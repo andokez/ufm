@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UFM PTC Calculator</title>
+<style>
+  :root { --bg:#0f1117; --card:#181c25; --card2:#202632; --text:#f2f4f8; --muted:#9da6b5; --accent:#63e6be; --danger:#ff8787; --border:#303746; }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(135deg,#0f1117,#151a23);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{width:100%;max-width:1800px;margin:0 auto;padding:24px 18px 45px}
+  h1{margin:0 0 6px;font-size:30px}
+  h2{margin:0 0 14px;font-size:20px}
+  .sub{color:var(--muted);margin:0 0 24px}
+  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+  .card{background:rgba(24,28,37,.96);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 12px 35px rgba(0,0,0,.18)}
+  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+  input,select,button{font:inherit}
+  input,select{width:100%;background:#11151d;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none}
+  input:focus,select:focus{border-color:var(--accent)}
+  .btnrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
+  button{border:0;border-radius:10px;padding:11px 15px;cursor:pointer;font-weight:700}
+  .primary{background:var(--accent);color:#09241d}
+  .secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
+  .danger{background:#4a1d22;color:#ff8787;border:1px solid #713039;font-size:18px;line-height:1;padding:10px 13px}
+  .small{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
+  .result{min-height:250px}
+  .empty{color:var(--muted);display:flex;align-items:center;justify-content:center;min-height:220px;text-align:center}
+  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .stat{background:#11151d;border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center}
+  .stat b{display:block;font-size:22px;margin-top:4px;text-align:center}
+  .stat span{color:var(--muted);font-size:12px;text-align:center;display:block}
+  .solution{background:#11151d;border:1px solid var(--border);border-radius:12px;padding:14px}
+  .solution h3{margin:0 0 10px;font-size:15px}
+  .row{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #252b36;align-items:center}
+  .row:last-child{border-bottom:0}.row>b{font-size:17px}
+  .tag{display:inline-block;background:#26302e;color:var(--accent);border-radius:999px;padding:4px 8px;font-weight:800}
+  .prices{margin-top:0}
+  .price-header{display:grid;grid-template-columns:180px 1fr auto;align-items:center;gap:18px}
+  .price-header h2{text-align:center;margin:0}
+  .price-header .toolbar{margin:0;justify-content:flex-end}
+  .logo{display:flex;align-items:center;gap:9px;font-weight:900;font-size:20px;line-height:.85;white-space:nowrap}
+  .logo span{font-size:16px;letter-spacing:.5px}
+  .logo small{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px}
+  .pricegrid{direction:rtl;display:grid;grid-template-columns:repeat(12,minmax(85px,1fr));grid-auto-flow:row;gap:8px;max-height:190px;overflow:auto;padding-right:3px}
+
+  .pricegrid{scrollbar-width:thin;scrollbar-color:#303642 transparent}
+  .pricegrid::-webkit-scrollbar{width:7px;height:7px}
+  .pricegrid::-webkit-scrollbar-track{background:transparent}
+  .pricegrid::-webkit-scrollbar-thumb{background:#303642;border-radius:999px}
+  .pricegrid::-webkit-scrollbar-thumb:hover{background:#3a424f}
+  .priceitem{direction:ltr;background:#11151d;border:1px solid var(--border);border-radius:10px;padding:9px;min-width:0;text-align:center}
+  .priceitem .rating{font-weight:900;margin-bottom:7px;text-align:center;font-size:14px;color:#ffd43b}
+  .priceitem input{padding:9px 6px;font-size:14px;text-align:center;font-weight:900;border-color:#454d5c}
+  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+  .toolbar button{padding:8px 10px;font-size:12px}
+  .error{color:var(--danger);background:#2a171a;border:1px solid #542126;border-radius:10px;padding:11px}
+  .success{color:var(--accent);font-size:13px;margin-top:8px}
+  .formula{margin-top:13px;padding:10px;background:#141922;border-radius:10px;color:#c5ccd7;font-size:13px;line-height:1.5}
+  .ptc-section{grid-column:1;grid-row:1;min-width:0}
+  .result-section{grid-column:2;grid-row:1;min-width:0}
+
+  @media(max-width:1100px){
+    .grid{grid-template-columns:1fr}
+    .ptc-section,.result-section{grid-column:1;grid-row:auto}
+    .pricegrid{grid-template-columns:repeat(8,minmax(80px,1fr))}
+    .grid{grid-template-columns:1fr}
+  }
+  @media(max-width:800px){
+    .price-header{grid-template-columns:1fr auto;gap:10px}
+    .price-header h2{grid-column:1/-1;grid-row:1;text-align:left}
+    .logo{grid-row:2}
+    .price-header .toolbar{grid-row:2}
+    .pricegrid{grid-template-columns:repeat(5,minmax(78px,1fr))}
+  }
+  @media(max-width:500px){
+    .inputs{grid-template-columns:1fr}
+    .summary{grid-template-columns:1fr 1fr}
+    .pricegrid{grid-template-columns:repeat(3,minmax(75px,1fr))}
+    .price-header{grid-template-columns:1fr}
+    .price-header h2{text-align:center}
+    .logo,.price-header .toolbar{justify-self:center}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="card prices">
+    <div class="price-header">
+      <div class="logo">⚽ <span>UFM<br><small>Calculator</small></span></div>
+      <h2>Precios por estrella</h2>
+      <div class="toolbar">
+        <button class="secondary" onclick="savePrices()">Guardar</button>
+        <button class="secondary" onclick="loadPrices()">Cargar</button>
+        <button class="danger" onclick="confirmClearPrices()" title="Borrar precios">×</button>
+      </div>
+    </div>
+    <div id="saveMsg" class="small"></div>
+    <div id="pricegrid" class="pricegrid"></div>
+  </div>
+
+  <div class="grid">
+    <section class="ptc-section">
+      <div class="card">
+        <h2>Datos del PTC</h2>
+        <div class="inputs">
+          <div>
+            <label for="players">Número de jugadores</label>
+            <input id="players" type="number" min="5" max="30" value="11">
+          </div>
+          <div>
+            <label for="target">Media exigida</label>
+            <input id="target" type="number" min="50" max="99" value="80">
+          </div>
+          </div>
+        <div class="btnrow">
+          <button class="primary" onclick="calculate()">Calcular combinación más barata</button>
+          <button class="secondary" onclick="clearResult()">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card result result-section">
+      <h2>Resultado</h2>
+      <div id="result" class="empty">Introduce los precios y pulsa <b style="margin-left:5px">Calcular combinación más barata</b>.</div>
+    </section>
+  </div>
+</div>
+
+<script>
+const MIN=50, MAX=99;
+const grid=document.getElementById('pricegrid');
+
+function buildPrices(){
+  for(let r=MAX;r>=MIN;r--){
+    const d=document.createElement('div');
+    d.className='priceitem';
+    d.innerHTML=`<div class="rating">⭐ ${r}</div>
+      <input id="p${r}" type="text" autocomplete="off" placeholder="Precio (€)">
+    `;
+    grid.appendChild(d);
+  }
+}
+buildPrices();
+loadPrices(true);
+
+function formatInputValue(input){
+  // Solo se ejecuta al salir de la casilla.
+  // Conserva todos los números y añade puntos cada 3 cifras.
+  const digits = String(input.value).replace(/[^0-9]/g,'');
+  if(digits === ''){
+    input.value = '';
+    return;
+  }
+
+  input.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
+}
+
+function attachPriceFormatting(){
+  for(let r=MIN;r<=MAX;r++){
+    const el=document.getElementById('p'+r);
+
+    // Mientras escribes no se modifica el contenido.
+    // Al hacer clic fuera de la casilla se añaden los puntos.
+    el.addEventListener('blur',()=>{
+      formatInputValue(el);
+    });
+  }
+}
+attachPriceFormatting();
+
+function parsePrice(v){
+  if(!v) return null;
+  const digits = String(v).replace(/[^0-9]/g,'');
+  if(digits === '') return null;
+  const n = parseInt(digits,10);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+function fmt(n){
+  return new Intl.NumberFormat('es-ES',{maximumFractionDigits:0}).format(Math.round(n));
+}
+function fmtDec(n){ return n.toFixed(2).replace('.',','); }
+
+function getPrices(){
+  const prices={};
+  for(let r=MIN;r<=MAX;r++){
+    const n=parsePrice(document.getElementById('p'+r).value);
+    if(n!==null) prices[r]=n;
+  }
+  return prices;
+}
+
+function thresholdFor(n,target){
+  return target*n - Math.floor(n/2);
+}
+
+function calculate(){
+  const n=parseInt(document.getElementById('players').value,10);
+  const target=parseInt(document.getElementById('target').value,10);
+  const out=document.getElementById('result');
+  if(!Number.isInteger(n)||n<5||n>30||!Number.isInteger(target)||target<50||target>99){
+    out.innerHTML='<div class="error">Revisa los datos: jugadores 5–30 y media 50–99.</div>'; return;
+  }
+  const prices=getPrices();
+  const ratings=Object.keys(prices).map(Number).sort((a,b)=>a-b);
+  if(!ratings.length){
+    out.innerHTML='<div class="error">No hay precios introducidos.</div>'; return;
+  }
+  const minSum=thresholdFor(n,target);
+  const maxSum=n*MAX;
+
+  // DP: dp[s] = cheapest way to fill the current number of slots to rating sum s.
+  // Store predecessor so we can reconstruct the exact number of each rating.
+  let dp=new Array(maxSum+1).fill(null);
+  dp[0]={cost:0, counts:new Map()};
+  for(let slot=0;slot<n;slot++){
+    const ndp=new Array(maxSum+1).fill(null);
+    for(let s=0;s<=MAX*slot;s++){
+      const state=dp[s]; if(!state) continue;
+      for(const r of ratings){
+        const ns=s+r;
+        const nc=state.cost+prices[r];
+        const old=ndp[ns];
+        if(!old || nc<old.cost){
+          const counts=new Map(state.counts);
+          counts.set(r,(counts.get(r)||0)+1);
+          ndp[ns]={cost:nc,counts};
+        }
+      }
+    }
+    dp=ndp;
+  }
+
+  let best=null,bestSum=null;
+  for(let s=minSum;s<=maxSum;s++){
+    if(dp[s] && (!best || dp[s].cost<best.cost || (dp[s].cost===best.cost && s<bestSum))){
+      best=dp[s]; bestSum=s;
+    }
+  }
+  if(!best){
+    out.innerHTML='<div class="error">No existe una combinación posible con los precios que has introducido. Prueba a añadir precios de medias más altas.</div>'; return;
+  }
+
+  const avg=bestSum/n;
+  const displayed=target;
+
+  const rows=[...best.counts.entries()].sort((a,b)=>b[0]-a[0]);
+  const composition=rows.map(([r,c])=>`<div class="row"><span><span class="tag">${c} × ${r}</span></span><b>${fmt(prices[r]*c)}</b></div>`).join('');
+
+  out.className='';
+  out.innerHTML=`
+    <div class="summary">
+      <div class="stat"><span>Coste total</span><b>${fmt(best.cost)}</b></div>
+      <div class="stat"><span>⭐ Estrella real</span><b>${fmtDec(avg)}</b></div>
+      <div class="stat"><span>⭐ Estrella PTC</span><b>${displayed}</b></div>
+    </div>
+    <div class="solution">
+      <h3>Combinación más barata encontrada</h3>
+      ${composition}
+      <div class="row" style="margin-top:6px;padding-top:12px"><span>Total jugadores</span><b>${n}</b></div>
+      <div class="row"><span>Suma de medias</span><b>${bestSum}</b></div>
+    </div>
+  `;
+}
+
+function clearResult(){
+  document.getElementById('result').className='empty';
+  document.getElementById('result').innerHTML='Introduce los precios y pulsa <b style="margin-left:5px">Calcular combinación más barata</b>.';
+}
+
+function confirmClearPrices(){
+  if(confirm('¿Seguro que quieres borrar todos los precios?')){
+    for(let r=MIN;r<=MAX;r++) document.getElementById('p'+r).value='';
+    showMessage('Borrado.');
+  }
+}
+let messageTimer=null;
+function showMessage(message){ const el=document.getElementById('saveMsg'); el.textContent=message; if(messageTimer) clearTimeout(messageTimer); messageTimer=setTimeout(()=>el.textContent='',5000); }
+function savePrices(){
+  if(localStorage.getItem('ufm_ptc_prices')!==null && !confirm('Ya hay datos guardados. ¿Quieres sobreescribirlos?')) return;
+  const data={}; for(let r=MIN;r<=MAX;r++) data[r]=document.getElementById('p'+r).value;
+  localStorage.setItem('ufm_ptc_prices',JSON.stringify(data)); showMessage('Guardado.');
+}
+function loadPrices(silent=false){
+  const raw=localStorage.getItem('ufm_ptc_prices'); if(!raw){if(!silent) showMessage('No hay datos guardados.');return;}
+  const data=JSON.parse(raw); for(let r=MIN;r<=MAX;r++){const el=document.getElementById('p'+r);el.value=data[r]||'';formatInputValue(el);} if(!silent) showMessage('Cargado.');
+}
+</script>
+</body>
+</html>
