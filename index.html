@@ -56,7 +56,7 @@
   .hero-stat-badge b { display: block; font-size: 18px; color: var(--accent); }
   .hero-stat-badge span { font-size: 11px; color: var(--muted); font-weight: 700; }
 
-  /* Barra de herramientas de PTC */
+  /* Barra de herramientas */
   .ptc-toolbar {
     display: flex; justify-content: space-between; align-items: center;
     gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
@@ -69,9 +69,7 @@
     display: flex; align-items: center; gap: 6px;
   }
   .tab-button:hover { color: var(--text); background: var(--card2); }
-  .tab-button.active {
-    background: var(--accent); color: #09241d; border-color: transparent;
-  }
+  .tab-button.active { background: var(--accent); color: #09241d; border-color: transparent; }
 
   .source-selector {
     display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #11151d;
@@ -79,22 +77,16 @@
   .source-btn {
     border: 0; padding: 8px 13px; font-size: 12px; font-weight: 700; background: transparent; color: var(--muted); cursor: pointer;
   }
-  .source-btn.active {
-    background: var(--accent); color: #09241d;
-  }
+  .source-btn.active { background: var(--accent); color: #09241d; }
 
-  /* Cuadrícula de Desafíos (PTCs) */
-  .ptc-grid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
-  }
+  /* Cuadrícula de Desafíos */
+  .ptc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
   .ptc-card {
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 16px; cursor: pointer; transition: 0.2s ease; position: relative;
     display: flex; flex-direction: column; justify-content: space-between;
   }
-  .ptc-card:hover {
-    transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,0.4);
-  }
+  .ptc-card:hover { transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
   .ptc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 6px; }
   .ptc-title { font-size: 16px; font-weight: 900; margin: 0; color: #fff; line-height: 1.2; }
   
@@ -103,15 +95,9 @@
     border-radius: 6px; background: rgba(152, 162, 179, 0.15); color: var(--muted); border: 1px solid rgba(152, 162, 179, 0.3);
     white-space: nowrap;
   }
-  .ptc-badge-type.repeatable {
-    background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3);
-  }
-  .ptc-badge-type.limited {
-    background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);
-  }
-  .ptc-badge-type.season {
-    background: rgba(255, 212, 59, 0.15); color: var(--gold); border-color: rgba(255, 212, 59, 0.3);
-  }
+  .ptc-badge-type.repeatable { background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3); }
+  .ptc-badge-type.limited { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+  .ptc-badge-type.season { background: rgba(255, 212, 59, 0.15); color: var(--gold); border-color: rgba(255, 212, 59, 0.3); }
 
   .ptc-reward {
     font-size: 12px; font-weight: 800; color: var(--gold); margin: -4px 0 10px; display: flex; align-items: center; gap: 6px;
@@ -126,7 +112,7 @@
   .ptc-cost { font-weight: 900; color: var(--accent); font-size: 14px; }
   .ptc-action { font-size: 12px; font-weight: 800; color: var(--muted); }
 
-  /* Cuadrícula de sub-plantillas simétrica y adaptable */
+  /* Sub-plantillas con el mismo ancho simétrico */
   .sub-tabs-wrap {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
@@ -135,74 +121,28 @@
     padding-bottom: 4px;
   }
   .sub-tab-btn {
-    background: #11151e;
-    border: 1px solid var(--line);
-    color: var(--muted);
-    border-radius: 12px;
-    padding: 12px 14px;
-    font-size: 13px;
-    font-weight: 800;
-    cursor: pointer;
-    transition: 0.15s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
-    text-align: left;
-    min-height: 72px;
-    box-sizing: border-box;
+    background: #11151e; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 12px; padding: 12px 14px; font-size: 13px; font-weight: 800;
+    cursor: pointer; transition: 0.15s ease; display: flex; flex-direction: column;
+    align-items: flex-start; gap: 6px; text-align: left; min-height: 72px; box-sizing: border-box;
   }
-  .sub-tab-btn:hover {
-    border-color: #4b5668;
-    background: #151b27;
-    color: var(--text);
-  }
+  .sub-tab-btn:hover { border-color: #4b5668; background: #151b27; color: var(--text); }
   .sub-tab-btn.active {
-    background: var(--card2);
-    color: var(--accent);
-    border-color: var(--accent);
+    background: var(--card2); color: var(--accent); border-color: var(--accent);
     box-shadow: 0 4px 14px rgba(0,0,0,0.35);
   }
-  .sub-tab-top {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    align-items: center;
-    gap: 8px;
-  }
-  .sub-tab-name {
-    font-size: 13px;
-    font-weight: 900;
-    color: #fff;
-  }
-  .sub-tab-target {
-    font-size: 12px;
-    font-weight: 900;
-    color: var(--gold);
-    white-space: nowrap;
-  }
-  .sub-tab-reward {
-    font-size: 11px;
-    font-weight: 700;
-    color: var(--muted);
-    line-height: 1.3;
-    word-break: break-word;
-  }
-  .sub-tab-btn.active .sub-tab-reward {
-    color: #ffd43b;
-  }
+  .sub-tab-top { display: flex; justify-content: space-between; width: 100%; align-items: center; gap: 8px; }
+  .sub-tab-name { font-size: 13px; font-weight: 900; color: #fff; }
+  .sub-tab-target { font-size: 12px; font-weight: 900; color: var(--gold); white-space: nowrap; }
+  .sub-tab-reward { font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.3; word-break: break-word; }
+  .sub-tab-btn.active .sub-tab-reward { color: #ffd43b; }
 
-  .summary-banner {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px;
-  }
+  .summary-banner { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px; }
   .summary-box { background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
   .summary-box small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
   .summary-box span { display: block; font-size: 20px; font-weight: 900; color: var(--accent); margin-top: 2px; }
 
-  /* Bloque de Requisitos Específicos */
-  .req-detail-panel {
-    background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;
-  }
+  .req-detail-panel { background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px; }
   .req-detail-panel h4 { margin: 0 0 8px 0; font-size: 13px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
   .req-tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
   .req-tag {
@@ -210,10 +150,7 @@
     font-size: 11px; font-weight: 700; color: #dfe4eb; display: inline-flex; align-items: center; gap: 4px;
   }
 
-  /* Grid de Jugadores en Alineación */
-  .squad-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; justify-content: center; margin-top: 10px;
-  }
+  .squad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; justify-content: center; margin-top: 10px; }
   .squad-slot { display: flex; flex-direction: column; align-items: center; }
 
   /* Tarjeta FUT Mini */
@@ -223,12 +160,20 @@
     cursor: pointer; transition: transform 0.15s ease;
   }
   .mini-card:hover { transform: translateY(-3px); }
+
+  /* Colores de las minifichas */
   .mini-card.bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; }
   .mini-card.silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; }
   .mini-card.gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; }
   .mini-card.gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; }
   .mini-card.weekend_league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
   .mini-card.ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
+  .mini-card.matchday { background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%); border-color: #f97316; }
+  .mini-card.potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
+  .mini-card.totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
+  .mini-card.euro_evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
+  .mini-card.new_season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
+  .mini-card.transfer_stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
   
   .mini-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .mini-card-rat { font-size: 18px; font-weight: 900; color: var(--gold); }
@@ -248,7 +193,7 @@
   }
   .squad-slot-empty b { color: var(--gold); font-size: 16px; margin-bottom: 4px; }
 
-  /* Modales Globales */
+  /* Modales */
   .modal-bg {
     position: fixed; inset: 0; background: #000b; display: none;
     align-items: center; justify-content: center; padding: 18px; z-index: 50;
@@ -262,7 +207,7 @@
   .modal-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
   .close-btn { background: var(--card2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 16px; padding: 6px 12px; cursor: pointer; }
 
-  /* ESTILOS DE FICHA DETALLADA (HEREDADOS DE LA BASE DE DATOS) */
+  /* Modal Ficha Detallada */
   .detail-modal { width: min(650px, 98%); z-index: 70; }
   .detail-container { display: flex; gap: 20px; align-items: flex-start; }
   .detail-left { width: 220px; flex-shrink: 0; }
@@ -342,7 +287,6 @@
 </head>
 <body>
 
-<!-- Cabecero Principal -->
 <header class="site-nav">
   <a class="nav-brand" href="index.html">
     <div style="font-size:24px">⚽</div>
@@ -365,7 +309,6 @@
 </header>
 
 <div class="wrap">
-  <!-- Hero Banner -->
   <div class="hero">
     <div class="hero-info">
       <h1 id="lblHeroTitle">Desafíos de Creación de Plantillas (PTC)</h1>
@@ -383,7 +326,6 @@
     </div>
   </div>
 
-  <!-- Barra de Herramientas y Filtros -->
   <div class="ptc-toolbar">
     <div class="category-tabs">
       <button type="button" class="tab-button active" onclick="switchCategory('basic')" id="tabBasic">📁 Básicos</button>
@@ -397,7 +339,6 @@
     </div>
   </div>
 
-  <!-- Grid de Desafíos -->
   <div class="ptc-grid" id="ptcGrid"></div>
 </div>
 
@@ -412,7 +353,6 @@
       <button type="button" class="close-btn" onclick="closeModal()">✕</button>
     </div>
 
-    <!-- Pestañas internas para desafíos de varias plantillas -->
     <div id="subTabsWrap" class="sub-tabs-wrap" style="display:none"></div>
 
     <div class="summary-banner">
@@ -430,7 +370,6 @@
       </div>
     </div>
 
-    <!-- Panel de Requisitos Específicos -->
     <div id="modalReqPanel" class="req-detail-panel" style="display:none">
       <h4 id="lblModalReqTitle">Requisitos Especiales de Plantilla</h4>
       <div class="req-tags-wrap" id="modalReqTags"></div>
@@ -441,11 +380,11 @@
   </div>
 </div>
 
-<!-- Modal Secundario: Ficha Detallada del Jugador -->
+<!-- Modal Secundario: Ficha Detallada -->
 <div class="modal-bg" id="detailModalBg" style="z-index: 60" onclick="closeDetailModal(event)">
   <div class="modal detail-modal" onclick="event.stopPropagation()">
     <div class="modal-top" style="margin-bottom: 12px;">
-      <h3 id="detModalHeader" style="margin:0; font-size:18px">Detalle del Jugador</h3>
+      <h3 style="margin:0; font-size:18px">Detalle del Jugador</h3>
       <button type="button" class="close-btn" onclick="closeDetailModal()">✕</button>
     </div>
     
@@ -502,64 +441,144 @@ function normalizePosition(p) {
   return reversePosLookup[up] || up;
 }
 
-function displayPosition(p) {
+function displayPosition(p, lang) {
   if (!p) return '—';
   var standard = normalizePosition(p);
-  var dict = posTranslations[currentLang] || posTranslations.es;
+  var l = lang || currentLang || 'es';
+  var dict = posTranslations[l] || posTranslations.es;
   return dict[standard] || standard;
 }
 
-/* LIGAS Y PAÍSES PARA BANDERAS Y DETALLES */
+/* LISTAS MAESTRAS COMPLETAS DE DATABASE.HTML */
 var masterLeaguesData = [
-  { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)" } },
-  { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)" } },
-  { id: "eng_2", code: "gb-eng", names: { es: "Inglaterra (2ª Div - Championship)", en: "England (2nd Div - Championship)" } },
-  { id: "fr_1", code: "fr", names: { es: "Francia (1ª Div - Ligue 1)", en: "France (1st Div - Ligue 1)" } },
-  { id: "de_1", code: "de", names: { es: "Alemania (1ª Div - Bundesliga)", en: "Germany (1st Div - Bundesliga)" } },
-  { id: "it_1", code: "it", names: { es: "Italia (1ª Div - Serie A)", en: "Italy (1st Div - Serie A)" } },
-  { id: "nl_1", code: "nl", names: { es: "Holanda (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)" } },
-  { id: "pt_1", code: "pt", names: { es: "Portugal (1ª Div - Liga Portugal)", en: "Portugal (1st Div - Liga Portugal)" } },
-  { id: "es_1", code: "es", names: { es: "España (1ª Div - LaLiga)", en: "Spain (1st Div - LaLiga)" } },
-  { id: "es_2", code: "es", names: { es: "España (2ª Div - LaLiga Hypermotion)", en: "Spain (2nd Div - Hypermotion)" } },
-  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)" } }
+  { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
+  { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
+  { id: "eng_2", code: "gb-eng", names: { es: "Inglaterra (2ª Div - Championship)", en: "England (2nd Div - Championship)", fr: "Angleterre (2ème Div - Championship)", de: "England (2. Liga - Championship)", it: "Inghilterra (2ª Div - Championship)", pt: "Inglaterra (2ª Div - Championship)" } },
+  { id: "eng_3", code: "gb-eng", names: { es: "Inglaterra (3ª Div - League One)", en: "England (3rd Div - League One)", fr: "Angleterre (3ème Div - League One)", de: "England (3. Liga - League One)", it: "Inghilterra (3ª Div - League One)", pt: "Inglaterra (3ª Div - League One)" } },
+  { id: "eng_4", code: "gb-eng", names: { es: "Inglaterra (4ª Div - League Two)", en: "England (4th Div - League Two)", fr: "Angleterre (4ème Div - League Two)", de: "England (4. Liga - League Two)", it: "Inghilterra (4ª Div - League Two)", pt: "Inglaterra (4ª Div - League Two)" } },
+  { id: "fr_1", code: "fr", names: { es: "Francia (1ª Div - Ligue 1)", en: "France (1st Div - Ligue 1)", fr: "France (1ère Div - Ligue 1)", de: "Frankreich (1. Liga - Ligue 1)", it: "Francia (1ª Div - Ligue 1)", pt: "França (1ª Div - Ligue 1)" } },
+  { id: "fr_2", code: "fr", names: { es: "Francia (2ª Div - Ligue 2)", en: "France (2nd Div - Ligue 2)", fr: "France (2ème Div - Ligue 2)", de: "Frankreich (2. Liga - Ligue 2)", it: "Francia (2ª Div - Ligue 2)", pt: "França (2ª Div - Ligue 2)" } },
+  { id: "de_1", code: "de", names: { es: "Alemania (1ª Div - Bundesliga)", en: "Germany (1st Div - Bundesliga)", fr: "Allemagne (1ère Div - Bundesliga)", de: "Deutschland (1. Liga - Bundesliga)", it: "Germania (1ª Div - Bundesliga)", pt: "Alemanha (1ª Div - Bundesliga)" } },
+  { id: "de_2", code: "de", names: { es: "Alemania (2ª Div - 2. Bundesliga)", en: "Germany (2nd Div - 2. Bundesliga)", fr: "Allemagne (2ème Div - 2. Bundesliga)", de: "Deutschland (2. Liga - 2. Bundesliga)", it: "Germania (2ª Div - 2. Bundesliga)", pt: "Alemanha (2ª Div - 2. Bundesliga)" } },
+  { id: "de_3", code: "de", names: { es: "Alemania (3ª Div - 3. Liga)", en: "Germany (3rd Div - 3. Liga)", fr: "Allemagne (3ème Div - 3. Liga)", de: "Deutschland (3. Liga)", it: "Germania (3ª Div - 3. Liga)", pt: "Alemanha (3ª Div - 3. Liga)" } },
+  { id: "it_1", code: "it", names: { es: "Italia (1ª Div - Serie A)", en: "Italy (1st Div - Serie A)", fr: "Italie (1ère Div - Serie A)", de: "Italien (1. Liga - Serie A)", it: "Italia (1ª Div - Serie A)", pt: "Itália (1ª Div - Serie A)" } },
+  { id: "it_2", code: "it", names: { es: "Italia (2ª Div - Serie B)", en: "Italy (2nd Div - Serie B)", fr: "Italie (2ème Div - Serie B)", de: "Italien (2. Liga - Serie B)", it: "Italia (2ª Div - Serie B)", pt: "Itália (2ª Div - Serie B)" } },
+  { id: "nl_1", code: "nl", names: { es: "Holanda (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)", fr: "Pays-Bas (1ère Div - Eredivisie)", de: "Niederlande (1. Liga - Eredivisie)", it: "Paesi Bassi (1ª Div - Eredivisie)", pt: "Holanda (1ª Div - Eredivisie)" } },
+  { id: "pt_1", code: "pt", names: { es: "Portugal (1ª Div - Liga Portugal)", en: "Portugal (1st Div - Liga Portugal)", fr: "Portugal (1ère Div - Liga Portugal)", de: "Portugal (1. Liga - Liga Portugal)", it: "Portogallo (1ª Div - Liga Portugal)", pt: "Portugal (1ª Div - Liga Portugal)" } },
+  { id: "es_1", code: "es", names: { es: "España (1ª Div - LaLiga)", en: "Spain (1st Div - LaLiga)", fr: "Espagne (1ère Div - LaLiga)", de: "Spanien (1. Liga - LaLiga)", it: "Spagna (1ª Div - LaLiga)", pt: "Espanha (1ª Div - LaLiga)" } },
+  { id: "es_2", code: "es", names: { es: "España (2ª Div - LaLiga Hypermotion)", en: "Spain (2nd Div - Hypermotion)", fr: "Espagne (2ème Div - Hypermotion)", de: "Spanien (2. Liga - Hypermotion)", it: "Spagna (2ª Div - Hypermotion)", pt: "Espanha (2ª Div - Hypermotion)" } },
+  { id: "tr_1", code: "tr", names: { es: "Turquía (1ª Div - Süper Lig)", en: "Turkey (1st Div - Süper Lig)", fr: "Turquie (1ère Div - Süper Lig)", de: "Türkei (1. Liga - Süper Lig)", it: "Turchia (1ª Div - Süper Lig)", pt: "Turquia (1ª Div - Süper Lig)" } },
+  { id: "ar_1", code: "ar", names: { es: "Argentina (1ª Div - Liga Profesional)", en: "Argentina (1st Div)", fr: "Argentine (1ère Div)", de: "Argentinien (1. Liga)", it: "Argentina (1ª Div)", pt: "Argentina (1ª Div)" } },
+  { id: "au_1", code: "au", names: { es: "Australia (1ª Div - A-League)", en: "Australia (1st Div - A-League)", fr: "Australie (1ère Div - A-League)", de: "Australien (1. Liga - A-League)", it: "Australia (1ª Div - A-League)", pt: "Austrália (1ª Div - A-League)" } },
+  { id: "at_1", code: "at", names: { es: "Austria (1ª Div - Bundesliga)", en: "Austria (1st Div - Bundesliga)", fr: "Autriche (1ère Div - Bundesliga)", de: "Österreich (1. Liga - Bundesliga)", it: "Austria (1ª Div - Bundesliga)", pt: "Áustria (1ª Div - Bundesliga)" } },
+  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasile (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
+  { id: "dk_1", code: "dk", names: { es: "Dinamarca (1ª Div - Superliga)", en: "Denmark (1st Div - Superliga)", fr: "Danemark (1ère Div - Superliga)", de: "Dänemark (1. Liga - Superliga)", it: "Danimarca (1ª Div - Superliga)", pt: "Dinamarca (1ª Div - Superliga)" } },
+  { id: "ie_1", code: "ie", names: { es: "Irlanda (1ª Div - Premier Div)", en: "Ireland (1st Div - Premier Div)", fr: "Irlande (1ère Div - Premier Div)", de: "Irland (1. Liga - Premier Div)", it: "Irlanda (1ª Div - Premier Div)", pt: "Irlanda (1ª Div - Premier Div)" } },
+  { id: "no_1", code: "no", names: { es: "Noruega (1ª Div - Eliteserien)", en: "Norway (1st Div - Eliteserien)", fr: "Norvège (1ère Div - Eliteserien)", de: "Norwegen (1. Liga - Eliteserien)", it: "Norvegia (1ª Div - Eliteserien)", pt: "Noruega (1ª Div - Eliteserien)" } },
+  { id: "pl_1", code: "pl", names: { es: "Polonia (1ª Div - Ekstraklasa)", en: "Poland (1st Div - Ekstraklasa)", fr: "Pologne (1ère Div - Ekstraklasa)", de: "Polen (1. Liga - Ekstraklasa)", it: "Polonia (1ª Div - Ekstraklasa)", pt: "Polónia (1ª Div - Ekstraklasa)" } },
+  { id: "ro_1", code: "ro", names: { es: "Rumanía (1ª Div - Liga I)", en: "Romania (1st Div - Liga I)", fr: "Roumanie (1ère Div - Liga I)", de: "Rumänien (1. Liga - Liga I)", it: "Romania (1ª Div - Liga I)", pt: "Roménia (1ª Div - Liga I)" } },
+  { id: "sct_1", code: "gb-sct", names: { es: "Escocia (1ª Div - Premiership)", en: "Scotland (1st Div - Premiership)", fr: "Écosse (1ère Div - Premiership)", de: "Schottland (1. Liga - Premiership)", it: "Scozia (1ª Div - Premiership)", pt: "Escócia (1ª Div - Premiership)" } },
+  { id: "kr_1", code: "kr", names: { es: "Corea del Sur (1ª Div - K League)", en: "South Korea (1st Div - K League)", fr: "Corée du Sud (1ère Div - K League)", de: "Südkorea (1. Liga - K League)", it: "Corea del Sud (1ª Div - K League)", pt: "Coreia do Sul (1ª Div - K League)" } },
+  { id: "se_1", code: "se", names: { es: "Suecia (1ª Div - Allsvenskan)", en: "Sweden (1st Div - Allsvenskan)", fr: "Suède (1ère Div - Allsvenskan)", de: "Schweden (1. Liga - Allsvenskan)", it: "Svezia (1ª Div - Allsvenskan)", pt: "Suécia (1ª Div - Allsvenskan)" } },
+  { id: "ch_1", code: "ch", names: { es: "Suiza (1ª Div - Super League)", en: "Switzerland (1st Div - Super League)", fr: "Suisse (1ère Div - Super League)", de: "Schweiz (1. Liga - Super League)", it: "Svizzera (1ª Div - Super League)", pt: "Suíça (1ª Div - Super League)" } }
 ];
 
 var masterCountriesData = [
-  { code: "de", names: { es: "Alemania", en: "Germany" } },
-  { code: "ar", names: { es: "Argentina", en: "Argentina" } },
-  { code: "br", names: { es: "Brasil", en: "Brazil" } },
-  { code: "es", names: { es: "España", en: "Spain" } },
-  { code: "fr", names: { es: "Francia", en: "France" } },
-  { code: "gb-eng", names: { es: "Inglaterra", en: "England" } },
-  { code: "nl", names: { es: "Holanda", en: "Netherlands" } },
-  { code: "it", names: { es: "Italia", en: "Italy" } },
-  { code: "pt", names: { es: "Portugal", en: "Portugal" } },
-  { code: "no", names: { es: "Noruega", en: "Norway" } }
+  { code: "de", names: { es: "Alemania", en: "Germany", fr: "Allemagne", de: "Deutschland", it: "Germania", pt: "Alemanha" } },
+  { code: "ar", names: { es: "Argentina", en: "Argentina", fr: "Argentine", de: "Argentinien", it: "Argentina", pt: "Argentina" } },
+  { code: "au", names: { es: "Australia", en: "Australia", fr: "Australie", de: "Australien", it: "Australia", pt: "Austrália" } },
+  { code: "at", names: { es: "Austria", en: "Austria", fr: "Autriche", de: "Österreich", it: "Austria", pt: "Áustria" } },
+  { code: "be", names: { es: "Bélgica", en: "Belgium", fr: "Belgique", de: "Belgien", it: "Belgio", pt: "Bélgica" } },
+  { code: "br", names: { es: "Brasil", en: "Brazil", fr: "Brésil", de: "Brasilien", it: "Brasile", pt: "Brasil" } },
+  { code: "co", names: { es: "Colombia", en: "Colombia", fr: "Colombie", de: "Kolumbien", it: "Colombia", pt: "Colômbia" } },
+  { code: "kr", names: { es: "Corea del Sur", en: "South Korea", fr: "Corée du Sud", de: "Südkorea", it: "Corea del Sud", pt: "Coreia do Sul" } },
+  { code: "hr", names: { es: "Croacia", en: "Croatia", fr: "Croatie", de: "Kroatien", it: "Croazia", pt: "Croácia" } },
+  { code: "dk", names: { es: "Dinamarca", en: "Denmark", fr: "Danemark", de: "Dänemark", it: "Danimarca", pt: "Dinamarca" } },
+  { code: "ec", names: { es: "Ecuador", en: "Ecuador", fr: "Équateur", de: "Ecuador", it: "Ecuador", pt: "Equador" } },
+  { code: "gb-sct", names: { es: "Escocia", en: "Scotland", fr: "Écosse", de: "Schottland", it: "Scozia", pt: "Escócia" } },
+  { code: "es", names: { es: "España", en: "Spain", fr: "Espagne", de: "Spanien", it: "Spagna", pt: "Espanha" } },
+  { code: "us", names: { es: "Estados Unidos", en: "USA", fr: "États-Unis", de: "USA", it: "Stati Uniti", pt: "Estados Unidos" } },
+  { code: "fr", names: { es: "Francia", en: "France", fr: "France", de: "Frankreich", it: "Francia", pt: "França" } },
+  { code: "gb-wls", names: { es: "Gales", en: "Wales", fr: "Pays de Galles", de: "Wales", it: "Galles", pt: "País de Gales" } },
+  { code: "nl", names: { es: "Holanda", en: "Netherlands", fr: "Pays-Bas", de: "Niederlande", it: "Paesi Bassi", pt: "Holanda" } },
+  { code: "gb-eng", names: { es: "Inglaterra", en: "England", fr: "Angleterre", de: "England", it: "Inghilterra", pt: "Inglaterra" } },
+  { code: "ie", names: { es: "Irlanda", en: "Ireland", fr: "Irlande", de: "Irland", it: "Irlanda", pt: "Irlanda" } },
+  { code: "it", names: { es: "Italia", en: "Italy", fr: "Italie", de: "Italien", it: "Italia", pt: "Itália" } },
+  { code: "jp", names: { es: "Japón", en: "Japan", fr: "Japon", de: "Japan", it: "Giappone", pt: "Japão" } },
+  { code: "ma", names: { es: "Marruecos", en: "Morocco", fr: "Maroc", de: "Marokko", it: "Marocco", pt: "Marrocos" } },
+  { code: "mx", names: { es: "México", en: "Mexico", fr: "Mexique", de: "Mexiko", it: "Messico", pt: "México" } },
+  { code: "ng", names: { es: "Nigeria", en: "Nigeria", fr: "Nigeria", de: "Nigeria", it: "Nigeria", pt: "Nigéria" } },
+  { code: "no", names: { es: "Noruega", en: "Norway", fr: "Norvège", de: "Norwegen", it: "Norvegia", pt: "Noruega" } },
+  { code: "pl", names: { es: "Polonia", en: "Poland", fr: "Pologne", de: "Polen", it: "Polonia", pt: "Polónia" } },
+  { code: "pt", names: { es: "Portugal", en: "Portugal", fr: "Portugal", de: "Portugal", it: "Portogallo", pt: "Portugal" } },
+  { code: "ro", names: { es: "Rumanía", en: "Romania", fr: "Roumanie", de: "Rumänien", it: "Romania", pt: "Roménia" } },
+  { code: "sn", names: { es: "Senegal", en: "Senegal", fr: "Sénégal", de: "Senegal", it: "Senegal", pt: "Senegal" } },
+  { code: "rs", names: { es: "Serbia", en: "Serbia", fr: "Serbie", de: "Serbien", it: "Serbia", pt: "Sérvia" } },
+  { code: "se", names: { es: "Suecia", en: "Sweden", fr: "Suède", de: "Schweden", it: "Svezia", pt: "Suécia" } },
+  { code: "ch", names: { es: "Suiza", en: "Switzerland", fr: "Suisse", de: "Schweiz", it: "Svizzera", pt: "Suíça" } },
+  { code: "tr", names: { es: "Turquía", en: "Turkey", fr: "Turquie", de: "Türkei", it: "Turchia", pt: "Turquia" } },
+  { code: "uy", names: { es: "Uruguay", en: "Uruguay", fr: "Uruguay", de: "Uruguay", it: "Uruguay", pt: "Uruguai" } }
 ];
 
+function normalizeSimple(str) {
+  if (!str) return '';
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
+/* FUNCIÓN DE BANDERAS IDÉNTICA A DATABASE.HTML */
 function getFlagUrl(str) {
   if (!str) return 'https://flagcdn.com/w40/un.png';
-  var clean = str.trim().toLowerCase();
+  var raw = str.trim();
+  var clean = raw.toLowerCase();
+  var norm = normalizeSimple(raw);
 
+  // 1. Coincidencia con Ligas
   var foundLeague = masterLeaguesData.find(function(l) {
-    return Object.values(l.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean.includes(l.code);
+    if (clean === l.code.toLowerCase() || norm === l.code.toLowerCase()) return true;
+    return Object.values(l.names).some(function(n) {
+      var nLow = n.toLowerCase();
+      var nNorm = normalizeSimple(n);
+      return clean.includes(nLow) || norm.includes(nNorm);
+    });
   });
   if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
 
+  // 2. Coincidencia con Países
   var foundCountry = masterCountriesData.find(function(c) {
-    return Object.values(c.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean === c.code;
+    if (clean === c.code.toLowerCase() || norm === c.code.toLowerCase()) return true;
+    return Object.values(c.names).some(function(n) {
+      return clean === n.toLowerCase() || norm === normalizeSimple(n);
+    });
   });
   if (foundCountry) return 'https://flagcdn.com/w40/' + foundCountry.code + '.png';
 
+  // 3. Fallbacks
   var fallbackDict = {
-    'premier': 'gb-eng', 'laliga': 'es', 'serie a': 'it', 'bundesliga': 'de',
-    'ligue 1': 'fr', 'eredivisie': 'nl', 'brasil': 'br', 'francia': 'fr',
-    'inglaterra': 'gb-eng', 'holanda': 'nl', 'españa': 'es', 'alemania': 'de'
+    'premier league': 'gb-eng', 'laliga': 'es', 'la liga': 'es', 'serie a': 'it', 'bundesliga': 'de',
+    'ligue 1': 'fr', 'eredivisie': 'nl', 'spain': 'es', 'england': 'gb-eng', 'france': 'fr', 'germany': 'de',
+    'mexico': 'mx', 'irlanda': 'ie', 'ireland': 'ie', 'scotland': 'gb-sct', 'escocia': 'gb-sct'
   };
-  for (var k in fallbackDict) {
-    if (clean.includes(k)) return 'https://flagcdn.com/w40/' + fallbackDict[k] + '.png';
-  }
-  return 'https://flagcdn.com/w40/un.png';
+  var code = fallbackDict[clean] || fallbackDict[norm] || 'un';
+  return 'https://flagcdn.com/w40/' + code + '.png';
+}
+
+/* CLASES VISUALES PARA LAS TARJETAS */
+function getCardClass(rating, rarity) {
+  var r = (rarity || 'normal').toLowerCase();
+  if (r === 'weekend_league') return 'weekend_league';
+  if (r === 'ptc') return 'ptc';
+  if (r === 'matchday') return 'matchday';
+  if (r === 'potm') return 'potm';
+  if (r === 'totw') return 'totw';
+  if (r === 'euro_evo') return 'euro_evo';
+  if (r === 'new_season') return 'new_season';
+  if (r === 'transfer_stars') return 'transfer_stars';
+  
+  var rat = +rating || 0;
+  if (rat <= 64) return 'bronze';
+  if (rat <= 74) return 'silver';
+  if (rat <= 82) return 'gold-light';
+  return 'gold-dark';
 }
 
 function getRarityClass(rarity, rating) {
@@ -956,16 +975,6 @@ function solveSbc(n, target, prices) {
   return { cost: best.cost, bestSum: bestSum, counts: best.counts };
 }
 
-function getCardClass(rating, rarity) {
-  if (rarity === 'weekend_league') return 'weekend_league';
-  if (rarity === 'ptc') return 'ptc';
-  var rat = +rating || 0;
-  if (rat <= 64) return 'bronze';
-  if (rat <= 74) return 'silver';
-  if (rat <= 82) return 'gold-light';
-  return 'gold-dark';
-}
-
 function setPriceSource(src) {
   priceSource = src;
   document.getElementById('btnSrcDb').classList.toggle('active', src === 'db');
@@ -1098,43 +1107,33 @@ function getPlayerRole(pos) {
   return 'GK';
 }
 
-/* COMPROBACIÓN ROBUSTA DE REQUISITOS (SOPORTA LM/MI, RM/MD, ETC.) */
 function checkPlayerMatches(p, type, cond) {
   if (!p) return false;
   if (type === 'exactPos') {
     return normalizePosition(p.position) === normalizePosition(cond);
   }
   if (type === 'league') {
-    return p.league && (p.league === cond || p.league.toLowerCase().includes(cond.toLowerCase()));
+    var pL = normalizeSimple(p.league || '');
+    var cL = normalizeSimple(cond || '');
+    return pL === cL || pL.includes(cL);
   }
   if (type === 'country') {
-    return p.country && (p.country === cond || p.country.toLowerCase().includes(cond.toLowerCase()));
+    var pC = normalizeSimple(p.country || '');
+    var cC = normalizeSimple(cond || '');
+    return pC === cC || pC.includes(cC);
   }
   if (type === 'role') {
     return getPlayerRole(p.position) === cond;
   }
-  if (type === 'minAge') {
-    return p.age && parseInt(p.age, 10) >= cond;
-  }
-  if (type === 'maxAge') {
-    return p.age && parseInt(p.age, 10) <= cond;
-  }
-  if (type === 'maxWeight') {
-    return p.weight && parseInt(p.weight, 10) <= cond;
-  }
-  if (type === 'minDri') {
-    return p.dri && parseInt(p.dri, 10) >= cond;
-  }
-  if (type === 'minSho') {
-    return p.sho && parseInt(p.sho, 10) >= cond;
-  }
-  if (type === 'minPhy') {
-    return p.phy && parseInt(p.phy, 10) >= cond;
-  }
+  if (type === 'minAge') return p.age && parseInt(p.age, 10) >= cond;
+  if (type === 'maxAge') return p.age && parseInt(p.age, 10) <= cond;
+  if (type === 'maxWeight') return p.weight && parseInt(p.weight, 10) <= cond;
+  if (type === 'minDri') return p.dri && parseInt(p.dri, 10) >= cond;
+  if (type === 'minSho') return p.sho && parseInt(p.sho, 10) >= cond;
+  if (type === 'minPhy') return p.phy && parseInt(p.phy, 10) >= cond;
   return false;
 }
 
-/* MOTOR DE RESOLUCIÓN GARANTIZANDO CONDICIONES ESTRICTAS */
 function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
   var n = targetPtc.players;
   var target = targetPtc.target;
@@ -1192,7 +1191,6 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     return { cost: totalCost, sumRating: sumRating, slots: slots };
   }
 
-  // 1. Fase de Posiciones Exactas (Prioridad Absoluta)
   var selectedPlayers = [];
   var usedIds = new Set();
 
@@ -1217,7 +1215,6 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     });
   }
 
-  // 2. Otras Condiciones Grupales
   var otherConditions = [];
   if (reqs.minLeague) for (var i = 0; i < reqs.minLeague.count; i++) otherConditions.push({ type: 'league', cond: reqs.minLeague.name });
   if (reqs.minCountry) for (var i = 0; i < reqs.minCountry.count; i++) otherConditions.push({ type: 'country', cond: reqs.minCountry.name });
@@ -1230,7 +1227,6 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
   if (reqs.minPhy && reqs.minPhyCount) for (var i = 0; i < reqs.minPhyCount; i++) otherConditions.push({ type: 'minPhy', cond: reqs.minPhy });
 
   otherConditions.forEach(function(reqItem) {
-    // Comprobar si algún jugador ya seleccionado cumple la condición
     var covered = false;
     for (var k = 0; k < selectedPlayers.length; k++) {
       var sel = selectedPlayers[k];
@@ -1243,7 +1239,6 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     }
     if (covered) return;
 
-    // Buscar candidato disponible
     var pool = candidates.filter(function(p) {
       return !usedIds.has(p.id) && checkPlayerMatches(p, reqItem.type, reqItem.cond);
     });
@@ -1453,7 +1448,6 @@ function renderModalContent() {
   });
 }
 
-/* MODAL DE FICHA DETALLADA AL HACER CLICK EN UN JUGADOR */
 function openPlayerCardDetail(index) {
   var p = window._activeSquadPlayers ? window._activeSquadPlayers[index] : null;
   if (!p) return;
