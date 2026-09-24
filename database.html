@@ -133,8 +133,6 @@
     tbody tr.card-totw { background: linear-gradient(90deg, rgba(24, 24, 27, 0.8), rgba(133, 77, 14, 0.35) 60%, transparent 90%); border-left-color: #eab308; }
     tbody tr.card-transfer-stars { background: linear-gradient(90deg, rgba(6, 78, 59, 0.5), transparent 80%); border-left-color: #2dd4bf; }
     tbody tr.card-weekend-league { background: linear-gradient(90deg, rgba(20, 53, 34, 0.55), transparent 80%); border-left-color: #22c55e; }
-    
-    /* Nuevas Rarezas en Tabla */
     tbody tr.card-matchday { background: linear-gradient(90deg, rgba(234, 88, 12, 0.4), rgba(24, 24, 27, 0.8) 60%, transparent 90%); border-left-color: #f97316; }
     tbody tr.card-potm { background: linear-gradient(90deg, rgba(88, 28, 135, 0.55), rgba(15, 23, 42, 0.8) 60%, transparent 90%); border-left-color: #a855f7; }
     tbody tr.card-ptc { background: linear-gradient(90deg, rgba(92, 51, 23, 0.55), rgba(31, 23, 18, 0.85) 60%, transparent 90%); border-left-color: #d97706; }
@@ -214,7 +212,6 @@
     .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
     .fut-card.card-weekend-league .card-rat { color: #4ade80; }
 
-    /* Estilos de las nuevas rarezas en fichas */
     .fut-card.card-matchday {
       background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%);
       border-color: #f97316;
@@ -362,7 +359,7 @@
     /* Menú Contextual (Clic Derecho) */
     .context-menu {
       position: fixed; background: #181f2b; border: 1px solid var(--line); border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: none; z-index: 100; min-width: 150px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: none; z-index: 100; min-width: 170px;
       overflow: hidden; padding: 4px 0;
     }
     .context-menu-item {
@@ -615,8 +612,24 @@
         </div>
       </div>
       <div class="modal-actions">
+        <button type="button" class="primary" onclick="openQuickPriceFromDetail()" id="btnEditPriceDetail">💰 Modificar Precio</button>
         <button type="button" onclick="closeModal()" id="btnCloseDetail">Cerrar</button>
       </div>
+    </div>
+
+    <!-- Modal Rápido: Cambiar Precio -->
+    <div id="quickPriceContainer" style="display:none">
+      <form onsubmit="submitQuickPrice(event)">
+        <p style="font-size: 14px; margin-top: 0;" id="quickPricePlayerLabel">Jugador: -</p>
+        <label style="font-size: 12px; color: var(--muted); font-weight: 700;">
+          <span id="lblQuickPriceInput">Nuevo Precio SBC / Mercado</span>
+          <input type="number" id="quickPriceInput" placeholder="Ej: 45000" style="margin-top: 6px;" required>
+        </label>
+        <div class="modal-actions" style="margin-top: 16px;">
+          <button type="button" onclick="closeModal()" id="btnCancelQuickPrice">Cancelar</button>
+          <button class="primary" type="submit" id="btnSaveQuickPrice">Actualizar Precio</button>
+        </div>
+      </form>
     </div>
 
     <!-- Modal Importación con 3 Pestañas (Archivo, Texto y URL) -->
@@ -667,7 +680,8 @@
 
 <!-- Menú Contextual (Clic Derecho) -->
 <div id="contextMenu" class="context-menu">
-  <div class="context-menu-item" onclick="onContextEdit()"><span id="ctxEdit">✏️ Modificar</span></div>
+  <div class="context-menu-item" onclick="onContextEditPrice()"><span id="ctxEditPrice">💰 Cambiar Precio</span></div>
+  <div class="context-menu-item" onclick="onContextEdit()"><span id="ctxEdit">✏️ Modificar Todo</span></div>
   <div class="context-menu-item danger-item" onclick="onContextDelete()"><span id="ctxDelete">🗑️ Eliminar</span></div>
 </div>
 
@@ -748,6 +762,7 @@ var sortKey = 'rating', sortDir = -1;
 var viewMode = 'table';
 var currentLang = localStorage.getItem('ufm_lang') || 'es';
 var contextTargetIndex = -1;
+var detailTargetIndex = -1;
 
 function $(id) { return document.getElementById(id); }
 function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
@@ -779,7 +794,7 @@ var masterLeaguesData = [
   { id: "ar_1", code: "ar", names: { es: "Argentina (1ª Div - Liga Profesional)", en: "Argentina (1st Div)", fr: "Argentine (1ère Div)", de: "Argentinien (1. Liga)", it: "Argentina (1ª Div)", pt: "Argentina (1ª Div)" } },
   { id: "au_1", code: "au", names: { es: "Australia (1ª Div - A-League)", en: "Australia (1st Div - A-League)", fr: "Australie (1ère Div - A-League)", de: "Australien (1. Liga - A-League)", it: "Australia (1ª Div - A-League)", pt: "Austrália (1ª Div - A-League)" } },
   { id: "at_1", code: "at", names: { es: "Austria (1ª Div - Bundesliga)", en: "Austria (1st Div - Bundesliga)", fr: "Autriche (1ère Div - Bundesliga)", de: "Österreich (1. Liga - Bundesliga)", it: "Austria (1ª Div - Bundesliga)", pt: "Áustria (1ª Div - Bundesliga)" } },
-  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasil (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
+  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasile (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
   { id: "dk_1", code: "dk", names: { es: "Dinamarca (1ª Div - Superliga)", en: "Denmark (1st Div - Superliga)", fr: "Danemark (1ère Div - Superliga)", de: "Dänemark (1. Liga - Superliga)", it: "Danimarca (1ª Div - Superliga)", pt: "Dinamarca (1ª Div - Superliga)" } },
   { id: "ie_1", code: "ie", names: { es: "Irlanda (1ª Div - Premier Div)", en: "Ireland (1st Div - Premier Div)", fr: "Irlande (1ère Div - Premier Div)", de: "Irland (1. Liga - Premier Div)", it: "Irlanda (1ª Div - Premier Div)", pt: "Irlanda (1ª Div - Premier Div)" } },
   { id: "no_1", code: "no", names: { es: "Noruega (1ª Div - Eliteserien)", en: "Norway (1st Div - Eliteserien)", fr: "Norvège (1ère Div - Eliteserien)", de: "Norwegen (1. Liga - Eliteserien)", it: "Norvegia (1ª Div - Eliteserien)", pt: "Noruega (1ª Div - Eliteserien)" } },
@@ -947,12 +962,15 @@ var i18n = {
     modalAddTitle: "Añadir Jugador", modalAddHelp: "Introduce los datos del jugador.",
     modalEditTitle: "Modificar Jugador", modalEditHelp: "Edita los atributos del jugador y guarda los cambios.",
     btnSavePlayer: "Guardar jugador", btnUpdatePlayer: "Actualizar Jugador", btnCancel: "Cancelar",
+    btnClose: "Cerrar", btnEditPrice: "💰 Modificar Precio",
     fName: "Nombre", fPos: "Posición", fRating: "Media / Valoración", fRarity: "Rareza",
     fClub: "Club", fLeague: "Liga", fCountry: "Nacionalidad", fAge: "Edad",
     fHeight: "Altura (cm)", fWeight: "Peso (kg)", fPrice: "Precio SBC / Mercado",
     fImage: "URL Imagen / Foto", fSubstats: "SUBATRIBUTOS",
     selLeague: "-- Seleccionar Liga --", selCountry: "-- Seleccionar País --",
-    ctxEdit: "✏️ Modificar", ctxDelete: "🗑️ Eliminar",
+    ctxEditPrice: "💰 Cambiar Precio", ctxEdit: "✏️ Modificar Todo", ctxDelete: "🗑️ Eliminar",
+    confirmDelete: "¿Seguro que deseas eliminar a {name} de la base de datos?",
+    quickPriceTitle: "Cambiar Precio", quickPriceHelp: "Introduce el nuevo precio para este jugador.",
     updatedOn: "Actualizado:", lastUpdate: "Última Actualización",
     statusToday: "Hoy", statusDaysAgo: "Hace {n}d"
   },
@@ -978,12 +996,15 @@ var i18n = {
     modalAddTitle: "Add Player", modalAddHelp: "Enter player attributes.",
     modalEditTitle: "Edit Player", modalEditHelp: "Update player attributes and save.",
     btnSavePlayer: "Save player", btnUpdatePlayer: "Update Player", btnCancel: "Cancel",
+    btnClose: "Close", btnEditPrice: "💰 Change Price",
     fName: "Name", fPos: "Position", fRating: "OVR / Rating", fRarity: "Rarity",
     fClub: "Club", fLeague: "League", fCountry: "Nation", fAge: "Age",
     fHeight: "Height (cm)", fWeight: "Weight (kg)", fPrice: "SBC Price / Market",
     fImage: "Image URL / Photo", fSubstats: "SUB-ATTRIBUTES",
     selLeague: "-- Select League --", selCountry: "-- Select Nation --",
-    ctxEdit: "✏️ Edit", ctxDelete: "🗑️ Delete",
+    ctxEditPrice: "💰 Change Price", ctxEdit: "✏️ Edit All", ctxDelete: "🗑️ Delete",
+    confirmDelete: "Are you sure you want to delete {name} from the database?",
+    quickPriceTitle: "Change Price", quickPriceHelp: "Enter the new price for this player.",
     updatedOn: "Updated:", lastUpdate: "Last Update",
     statusToday: "Today", statusDaysAgo: "{n}d ago"
   },
@@ -1009,12 +1030,15 @@ var i18n = {
     modalAddTitle: "Ajouter un Joueur", modalAddHelp: "Entrez les données du joueur.",
     modalEditTitle: "Modifier le Joueur", modalEditHelp: "Modifiez les attributs et sauvegardez.",
     btnSavePlayer: "Enregistrer", btnUpdatePlayer: "Mettre à jour", btnCancel: "Annuler",
+    btnClose: "Fermer", btnEditPrice: "💰 Modifier le Prix",
     fName: "Nom", fPos: "Position", fRating: "Note / GÉN", fRarity: "Rareté",
     fClub: "Club", fLeague: "Ligue", fCountry: "Nationalité", fAge: "Âge",
     fHeight: "Taille (cm)", fWeight: "Poids (kg)", fPrice: "Prix DCE / Marché",
     fImage: "URL Image / Photo", fSubstats: "SOUS-ATTRIBUTS",
     selLeague: "-- Choisir la Ligue --", selCountry: "-- Choisir la Nationalité --",
-    ctxEdit: "✏️ Modifier", ctxDelete: "🗑️ Supprimer",
+    ctxEditPrice: "💰 Modifier le Prix", ctxEdit: "✏️ Tout Modifier", ctxDelete: "🗑️ Supprimer",
+    confirmDelete: "Voulez-vous vraiment supprimer {name} de la base de données ?",
+    quickPriceTitle: "Changer le Prix", quickPriceHelp: "Entrez le nouveau prix pour ce joueur.",
     updatedOn: "Mis à jour:", lastUpdate: "Dernière Mise à Jour",
     statusToday: "Aujourd'hui", statusDaysAgo: "Il y a {n}j"
   },
@@ -1040,12 +1064,15 @@ var i18n = {
     modalAddTitle: "Spieler Hinzufügen", modalAddHelp: "Spielerattribute eingeben.",
     modalEditTitle: "Spieler Bearbeiten", modalEditHelp: "Attribute anpassen und speichern.",
     btnSavePlayer: "Speichern", btnUpdatePlayer: "Aktualisieren", btnCancel: "Abbrechen",
+    btnClose: "Schließen", btnEditPrice: "💰 Preis Ändern",
     fName: "Name", fPos: "Position", fRating: "GES / Bewertung", fRarity: "Seltenheit",
     fClub: "Verein", fLeague: "Liga", fCountry: "Nation", fAge: "Alter",
     fHeight: "Größe (cm)", fWeight: "Gewicht (kg)", fPrice: "SBC-Preis / Markt",
     fImage: "Bild-URL / Foto", fSubstats: "UNTERATTRIBUTE",
     selLeague: "-- Liga Auswählen --", selCountry: "-- Nation Auswählen --",
-    ctxEdit: "✏️ Bearbeiten", ctxDelete: "🗑️ Löschen",
+    ctxEditPrice: "💰 Preis Ändern", ctxEdit: "✏️ Alles Bearbeiten", ctxDelete: "🗑️ Löschen",
+    confirmDelete: "Möchtest du {name} wirklich aus der Datenbank löschen?",
+    quickPriceTitle: "Preis Ändern", quickPriceHelp: "Gib den neuen Preis für diesen Spieler ein.",
     updatedOn: "Aktualisiert:", lastUpdate: "Letzte Aktualisierung",
     statusToday: "Heute", statusDaysAgo: "Vor {n}T"
   },
@@ -1071,12 +1098,15 @@ var i18n = {
     modalAddTitle: "Aggiungi Giocatore", modalAddHelp: "Inserisci i dati del giocatore.",
     modalEditTitle: "Modifica Giocatore", modalEditHelp: "Modifica gli attributi e salva.",
     btnSavePlayer: "Salva giocatore", btnUpdatePlayer: "Aggiorna Giocatore", btnCancel: "Annulla",
+    btnClose: "Chiudi", btnEditPrice: "💰 Modifica Prezzo",
     fName: "Nome", fPos: "Ruolo", fRating: "Valutazione / VAL", fRarity: "Rarità",
     fClub: "Club", fLeague: "Campionato", fCountry: "Nazionalità", fAge: "Età",
     fHeight: "Altezza (cm)", fWeight: "Peso (kg)", fPrice: "Prezzo SCR / Mercato",
     fImage: "URL Immagine / Foto", fSubstats: "SOTTO-ATTRIBUTI",
     selLeague: "-- Seleziona Campionato --", selCountry: "-- Seleziona Nazione --",
-    ctxEdit: "✏️ Modifica", ctxDelete: "🗑️ Elimina",
+    ctxEditPrice: "💰 Modifica Prezzo", ctxEdit: "✏️ Modifica Tutto", ctxDelete: "🗑️ Elimina",
+    confirmDelete: "Sei sicuro di voler eliminare {name} dal database?",
+    quickPriceTitle: "Modifica Prezzo", quickPriceHelp: "Inserisci il nuovo prezzo per questo giocatore.",
     updatedOn: "Aggiornato:", lastUpdate: "Ultimo Aggiornamento",
     statusToday: "Oggi", statusDaysAgo: "{n}g fa"
   },
@@ -1102,12 +1132,15 @@ var i18n = {
     modalAddTitle: "Adicionar Jogador", modalAddHelp: "Insira os dados do jogador.",
     modalEditTitle: "Modificar Jogador", modalEditHelp: "Edite os atributos e salve.",
     btnSavePlayer: "Salvar jogador", btnUpdatePlayer: "Atualizar Jogador", btnCancel: "Cancelar",
+    btnClose: "Fechar", btnEditPrice: "💰 Alterar Preço",
     fName: "Nome", fPos: "Posição", fRating: "Classificação / GER", fRarity: "Raridade",
     fClub: "Clube", fLeague: "Liga", fCountry: "Nacionalidade", fAge: "Idade",
     fHeight: "Altura (cm)", fWeight: "Peso (kg)", fPrice: "Preço DME / Mercado",
     fImage: "URL Imagem / Foto", fSubstats: "SUBATRIBUTOS",
     selLeague: "-- Selecionar Liga --", selCountry: "-- Selecionar País --",
-    ctxEdit: "✏️ Modificar", ctxDelete: "🗑️ Eliminar",
+    ctxEditPrice: "💰 Alterar Preço", ctxEdit: "✏️ Modificar Tudo", ctxDelete: "🗑️ Eliminar",
+    confirmDelete: "Tem certeza de que deseja excluir {name} da base de dados?",
+    quickPriceTitle: "Alterar Preço", quickPriceHelp: "Digite o novo preço para este jogador.",
     updatedOn: "Atualizado:", lastUpdate: "Última Atualização",
     statusToday: "Hoje", statusDaysAgo: "Há {n}d"
   }
@@ -1186,9 +1219,13 @@ function applyTranslations() {
   $('lblF_image').textContent = t.fImage;
   $('lblF_substats').textContent = t.fSubstats;
   $('btnCancelPlayer').textContent = t.btnCancel;
-  $('btnCloseDetail').textContent = t.btnCancel;
+  $('btnCloseDetail').textContent = t.btnClose;
+  $('btnEditPriceDetail').textContent = t.btnEditPrice;
   $('btnCancelImport').textContent = t.btnCancel;
+  $('btnCancelQuickPrice').textContent = t.btnCancel;
+  $('btnSaveQuickPrice').textContent = t.btnUpdatePlayer;
 
+  $('ctxEditPrice').textContent = t.ctxEditPrice;
   $('ctxEdit').textContent = t.ctxEdit;
   $('ctxDelete').textContent = t.ctxDelete;
 
@@ -1410,6 +1447,7 @@ function generateFutCardHtml(p) {
 function openPlayerDetail(index) {
   var p = players[index];
   if (!p) return;
+  detailTargetIndex = index;
 
   var t = i18n[currentLang] || i18n.es;
   var cleanName = cleanPlayerName(p.name);
@@ -1417,6 +1455,7 @@ function openPlayerDetail(index) {
   $('modalHelp').textContent = getRarityLabel(p.rarity, p.rating);
   $('playerForm').style.display = 'none';
   $('importContainer').style.display = 'none';
+  $('quickPriceContainer').style.display = 'none';
   $('playerDetailContainer').style.display = 'block';
 
   $('detailCardTarget').innerHTML = generateFutCardHtml(p);
@@ -1427,12 +1466,57 @@ function openPlayerDetail(index) {
   $('detCountry').textContent = p.country || '—';
   $('detAge').textContent = p.age ? p.age + (currentLang === 'es' ? ' años' : ' years') : '—';
   $('detPhysique').textContent = (p.height ? p.height + ' cm' : '—') + ' / ' + (p.weight ? p.weight + ' kg' : '—');
-  $('detPrice').textContent = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : (currentLang === 'es' ? 'Sin precio' : 'No price');
+  
+  var priceDisplay = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : (currentLang === 'es' ? 'Sin precio' : 'No price');
+  $('detPrice').textContent = priceDisplay;
   
   var status = getDateStatus(p.price_date);
   $('detUpdated').innerHTML = '<span class="date-badge ' + status.colorClass + '">' + status.text + '</span>';
 
   $('modalBg').classList.add('open');
+}
+
+function openQuickPriceModal(index) {
+  var p = players[index];
+  if (!p) return;
+  detailTargetIndex = index;
+
+  var t = i18n[currentLang] || i18n.es;
+  $('modalTitle').textContent = t.quickPriceTitle;
+  $('modalHelp').textContent = t.quickPriceHelp;
+  $('quickPricePlayerLabel').innerHTML = '<b>' + esc(cleanPlayerName(p.name)) + '</b> (' + p.rating + ' · ' + displayPosition(p.position) + ')';
+  $('quickPriceInput').value = p.price || '';
+
+  $('playerForm').style.display = 'none';
+  $('importContainer').style.display = 'none';
+  $('playerDetailContainer').style.display = 'none';
+  $('quickPriceContainer').style.display = 'block';
+
+  $('modalBg').classList.add('open');
+  setTimeout(function() { $('quickPriceInput').focus(); }, 100);
+}
+
+function openQuickPriceFromDetail() {
+  if (detailTargetIndex >= 0) {
+    openQuickPriceModal(detailTargetIndex);
+  }
+}
+
+function submitQuickPrice(e) {
+  e.preventDefault();
+  if (detailTargetIndex < 0 || detailTargetIndex >= players.length) return;
+  
+  var newPrice = $('quickPriceInput').value !== '' ? +$('quickPriceInput').value : '';
+  var p = players[detailTargetIndex];
+
+  if (newPrice !== p.price) {
+    p.price = newPrice;
+    p.price_date = new Date().toISOString();
+    save();
+    render();
+  }
+
+  closeModal();
 }
 
 function render() {
@@ -1512,11 +1596,20 @@ function onContextDelete() {
   hideContextMenu();
   if (contextTargetIndex >= 0 && contextTargetIndex < players.length) {
     var p = players[contextTargetIndex];
-    if (confirm("¿Eliminar a " + p.name + " de la base de datos?")) {
+    var t = i18n[currentLang] || i18n.es;
+    var msg = (t.confirmDelete || '¿Seguro que deseas eliminar a {name}?').replace('{name}', p.name);
+    if (confirm(msg)) {
       players.splice(contextTargetIndex, 1);
       save();
       render();
     }
+  }
+}
+
+function onContextEditPrice() {
+  hideContextMenu();
+  if (contextTargetIndex >= 0 && contextTargetIndex < players.length) {
+    openQuickPriceModal(contextTargetIndex);
   }
 }
 
@@ -1555,6 +1648,7 @@ function onContextEdit() {
     $('playerForm').style.display = 'block';
     $('importContainer').style.display = 'none';
     $('playerDetailContainer').style.display = 'none';
+    $('quickPriceContainer').style.display = 'none';
     $('modalBg').classList.add('open');
   }
 }
@@ -1570,6 +1664,7 @@ function openAdd() {
   $('playerForm').style.display = 'block';
   $('importContainer').style.display = 'none';
   $('playerDetailContainer').style.display = 'none';
+  $('quickPriceContainer').style.display = 'none';
 
   ['f_name','f_club','f_age','f_height','f_weight','f_price','f_image','f_pac','f_sho','f_pas','f_dri','f_def','f_phy'].forEach(function(x) { $(x).value = ''; });
   $('f_position').value = 'ST';
@@ -1647,7 +1742,10 @@ function resetFilters() {
 }
 
 function closeModal(e) {
-  if (!e || e.target === $('modalBg')) $('modalBg').classList.remove('open');
+  if (!e || e.target === $('modalBg')) {
+    $('modalBg').classList.remove('open');
+    detailTargetIndex = -1;
+  }
 }
 
 function openImportModal() {
@@ -1655,6 +1753,7 @@ function openImportModal() {
   $('modalHelp').textContent = currentLang === 'es' ? 'Sube un archivo, introduce una URL o pega texto.' : 'Upload file, enter URL or paste text.';
   $('playerForm').style.display = 'none';
   $('playerDetailContainer').style.display = 'none';
+  $('quickPriceContainer').style.display = 'none';
   $('importContainer').style.display = 'block';
   
   var savedUrl = localStorage.getItem(URL_KEY) || '';
