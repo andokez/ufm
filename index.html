@@ -97,16 +97,24 @@
   }
   .ptc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 6px; }
   .ptc-title { font-size: 16px; font-weight: 900; margin: 0; color: #fff; line-height: 1.2; }
+  
   .ptc-badge-type {
     font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 7px;
-    border-radius: 6px; background: rgba(99, 230, 190, 0.15); color: var(--accent); border: 1px solid rgba(99, 230, 190, 0.3);
+    border-radius: 6px; background: rgba(152, 162, 179, 0.15); color: var(--muted); border: 1px solid rgba(152, 162, 179, 0.3);
     white-space: nowrap;
+  }
+  .ptc-badge-type.repeatable {
+    background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3);
   }
   .ptc-badge-type.limited {
     background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);
   }
   .ptc-badge-type.season {
     background: rgba(255, 212, 59, 0.15); color: var(--gold); border-color: rgba(255, 212, 59, 0.3);
+  }
+
+  .ptc-reward {
+    font-size: 11px; font-weight: 800; color: var(--gold); margin: -4px 0 10px; display: flex; align-items: center; gap: 4px;
   }
   .ptc-reqs { font-size: 13px; color: var(--muted); margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
   .ptc-req-item { display: flex; justify-content: space-between; }
@@ -229,7 +237,7 @@
         <span id="lblStatPlayers">Jugadores en BD</span>
       </div>
       <div class="hero-stat-badge">
-        <b id="statPtcCount">13</b>
+        <b id="statPtcCount">0</b>
         <span id="lblStatActive">PTCs Activos</span>
       </div>
     </div>
@@ -238,7 +246,7 @@
   <!-- Barra de Herramientas y Filtros -->
   <div class="ptc-toolbar">
     <div class="category-tabs">
-      <button type="button" class="tab-button active" onclick="switchCategory('basic')" id="tabBasic">🔄 Básicos Repetibles</button>
+      <button type="button" class="tab-button active" onclick="switchCategory('basic')" id="tabBasic">📁 Básicos</button>
       <button type="button" class="tab-button" onclick="switchCategory('season')" id="tabSeason">🏆 De Temporada</button>
       <button type="button" class="tab-button" onclick="switchCategory('limited')" id="tabLimited">⏳ Tiempo Limitado</button>
     </div>
@@ -305,119 +313,120 @@ var i18n = {
     heroTitle: "Desafíos de Creación de Plantillas (PTC)",
     heroSubtitle: "Explora los desafíos activos y obtén la solución más barata con precios de la base de datos o de la calculadora.",
     statPlayers: "Jugadores en BD", statActive: "PTCs Activos",
-    tabBasic: "🔄 Básicos Repetibles", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tiempo Limitado",
+    tabBasic: "📁 Básicos", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tiempo Limitado",
     btnSrcDb: "🗄️ Base de Datos", btnSrcManual: "✏️ Calculadora Manual",
     reqPlayers: "Jugadores:", reqTarget: "Media requerida:",
     reqSquads: "Plantillas requeridas:",
     viewSolution: "Ver alineación óptima →",
     estCost: "Coste estimado:",
-    sumCost: "Coste Plantilla", sumTotalCost: "Coste Total Desafío",
-    sumTarget: "Media Exigida", sumExact: "Media Exacta",
+    rewardLabel: "Premio:",
+    sumCost: "Coste Plantilla", sumTarget: "Media Exigida", sumExact: "Media Exacta",
     squadTitle: "Alineación Sugerida",
     noPricesWarning: "No hay precios disponibles. Revisa la Base de Datos o introduce precios en el modo Manual de la calculadora.",
     anyPlayer: "Cualquier jugador de",
-    badgeBasic: "Básico", badgeSeason: "Temporada", badgeLimited: "Limitado",
+    badgeBasic: "Básico", badgeRepeatable: "Básico Repetible", badgeSeason: "Temporada", badgeLimited: "Limitado",
     modalSubtitle: "{players} jugadores · Media {target}",
-    multiSquadTitle: "{title} ({current} de {total})"
+    pendingDetails: "Requisitos de esta plantilla pendientes de definir."
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
     heroTitle: "Squad Building Challenges (PTC)",
     heroSubtitle: "Explore active challenges and get the cheapest squad solution using database or calculator manual prices.",
     statPlayers: "Players in DB", statActive: "Active PTCs",
-    tabBasic: "🔄 Repeatable Basics", tabSeason: "🏆 Season Challenges", tabLimited: "⏳ Limited Time",
+    tabBasic: "📁 Basics", tabSeason: "🏆 Season Challenges", tabLimited: "⏳ Limited Time",
     btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Manual Calculator",
     reqPlayers: "Players:", reqTarget: "Target Rating:",
     reqSquads: "Required Squads:",
     viewSolution: "View cheapest squad →",
     estCost: "Estimated Cost:",
-    sumCost: "Squad Cost", sumTotalCost: "Total Challenge Cost",
-    sumTarget: "Target Rating", sumExact: "Exact Rating",
+    rewardLabel: "Reward:",
+    sumCost: "Squad Cost", sumTarget: "Target Rating", sumExact: "Exact Rating",
     squadTitle: "Suggested Squad",
     noPricesWarning: "No prices available. Check your Database or enter manual prices in the calculator.",
     anyPlayer: "Any player of",
-    badgeBasic: "Basic", badgeSeason: "Season", badgeLimited: "Limited",
+    badgeBasic: "Basic", badgeRepeatable: "Repeatable Basic", badgeSeason: "Season", badgeLimited: "Limited",
     modalSubtitle: "{players} players · Rating {target}",
-    multiSquadTitle: "{title} ({current} of {total})"
+    pendingDetails: "Squad requirements pending to be defined."
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
     heroTitle: "Défis de Création d'Équipe (DCE)",
     heroSubtitle: "Découvrez les défis actifs et obtenez la solution la moins chère avec votre base de données ou la calculatrice.",
     statPlayers: "Joueurs en BD", statActive: "DCE Actifs",
-    tabBasic: "🔄 Répétables Basiques", tabSeason: "🏆 De Saison", tabLimited: "⏳ Temps Limité",
+    tabBasic: "📁 Basiques", tabSeason: "🏆 De Saison", tabLimited: "⏳ Temps Limité",
     btnSrcDb: "🗄️ Base de Données", btnSrcManual: "✏️ Calculateur Manuel",
     reqPlayers: "Joueurs :", reqTarget: "Note Requise :",
     reqSquads: "Équipes Requises :",
     viewSolution: "Voir l'équipe optimale →",
     estCost: "Coût estimé :",
-    sumCost: "Coût de l'équipe", sumTotalCost: "Coût Total du Défi",
-    sumTarget: "Note Requise", sumExact: "Note Réelle",
+    rewardLabel: "Récompense :",
+    sumCost: "Coût de l'équipe", sumTarget: "Note Requise", sumExact: "Note Réelle",
     squadTitle: "Équipe Recommandée",
     noPricesWarning: "Aucun prix disponible. Vérifiez la base ou entrez des prix dans le calculateur manuel.",
     anyPlayer: "Tout joueur de",
-    badgeBasic: "Basique", badgeSeason: "Saison", badgeLimited: "Limité",
+    badgeBasic: "Basique", badgeRepeatable: "Basique Répétable", badgeSeason: "Saison", badgeLimited: "Limité",
     modalSubtitle: "{players} joueurs · Note {target}",
-    multiSquadTitle: "{title} ({current} sur {total})"
+    pendingDetails: "Critères de cette équipe en attente de définition."
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
     heroTitle: "Squad Building Challenges (PTC)",
     heroSubtitle: "Finde die günstigste SBC-Kombination mit Datenbank- oder manuellen Rechnerpreisen.",
     statPlayers: "Spieler in DB", statActive: "Aktive PTCs",
-    tabBasic: "🔄 Wiederholbar Basis", tabSeason: "🏆 Saison-PTC", tabLimited: "⏳ Zeitlich Begrenzt",
+    tabBasic: "📁 Basis", tabSeason: "🏆 Saison-PTC", tabLimited: "⏳ Zeitlich Begrenzt",
     btnSrcDb: "🗄️ Datenbank", btnSrcManual: "✏️ Rechner Manuell",
     reqPlayers: "Spieler:", reqTarget: "Benötigte Wertung:",
     reqSquads: "Erforderliche Teams:",
     viewSolution: "Günstigste Aufstellung →",
     estCost: "Geschätzte Kosten:",
-    sumCost: "Team-Kosten", sumTotalCost: "Gesamtkosten Challenge",
-    sumTarget: "Ziel-Wertung", sumExact: "Genaue Wertung",
+    rewardLabel: "Belohnung:",
+    sumCost: "Team-Kosten", sumTarget: "Ziel-Wertung", sumExact: "Genaue Wertung",
     squadTitle: "Empfohlene Aufstellung",
     noPricesWarning: "Keine Preise verfügbar. Bitte Datenbank oder manuelle Preise im Rechner prüfen.",
     anyPlayer: "Jeder Spieler mit",
-    badgeBasic: "Basis", badgeSeason: "Saison", badgeLimited: "Begrenzt",
+    badgeBasic: "Basis", badgeRepeatable: "Wiederholbar Basis", badgeSeason: "Saison", badgeLimited: "Begrenzt",
     modalSubtitle: "{players} Spieler · Wertung {target}",
-    multiSquadTitle: "{title} ({current} von {total})"
+    pendingDetails: "Anforderungen für dieses Team noch nicht festgelegt."
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
     heroTitle: "Sfide Creazione Rosa (PTC)",
     heroSubtitle: "Trova la combinazione più economica usando i prezzi del database o del calcolatore manuale.",
     statPlayers: "Giocatori in BD", statActive: "PTC Attivi",
-    tabBasic: "🔄 Ripetibili Base", tabSeason: "🏆 Stagionali", tabLimited: "⏳ Tempo Limitato",
+    tabBasic: "📁 Base", tabSeason: "🏆 Stagionali", tabLimited: "⏳ Tempo Limitato",
     btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Calcolatore Manuale",
     reqPlayers: "Giocatori:", reqTarget: "Valutazione richiesta:",
     reqSquads: "Rose richieste:",
     viewSolution: "Vedi rosa migliore →",
     estCost: "Costo stimato:",
-    sumCost: "Costo Rosa", sumTotalCost: "Costo Totale Sfida",
-    sumTarget: "Valutazione Richiesta", sumExact: "Valutazione Reale",
+    rewardLabel: "Premio:",
+    sumCost: "Costo Rosa", sumTarget: "Valutazione Richiesta", sumExact: "Valutazione Reale",
     squadTitle: "Rosa Suggerita",
     noPricesWarning: "Nessun prezzo disponibile. Controlla il database o inserisci prezzi nel calcolatore.",
     anyPlayer: "Qualsiasi giocatore da",
-    badgeBasic: "Base", badgeSeason: "Stagione", badgeLimited: "Limitato",
+    badgeBasic: "Base", badgeRepeatable: "Ripetibile Base", badgeSeason: "Stagione", badgeLimited: "Limitato",
     modalSubtitle: "{players} giocatori · Valutazione {target}",
-    multiSquadTitle: "{title} ({current} di {total})"
+    pendingDetails: "Requisiti di questa rosa in attesa di definizione."
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
     heroTitle: "Desafios de Montagem de Elenco (DME)",
     heroSubtitle: "Encontre a solução mais barata para os desafios usando preços da base de dados ou da calculadora.",
     statPlayers: "Jogadores na BD", statActive: "DMEs Ativos",
-    tabBasic: "🔄 Básicos Repetíveis", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tempo Limitado",
+    tabBasic: "📁 Básicos", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tempo Limitado",
     btnSrcDb: "🗄️ Base de Dados", btnSrcManual: "✏️ Calculadora Manual",
     reqPlayers: "Jogadores:", reqTarget: "Classificação exigida:",
     reqSquads: "Elencos exigidos:",
     viewSolution: "Ver elenco ideal →",
     estCost: "Custo estimado:",
-    sumCost: "Custo do Elenco", sumTotalCost: "Custo Total do Desafio",
-    sumTarget: "Nota Exigida", sumExact: "Nota Exata",
+    rewardLabel: "Prêmio:",
+    sumCost: "Custo do Elenco", sumTarget: "Nota Exigida", sumExact: "Nota Exata",
     squadTitle: "Elenco Sugerido",
     noPricesWarning: "Sem preços disponíveis. Verifique a base de dados ou insira preços manuais na calculadora.",
     anyPlayer: "Qualquer jogador de",
-    badgeBasic: "Básico", badgeSeason: "Temporada", badgeLimited: "Limitado",
-    modalSubtitle: "{players} jogadores · Classificação {target}"
+    badgeBasic: "Básico", badgeRepeatable: "Básico Repetível", badgeSeason: "Temporada", badgeLimited: "Limitado",
+    modalSubtitle: "{players} jogadores · Classificação {target}",
+    pendingDetails: "Requisitos deste elenco pendentes de definição."
   }
 };
 
@@ -431,8 +440,14 @@ var ptcTitles = {
   b_83: { es: "Mejora 83+", en: "83+ Upgrade", fr: "Renfort 83+", de: "83+-Upgrade", it: "Miglioramento 83+", pt: "Melhoria 83+" },
   b_85: { es: "Mejora 85+", en: "85+ Upgrade", fr: "Renfort 85+", de: "85+-Upgrade", it: "Miglioramento 85+", pt: "Melhoria 85+" },
   b_87: { es: "Mejora 87+", en: "87+ Upgrade", fr: "Renfort 87+", de: "87+-Upgrade", it: "Miglioramento 87+", pt: "Melhoria 87+" },
-  b_gold_up: { es: "Mejora de Oro Común", en: "Common Gold Upgrade", fr: "Renfort Or Commun", de: "Gewöhnliches Gold-Upgrade", it: "Miglioramento Oro Comune", pt: "Melhoria de Ouro Comum" },
-  b_silver_up: { es: "Mejora de Plata", en: "Silver Upgrade", fr: "Renfort Argent", de: "Silber-Upgrade", it: "Miglioramento Argento", pt: "Melhoria de Prata" },
+  
+  b_daily_11: { es: "Diario 11", en: "Daily 11", fr: "Quotidien 11", de: "Täglich 11", it: "Giornaliero 11", pt: "Diário 11" },
+  b_weekly_17: { es: "Semanal 17", en: "Weekly 17", fr: "Hebdomadaire 17", de: "Wöchentlich 17", it: "Settimanale 17", pt: "Semanal 17" },
+  
+  b_bronze_group: { es: "Desafío Bronce", en: "Bronze Challenge", fr: "Défi Bronze", de: "Bronze-Challenge", it: "Sfida Bronzo", pt: "Desafio Bronze" },
+  b_silver_group: { es: "Desafío Plata", en: "Silver Challenge", fr: "Défi Argent", de: "Silber-Challenge", it: "Sfida Argento", pt: "Desafio Prata" },
+  b_gold_group: { es: "Desafío Oro", en: "Gold Challenge", fr: "Défi Or", de: "Gold-Challenge", it: "Sfida Oro", pt: "Desafio Ouro" },
+
   s_tots_warm: { es: "Elección de Jugador Temporada", en: "Season Player Pick", fr: "Choix Joueur Saison", de: "Saison-Spielerwahl", it: "Scelta Giocatore Stagione", pt: "Escolha de Jogador da Temporada" },
   s_league_sbc: { es: "Desafío de Liga Principal", en: "Major League Challenge", fr: "Défi Ligue Principale", de: "Hauptliga-Challenge", it: "Sfida Campionato Principale", pt: "Desafio da Liga Principal" },
   l_totw_upgrade: { es: "Mejora TOTW Activo", en: "Active TOTW Upgrade", fr: "Renfort TOTW Actif", de: "Aktives TDW-Upgrade", it: "Miglioramento TOTW Attivo", pt: "Melhoria TOTW Ativa" },
@@ -440,30 +455,66 @@ var ptcTitles = {
   l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)", fr: "Martin Ødegaard (91 POTM)", de: "Martin Ødegaard (91 POTM)", it: "Martin Ødegaard (91 POTM)", pt: "Martin Ødegaard (91 POTM)" }
 };
 
-/* DEFINICIÓN DE LOS PTCS */
+/* DEFINICIÓN COMPLETA DE LOS PTCS */
 var ptcList = [
-  // 8 BÁSICOS REPETIBLES (5 Jugadores)
-  { id: "b_60", category: "basic", players: 5, target: 50 },
-  { id: "b_70", category: "basic", players: 5, target: 60 },
-  { id: "b_74", category: "basic", players: 5, target: 70 },
-  { id: "b_78", category: "basic", players: 5, target: 74 },
-  { id: "b_81", category: "basic", players: 5, target: 78 },
-  { id: "b_83", category: "basic", players: 5, target: 81 },
-  { id: "b_85", category: "basic", players: 5, target: 83 },
-  { id: "b_87", category: "basic", players: 5, target: 85 },
-  // De muestra en Básicos
-  { id: "b_gold_up", category: "basic", players: 11, target: 75 },
-  { id: "b_silver_up", category: "basic", players: 11, target: 65 },
+  // --- BÁSICOS: 8 REPETIBLES (5 Jugadores) ---
+  { id: "b_60", category: "basic", isRepeatable: true, players: 5, target: 50 },
+  { id: "b_70", category: "basic", isRepeatable: true, players: 5, target: 60 },
+  { id: "b_74", category: "basic", isRepeatable: true, players: 5, target: 70 },
+  { id: "b_78", category: "basic", isRepeatable: true, players: 5, target: 74 },
+  { id: "b_81", category: "basic", isRepeatable: true, players: 5, target: 78 },
+  { id: "b_83", category: "basic", isRepeatable: true, players: 5, target: 81 },
+  { id: "b_85", category: "basic", isRepeatable: true, players: 5, target: 83 },
+  { id: "b_87", category: "basic", isRepeatable: true, players: 5, target: 85 },
 
-  // DE TEMPORADA
-  { id: "s_tots_warm", category: "season", players: 11, target: 84 },
-  { id: "s_league_sbc", category: "season", players: 11, target: 82 },
+  // --- BÁSICOS: PERIÓDICOS ---
+  { id: "b_daily_11", category: "basic", isRepeatable: false, players: 3, target: 70 },
+  { id: "b_weekly_17", category: "basic", isRepeatable: false, players: 5, target: 78 },
 
-  // TIEMPO LIMITADO
-  // PTC Especial compuesto por 5 plantillas internas (Ødegaard 91)
+  // --- BÁSICOS: GRUPOS CON PREMIOS Y 3 SUB-PTCS ---
+  {
+    id: "b_bronze_group",
+    category: "basic",
+    isRepeatable: false,
+    reward: "Moore (DC) ⭐ 75",
+    subchallenges: [
+      { name: "Bronce 1", players: 0, target: 0, isPending: true },
+      { name: "Bronce 2", players: 0, target: 0, isPending: true },
+      { name: "Bronce 3", players: 0, target: 0, isPending: true }
+    ]
+  },
+  {
+    id: "b_silver_group",
+    category: "basic",
+    isRepeatable: false,
+    reward: "Bueno (DFC) ⭐ 78",
+    subchallenges: [
+      { name: "Plata 1", players: 0, target: 0, isPending: true },
+      { name: "Plata 2", players: 0, target: 0, isPending: true },
+      { name: "Plata 3", players: 0, target: 0, isPending: true }
+    ]
+  },
+  {
+    id: "b_gold_group",
+    category: "basic",
+    isRepeatable: false,
+    reward: "Merino (MC) ⭐ 83",
+    subchallenges: [
+      { name: "Oro 1", players: 0, target: 0, isPending: true },
+      { name: "Oro 2", players: 0, target: 0, isPending: true },
+      { name: "Oro 3", players: 0, target: 0, isPending: true }
+    ]
+  },
+
+  // --- DE TEMPORADA ---
+  { id: "s_tots_warm", category: "season", isRepeatable: false, players: 11, target: 84 },
+  { id: "s_league_sbc", category: "season", isRepeatable: false, players: 11, target: 82 },
+
+  // --- TIEMPO LIMITADO ---
   {
     id: "l_odegaard_91",
     category: "limited",
+    isRepeatable: false,
     subchallenges: [
       { name: "Plantilla 84", players: 11, target: 84 },
       { name: "Plantilla 86", players: 11, target: 86 },
@@ -472,8 +523,8 @@ var ptcList = [
       { name: "Plantilla 90", players: 11, target: 90 }
     ]
   },
-  { id: "l_totw_upgrade", category: "limited", players: 11, target: 83 },
-  { id: "l_flash_challenge", category: "limited", players: 6, target: 79 }
+  { id: "l_totw_upgrade", category: "limited", isRepeatable: false, players: 11, target: 83 },
+  { id: "l_flash_challenge", category: "limited", isRepeatable: false, players: 6, target: 79 }
 ];
 
 function getPtcTitle(ptcId) {
@@ -482,11 +533,18 @@ function getPtcTitle(ptcId) {
   return entry[currentLang] || entry.es || entry.en;
 }
 
-function getPtcBadgeLabel(category) {
+function getPtcBadgeInfo(ptc) {
   var t = i18n[currentLang] || i18n.es;
-  if (category === 'limited') return t.badgeLimited;
-  if (category === 'season') return t.badgeSeason;
-  return t.badgeBasic;
+  if (ptc.isRepeatable) {
+    return { label: t.badgeRepeatable, className: 'repeatable' };
+  }
+  if (ptc.category === 'limited') {
+    return { label: t.badgeLimited, className: 'limited' };
+  }
+  if (ptc.category === 'season') {
+    return { label: t.badgeSeason, className: 'season' };
+  }
+  return { label: t.badgeBasic, className: '' };
 }
 
 /* OBTENER BASE DE DATOS DE JUGADORES */
@@ -547,6 +605,7 @@ function thresholdFor(n, target) {
 }
 
 function solveSbc(n, target, prices) {
+  if (!n || !target || n < 1 || target < 50) return null;
   var ratings = Object.keys(prices).map(Number).sort(function(a, b) { return a - b; });
   if (!ratings.length) return null;
 
@@ -620,27 +679,36 @@ function renderPtcList() {
     card.className = 'ptc-card';
     card.onclick = function() { openPtcModal(ptc); };
 
-    var typeClass = ptc.category === 'limited' ? 'limited' : (ptc.category === 'season' ? 'season' : '');
+    var badgeInfo = getPtcBadgeInfo(ptc);
     var localizedTitle = getPtcTitle(ptc.id);
-    var localizedBadge = getPtcBadgeLabel(ptc.category);
+
+    var rewardHtml = ptc.reward 
+      ? `<div class="ptc-reward"><span>🎁 ${t.rewardLabel}</span> <b>${ptc.reward}</b></div>` 
+      : '';
 
     var reqHtml = '';
     var costText = '—';
 
     // Desafío compuesto (Multi-plantilla)
     if (ptc.subchallenges && ptc.subchallenges.length) {
+      var targets = ptc.subchallenges.map(function(s) { return s.isPending ? '—' : s.target; }).join(', ');
       reqHtml = `
         <div class="ptc-req-item"><span>${t.reqSquads}</span> <b>${ptc.subchallenges.length}</b></div>
-        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>${ptc.subchallenges.map(s => s.target).join(', ')}</b></div>
+        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${targets}</b></div>
       `;
       var totalCost = 0;
-      var canSolveAll = true;
+      var hasValidSol = false;
+      var allSolved = true;
       ptc.subchallenges.forEach(function(sub) {
-        var s = solveSbc(sub.players, sub.target, prices);
-        if (s) totalCost += s.cost;
-        else canSolveAll = false;
+        if (!sub.isPending) {
+          var s = solveSbc(sub.players, sub.target, prices);
+          if (s) { totalCost += s.cost; hasValidSol = true; }
+          else { allSolved = false; }
+        } else {
+          allSolved = false;
+        }
       });
-      if (canSolveAll && totalCost > 0) {
+      if (hasValidSol && allSolved) {
         costText = Number(totalCost).toLocaleString('es-ES') + ' 🪙';
       }
     } else {
@@ -656,8 +724,9 @@ function renderPtcList() {
       <div>
         <div class="ptc-header">
           <h3 class="ptc-title">${localizedTitle}</h3>
-          <span class="ptc-badge-type ${typeClass}">${localizedBadge}</span>
+          <span class="ptc-badge-type ${badgeInfo.className}">${badgeInfo.label}</span>
         </div>
+        ${rewardHtml}
         <div class="ptc-reqs">${reqHtml}</div>
       </div>
       <div class="ptc-footer">
@@ -680,7 +749,8 @@ function openPtcModal(ptc) {
   if (ptc.subchallenges && ptc.subchallenges.length) {
     subTabsWrap.style.display = 'flex';
     subTabsWrap.innerHTML = ptc.subchallenges.map(function(sub, idx) {
-      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${sub.name} (⭐${sub.target})</button>`;
+      var targetLabel = sub.isPending ? 'Pendiente' : ('⭐ ' + sub.target);
+      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${sub.name} (${targetLabel})</button>`;
     }).join('');
   } else {
     subTabsWrap.style.display = 'none';
@@ -708,21 +778,33 @@ function renderModalContent() {
   
   var prices = getActivePrices();
   var db = priceSource === 'db' ? getDatabasePlayers() : [];
-  var sol = solveSbc(currentTargetPtc.players, currentTargetPtc.target, prices);
 
   var localizedTitle = getPtcTitle(ptc.id);
   if (isMulti) {
     localizedTitle = localizedTitle + ' - ' + currentTargetPtc.name;
   }
 
+  var squadGrid = document.getElementById('squadGrid');
+  squadGrid.innerHTML = '';
+
+  // Caso: plantilla pendiente de definir
+  if (currentTargetPtc.isPending) {
+    document.getElementById('modalPtcTitle').textContent = localizedTitle;
+    document.getElementById('modalPtcSubtitle').textContent = t.pendingDetails;
+    document.getElementById('solCost').textContent = '—';
+    document.getElementById('solTarget').textContent = '—';
+    document.getElementById('solAvg').textContent = '—';
+    squadGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:35px; color:var(--muted)">📝 ${t.pendingDetails}</div>`;
+    return;
+  }
+
+  var sol = solveSbc(currentTargetPtc.players, currentTargetPtc.target, prices);
+
   var subtitleTemplate = t.modalSubtitle || "{players} jugadores · Media {target}";
   var localizedSubtitle = subtitleTemplate.replace('{players}', currentTargetPtc.players).replace('{target}', currentTargetPtc.target);
 
   document.getElementById('modalPtcTitle').textContent = localizedTitle;
   document.getElementById('modalPtcSubtitle').textContent = localizedSubtitle;
-
-  var squadGrid = document.getElementById('squadGrid');
-  squadGrid.innerHTML = '';
 
   if (!sol) {
     document.getElementById('solCost').textContent = '—';
@@ -777,7 +859,6 @@ function renderModalContent() {
         </div>
       `;
     } else {
-      // Modo manual o sin jugador específico en base de datos
       var minP = prices[rat] ? Number(prices[rat]).toLocaleString('es-ES') + ' 🪙' : '—';
       slot.innerHTML = `
         <div class="squad-slot-empty">

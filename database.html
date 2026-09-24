@@ -96,12 +96,10 @@
     .rating { font-weight: 900; color: var(--gold); }
     .price { font-weight: 800; color: var(--accent); }
     
-    /* Celda de liga compactada */
     .col-league {
       max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    /* Badges de fecha con colores de estado */
     .date-badge {
       display: inline-block; padding: 3px 8px; border-radius: 6px;
       font-size: 11px; font-weight: 700; border: 1px solid transparent;
@@ -135,6 +133,11 @@
     tbody tr.card-totw { background: linear-gradient(90deg, rgba(24, 24, 27, 0.8), rgba(133, 77, 14, 0.35) 60%, transparent 90%); border-left-color: #eab308; }
     tbody tr.card-transfer-stars { background: linear-gradient(90deg, rgba(6, 78, 59, 0.5), transparent 80%); border-left-color: #2dd4bf; }
     tbody tr.card-weekend-league { background: linear-gradient(90deg, rgba(20, 53, 34, 0.55), transparent 80%); border-left-color: #22c55e; }
+    
+    /* Nuevas Rarezas en Tabla */
+    tbody tr.card-matchday { background: linear-gradient(90deg, rgba(234, 88, 12, 0.4), rgba(24, 24, 27, 0.8) 60%, transparent 90%); border-left-color: #f97316; }
+    tbody tr.card-potm { background: linear-gradient(90deg, rgba(88, 28, 135, 0.55), rgba(15, 23, 42, 0.8) 60%, transparent 90%); border-left-color: #a855f7; }
+    tbody tr.card-ptc { background: linear-gradient(90deg, rgba(92, 51, 23, 0.55), rgba(31, 23, 18, 0.85) 60%, transparent 90%); border-left-color: #d97706; }
 
     /* Fichas */
     .cards-grid {
@@ -210,6 +213,28 @@
     .fut-card.card-transfer-stars .card-rat { color: #5eead4; }
     .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
     .fut-card.card-weekend-league .card-rat { color: #4ade80; }
+
+    /* Estilos de las nuevas rarezas en fichas */
+    .fut-card.card-matchday {
+      background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%);
+      border-color: #f97316;
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.35);
+    }
+    .fut-card.card-matchday .card-rat { color: #fdba74; }
+
+    .fut-card.card-potm {
+      background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%);
+      border-color: #c084fc;
+      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
+    }
+    .fut-card.card-potm .card-rat { color: #e9d5ff; }
+
+    .fut-card.card-ptc {
+      background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%);
+      border-color: #f59e0b;
+      box-shadow: 0 0 14px rgba(217, 119, 6, 0.35);
+    }
+    .fut-card.card-ptc .card-rat { color: #fde68a; }
 
     /* Contenedor Superior con Capas */
     .card-top {
@@ -438,8 +463,11 @@
         <select id="advRarity" onchange="render()">
           <option value="" id="optAnyRarity">Cualquier Rareza</option>
           <option value="normal">Normal</option>
-          <option value="euro_evo">European Evolutions</option>
+          <option value="matchday">Matchday</option>
           <option value="new_season">NewSeason</option>
+          <option value="potm">Player of the Month</option>
+          <option value="ptc">PTC</option>
+          <option value="euro_evo">European Evolutions</option>
           <option value="totw">Team of the Week</option>
           <option value="transfer_stars">Transfer Stars</option>
           <option value="weekend_league">Weekend League</option>
@@ -524,8 +552,11 @@
         <label><span id="lblF_rarity">Rareza</span>
           <select id="f_rarity">
             <option value="normal">Normal</option>
-            <option value="euro_evo">European Evolutions</option>
+            <option value="matchday">Matchday</option>
             <option value="new_season">NewSeason</option>
+            <option value="potm">Player of the Month</option>
+            <option value="ptc">PTC</option>
+            <option value="euro_evo">European Evolutions</option>
             <option value="totw">Team of the Week</option>
             <option value="transfer_stars">Transfer Stars</option>
             <option value="weekend_league">Weekend League</option>
@@ -646,10 +677,8 @@ var URL_KEY = 'ufm27_database_online_url';
 var fields = ['id','name','rating','position','rarity','pac','sho','pas','dri','def','phy','country','club','league','age','height','weight','price','price_date','image'];
 var players = [];
 
-// Imagen SVG por defecto
 var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%234b5668'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
-// Helper para analizar la antigüedad de la fecha de actualización
 function getDateStatus(isoDate) {
   if (!isoDate) {
     return { text: '—', colorClass: 'empty', diffDays: Infinity, title: 'Sin fecha registrada' };
@@ -661,7 +690,6 @@ function getDateStatus(isoDate) {
   }
 
   var now = new Date();
-  // Comparación por día natural
   var todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   var targetMidnight = new Date(target.getFullYear(), target.getMonth(), target.getDate());
   
@@ -692,7 +720,6 @@ function getDateStatus(isoDate) {
   };
 }
 
-// Helper para construir siempre la clave única sin discrepancias
 function getPlayerKey(name, pos, rarity) {
   var cleanN = cleanPlayerName(name);
   var normP = normalizePosition(pos);
@@ -700,7 +727,6 @@ function getPlayerKey(name, pos, rarity) {
   return cleanN.toLowerCase() + '_' + normP.toLowerCase() + '_' + normR;
 }
 
-// Recuperación de datos desde cualquier clave anterior
 (function loadInitialData() {
   var candidateKeys = [KEY, 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4', 'ufm_database_players_v2'];
   for (var i = 0; i < candidateKeys.length; i++) {
@@ -731,7 +757,7 @@ function cleanPlayerName(name) {
   return name.replace(/\s*\([^)]*\)/g, '').trim();
 }
 
-/* LISTA DE LIGAS CON TRADUCCIÓN COMPLETA EN 6 IDIOMAS Y CÓDIGO DE BANDERA */
+/* LISTA DE LIGAS */
 var masterLeaguesData = [
   { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
   { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
@@ -753,7 +779,7 @@ var masterLeaguesData = [
   { id: "ar_1", code: "ar", names: { es: "Argentina (1ª Div - Liga Profesional)", en: "Argentina (1st Div)", fr: "Argentine (1ère Div)", de: "Argentinien (1. Liga)", it: "Argentina (1ª Div)", pt: "Argentina (1ª Div)" } },
   { id: "au_1", code: "au", names: { es: "Australia (1ª Div - A-League)", en: "Australia (1st Div - A-League)", fr: "Australie (1ère Div - A-League)", de: "Australien (1. Liga - A-League)", it: "Australia (1ª Div - A-League)", pt: "Austrália (1ª Div - A-League)" } },
   { id: "at_1", code: "at", names: { es: "Austria (1ª Div - Bundesliga)", en: "Austria (1st Div - Bundesliga)", fr: "Autriche (1ère Div - Bundesliga)", de: "Österreich (1. Liga - Bundesliga)", it: "Austria (1ª Div - Bundesliga)", pt: "Áustria (1ª Div - Bundesliga)" } },
-  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasile (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
+  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasil (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
   { id: "dk_1", code: "dk", names: { es: "Dinamarca (1ª Div - Superliga)", en: "Denmark (1st Div - Superliga)", fr: "Danemark (1ère Div - Superliga)", de: "Dänemark (1. Liga - Superliga)", it: "Danimarca (1ª Div - Superliga)", pt: "Dinamarca (1ª Div - Superliga)" } },
   { id: "ie_1", code: "ie", names: { es: "Irlanda (1ª Div - Premier Div)", en: "Ireland (1st Div - Premier Div)", fr: "Irlande (1ère Div - Premier Div)", de: "Irland (1. Liga - Premier Div)", it: "Irlanda (1ª Div - Premier Div)", pt: "Irlanda (1ª Div - Premier Div)" } },
   { id: "no_1", code: "no", names: { es: "Noruega (1ª Div - Eliteserien)", en: "Norway (1st Div - Eliteserien)", fr: "Norvège (1ère Div - Eliteserien)", de: "Norwegen (1. Liga - Eliteserien)", it: "Norvegia (1ª Div - Eliteserien)", pt: "Noruega (1ª Div - Eliteserien)" } },
@@ -1183,8 +1209,11 @@ function getRarityClass(rarity, rating) {
     if (rat <= 82) return 'card-gold-light';
     return 'card-gold-dark';
   }
-  if (r === 'euro_evo') return 'card-euro-evo';
+  if (r === 'matchday') return 'card-matchday';
   if (r === 'new_season') return 'card-new-season';
+  if (r === 'potm') return 'card-potm';
+  if (r === 'ptc') return 'card-ptc';
+  if (r === 'euro_evo') return 'card-euro-evo';
   if (r === 'totw') return 'card-totw';
   if (r === 'transfer_stars') return 'card-transfer-stars';
   if (r === 'weekend_league') return 'card-weekend-league';
@@ -1195,8 +1224,11 @@ function getRarityLabel(r, rat) {
   var norm = (r || 'normal').toLowerCase();
   if (norm === 'normal') return 'Normal';
   var labels = {
-    euro_evo: 'European Evolutions',
+    matchday: 'Matchday',
     new_season: 'NewSeason',
+    potm: 'Player of the Month',
+    ptc: 'PTC',
+    euro_evo: 'European Evolutions',
     totw: 'Team of the Week',
     transfer_stars: 'Transfer Stars',
     weekend_league: 'Weekend League'
@@ -1557,7 +1589,6 @@ function submitPlayer(e) {
   var newPrice = $('f_price').value !== '' ? +$('f_price').value : '';
   var priceDate = existingPlayer ? (existingPlayer.price_date || '') : '';
 
-  // Si se introduce o actualiza el precio, se graba la fecha actual
   if (newPrice !== '' && (!existingPlayer || existingPlayer.price !== newPrice)) {
     priceDate = new Date().toISOString();
   }
