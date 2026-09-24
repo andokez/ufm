@@ -114,7 +114,8 @@
   }
 
   .ptc-reward {
-    font-size: 11px; font-weight: 800; color: var(--gold); margin: -4px 0 10px; display: flex; align-items: center; gap: 4px;
+    font-size: 12px; font-weight: 800; color: var(--gold); margin: -4px 0 10px; display: flex; align-items: center; gap: 6px;
+    line-height: 1.3;
   }
   .ptc-reqs { font-size: 13px; color: var(--muted); margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
   .ptc-req-item { display: flex; justify-content: space-between; }
@@ -173,6 +174,7 @@
   .mini-card.silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; }
   .mini-card.gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; }
   .mini-card.gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; }
+  .mini-card.weekend_league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
   .mini-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .mini-card-rat { font-size: 18px; font-weight: 900; color: var(--gold); }
   .mini-card-pos { font-size: 11px; font-weight: 800; color: #fff; }
@@ -300,11 +302,42 @@
 var DB_KEY = 'ufm27_database_v3';
 var currentLang = localStorage.getItem('ufm_lang') || 'es';
 var currentCategory = 'basic';
-var priceSource = 'db'; // 'db' o 'manual'
+var priceSource = 'db';
 var activeModalPtc = null;
 var activeSubIndex = 0;
 
 var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%234b5668'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+
+/* DICCIONARIO DE POSICIONES */
+var posTranslations = {
+  es: { 'ST':'DC', 'RW':'ED', 'LW':'EI', 'RM':'MD', 'LM':'MI', 'CM':'MC', 'CDM':'MCD', 'CAM':'MCO', 'CB':'DFC', 'RB':'LD', 'LB':'LI', 'GK':'POR' },
+  en: { 'ST':'ST', 'RW':'RW', 'LW':'LW', 'RM':'RM', 'LM':'LM', 'CM':'CM', 'CDM':'CDM', 'CAM':'CAM', 'CB':'CB', 'RB':'RB', 'LB':'LB', 'GK':'GK' },
+  fr: { 'ST':'BU', 'RW':'AD', 'LW':'AG', 'RM':'MD', 'LM':'MG', 'CM':'MC', 'CDM':'MDC', 'CAM':'MOC', 'CB':'DC', 'RB':'DD', 'LB':'DG', 'GK':'G' },
+  de: { 'ST':'ST', 'RW':'RF', 'LW':'LF', 'RM':'RM', 'LM':'LM', 'CM':'ZM', 'CDM':'ZDM', 'CAM':'ZOM', 'CB':'IV', 'RB':'RV', 'LB':'LV', 'GK':'TW' },
+  it: { 'ST':'ATT', 'RW':'AD', 'LW':'AS', 'RM':'ED', 'LM':'ES', 'CM':'CC', 'CDM':'CDC', 'CAM':'COC', 'CB':'DC', 'RB':'TD', 'LB':'TS', 'GK':'POR' },
+  pt: { 'ST':'PL', 'RW':'PD', 'LW':'PE', 'RM':'MD', 'LM':'ME', 'CM':'MC', 'CDM':'VOL', 'CAM':'MEI', 'CB':'ZAG', 'RB':'LD', 'LB':'LE', 'GK':'GR' }
+};
+
+var reversePosLookup = {
+  'DC':'ST', 'ED':'RW', 'EI':'LW', 'DFC':'CB', 'LD':'RB', 'LI':'LB', 'POR':'GK', 'MCD':'CDM', 'MCO':'CAM',
+  'BU':'ST', 'AD':'RW', 'AG':'LW', 'MDC':'CDM', 'MOC':'CAM', 'DD':'RB', 'DG':'LB', 'G':'GK',
+  'RF':'RW', 'LF':'LW', 'ZM':'CM', 'ZDM':'CDM', 'ZOM':'CAM', 'IV':'CB', 'RV':'RB', 'LV':'LB', 'TW':'GK',
+  'ATT':'ST', 'AS':'LW', 'CC':'CM', 'CDC':'CDM', 'COC':'CAM', 'TD':'RB', 'TS':'LB',
+  'PL':'ST', 'PD':'RW', 'PE':'LW', 'VOL':'CDM', 'MEI':'CAM', 'ZAG':'CB', 'LE':'LB', 'GR':'GK'
+};
+
+function normalizePosition(p) {
+  if (!p) return 'ST';
+  var up = p.trim().toUpperCase();
+  return reversePosLookup[up] || up;
+}
+
+function displayPosition(p) {
+  if (!p) return '—';
+  var standard = normalizePosition(p);
+  var dict = posTranslations[currentLang] || posTranslations.es;
+  return dict[standard] || standard;
+}
 
 /* DICCIONARIO MULTILINGÜE */
 var i18n = {
@@ -317,16 +350,17 @@ var i18n = {
     btnSrcDb: "🗄️ Base de Datos", btnSrcManual: "✏️ Calculadora Manual",
     reqPlayers: "Jugadores:", reqTarget: "Media requerida:",
     reqSquads: "Plantillas requeridas:",
+    reqRarity: "Rareza exigida:",
     viewSolution: "Ver alineación óptima →",
     estCost: "Coste estimado:",
-    rewardLabel: "Premio:",
     sumCost: "Coste Plantilla", sumTarget: "Media Exigida", sumExact: "Media Exacta",
     squadTitle: "Alineación Sugerida",
     noPricesWarning: "No hay precios disponibles. Revisa la Base de Datos o introduce precios en el modo Manual de la calculadora.",
     anyPlayer: "Cualquier jugador de",
     badgeBasic: "Básico", badgeRepeatable: "Básico Repetible", badgeSeason: "Temporada", badgeLimited: "Limitado",
     modalSubtitle: "{players} jugadores · Media {target}",
-    pendingDetails: "Requisitos de esta plantilla pendientes de definir."
+    pendingDetails: "Requisitos de esta plantilla pendientes de definir.",
+    squadWord: "Plantilla", challengeWord: "Desafío"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
@@ -337,16 +371,17 @@ var i18n = {
     btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Manual Calculator",
     reqPlayers: "Players:", reqTarget: "Target Rating:",
     reqSquads: "Required Squads:",
+    reqRarity: "Required Rarity:",
     viewSolution: "View cheapest squad →",
     estCost: "Estimated Cost:",
-    rewardLabel: "Reward:",
     sumCost: "Squad Cost", sumTarget: "Target Rating", sumExact: "Exact Rating",
     squadTitle: "Suggested Squad",
     noPricesWarning: "No prices available. Check your Database or enter manual prices in the calculator.",
     anyPlayer: "Any player of",
     badgeBasic: "Basic", badgeRepeatable: "Repeatable Basic", badgeSeason: "Season", badgeLimited: "Limited",
     modalSubtitle: "{players} players · Rating {target}",
-    pendingDetails: "Squad requirements pending to be defined."
+    pendingDetails: "Squad requirements pending to be defined.",
+    squadWord: "Squad", challengeWord: "Challenge"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
@@ -357,16 +392,17 @@ var i18n = {
     btnSrcDb: "🗄️ Base de Données", btnSrcManual: "✏️ Calculateur Manuel",
     reqPlayers: "Joueurs :", reqTarget: "Note Requise :",
     reqSquads: "Équipes Requises :",
+    reqRarity: "Rareté Exigée :",
     viewSolution: "Voir l'équipe optimale →",
     estCost: "Coût estimé :",
-    rewardLabel: "Récompense :",
     sumCost: "Coût de l'équipe", sumTarget: "Note Requise", sumExact: "Note Réelle",
     squadTitle: "Équipe Recommandée",
     noPricesWarning: "Aucun prix disponible. Vérifiez la base ou entrez des prix dans le calculateur manuel.",
     anyPlayer: "Tout joueur de",
     badgeBasic: "Basique", badgeRepeatable: "Basique Répétable", badgeSeason: "Saison", badgeLimited: "Limité",
     modalSubtitle: "{players} joueurs · Note {target}",
-    pendingDetails: "Critères de cette équipe en attente de définition."
+    pendingDetails: "Critères de cette équipe en attente de définition.",
+    squadWord: "Équipe", challengeWord: "Défi"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
@@ -377,16 +413,17 @@ var i18n = {
     btnSrcDb: "🗄️ Datenbank", btnSrcManual: "✏️ Rechner Manuell",
     reqPlayers: "Spieler:", reqTarget: "Benötigte Wertung:",
     reqSquads: "Erforderliche Teams:",
+    reqRarity: "Benötigte Seltenheit:",
     viewSolution: "Günstigste Aufstellung →",
     estCost: "Geschätzte Kosten:",
-    rewardLabel: "Belohnung:",
     sumCost: "Team-Kosten", sumTarget: "Ziel-Wertung", sumExact: "Genaue Wertung",
     squadTitle: "Empfohlene Aufstellung",
     noPricesWarning: "Keine Preise verfügbar. Bitte Datenbank oder manuelle Preise im Rechner prüfen.",
     anyPlayer: "Jeder Spieler mit",
     badgeBasic: "Basis", badgeRepeatable: "Wiederholbar Basis", badgeSeason: "Saison", badgeLimited: "Begrenzt",
     modalSubtitle: "{players} Spieler · Wertung {target}",
-    pendingDetails: "Anforderungen für dieses Team noch nicht festgelegt."
+    pendingDetails: "Anforderungen für dieses Team noch nicht festgelegt.",
+    squadWord: "Team", challengeWord: "Challenge"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
@@ -397,16 +434,17 @@ var i18n = {
     btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Calcolatore Manuale",
     reqPlayers: "Giocatori:", reqTarget: "Valutazione richiesta:",
     reqSquads: "Rose richieste:",
+    reqRarity: "Rarità richiesta:",
     viewSolution: "Vedi rosa migliore →",
     estCost: "Costo stimato:",
-    rewardLabel: "Premio:",
     sumCost: "Costo Rosa", sumTarget: "Valutazione Richiesta", sumExact: "Valutazione Reale",
     squadTitle: "Rosa Suggerita",
     noPricesWarning: "Nessun prezzo disponibile. Controlla il database o inserisci prezzi nel calcolatore.",
     anyPlayer: "Qualsiasi giocatore da",
     badgeBasic: "Base", badgeRepeatable: "Ripetibile Base", badgeSeason: "Stagione", badgeLimited: "Limitato",
     modalSubtitle: "{players} giocatori · Valutazione {target}",
-    pendingDetails: "Requisiti di questa rosa in attesa di definizione."
+    pendingDetails: "Requisiti di questa rosa in attesa di definizione.",
+    squadWord: "Rosa", challengeWord: "Sfida"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
@@ -417,20 +455,21 @@ var i18n = {
     btnSrcDb: "🗄️ Base de Dados", btnSrcManual: "✏️ Calculadora Manual",
     reqPlayers: "Jogadores:", reqTarget: "Classificação exigida:",
     reqSquads: "Elencos exigidos:",
+    reqRarity: "Raridade exigida:",
     viewSolution: "Ver elenco ideal →",
     estCost: "Custo estimado:",
-    rewardLabel: "Prêmio:",
     sumCost: "Custo do Elenco", sumTarget: "Nota Exigida", sumExact: "Nota Exata",
     squadTitle: "Elenco Sugerido",
     noPricesWarning: "Sem preços disponíveis. Verifique a base de dados ou insira preços manuais na calculadora.",
     anyPlayer: "Qualquer jogador de",
     badgeBasic: "Básico", badgeRepeatable: "Básico Repetível", badgeSeason: "Temporada", badgeLimited: "Limitado",
     modalSubtitle: "{players} jogadores · Classificação {target}",
-    pendingDetails: "Requisitos deste elenco pendentes de definição."
+    pendingDetails: "Requisitos deste elenco pendentes de definição.",
+    squadWord: "Elenco", challengeWord: "Desafio"
   }
 };
 
-/* NOMBRES DE LOS DESAFÍOS TRADUCIDOS EN LOS 6 IDIOMAS */
+/* NOMBRES DE LOS DESAFÍOS TRADUCIDOS */
 var ptcTitles = {
   b_60: { es: "Mejora 60+", en: "60+ Upgrade", fr: "Renfort 60+", de: "60+-Upgrade", it: "Miglioramento 60+", pt: "Melhoria 60+" },
   b_70: { es: "Mejora 70+", en: "70+ Upgrade", fr: "Renfort 70+", de: "70+-Upgrade", it: "Miglioramento 70+", pt: "Melhoria 70+" },
@@ -448,12 +487,87 @@ var ptcTitles = {
   b_silver_group: { es: "Desafío Plata", en: "Silver Challenge", fr: "Défi Argent", de: "Silber-Challenge", it: "Sfida Argento", pt: "Desafio Prata" },
   b_gold_group: { es: "Desafío Oro", en: "Gold Challenge", fr: "Défi Or", de: "Gold-Challenge", it: "Sfida Oro", pt: "Desafio Ouro" },
 
-  s_tots_warm: { es: "Elección de Jugador Temporada", en: "Season Player Pick", fr: "Choix Joueur Saison", de: "Saison-Spielerwahl", it: "Scelta Giocatore Stagione", pt: "Escolha de Jogador da Temporada" },
-  s_league_sbc: { es: "Desafío de Liga Principal", en: "Major League Challenge", fr: "Défi Ligue Principale", de: "Hauptliga-Challenge", it: "Sfida Campionato Principale", pt: "Desafio da Liga Principal" },
+  s_aficionado_1: { es: "Aficionado 1", en: "Amateur 1", fr: "Amateur 1", de: "Amateur 1", it: "Dilettante 1", pt: "Amador 1" },
+  s_aficionado_2: { es: "Aficionado 2", en: "Amateur 2", fr: "Amateur 2", de: "Amateur 2", it: "Dilettante 2", pt: "Amador 2" },
+  s_aficionado_3: { es: "Aficionado 3", en: "Amateur 3", fr: "Amateur 3", de: "Amateur 3", it: "Dilettante 3", pt: "Amador 3" },
+  s_semipro_1: { es: "Semiprofesional 1", en: "Semi-Pro 1", fr: "Semi-Pro 1", de: "Halbprofi 1", it: "Semi-Pro 1", pt: "Semiprofissional 1" },
+  s_semipro_2: { es: "Semiprofesional 2", en: "Semi-Pro 2", fr: "Semi-Pro 2", de: "Halbprofi 2", it: "Semi-Pro 2", pt: "Semiprofissional 2" },
+  s_semipro_3: { es: "Semiprofesional 3", en: "Semi-Pro 3", fr: "Semi-Pro 3", de: "Halbprofi 3", it: "Semi-Pro 3", pt: "Semiprofissional 3" },
+  s_pro_1: { es: "Profesional 1", en: "Professional 1", fr: "Professionnel 1", de: "Profi 1", it: "Professionista 1", pt: "Profissional 1" },
+  s_pro_2: { es: "Profesional 2", en: "Professional 2", fr: "Professionnel 2", de: "Profi 2", it: "Professionista 2", pt: "Profissional 2" },
+  s_pro_3: { es: "Profesional 3", en: "Professional 3", fr: "Professionnel 3", de: "Profi 3", it: "Professionista 3", pt: "Profissional 3" },
+  s_legend_1: { es: "Legendario 1", en: "Legendary 1", fr: "Légendaire 1", de: "Legende 1", it: "Leggenda 1", pt: "Lendário 1" },
+
+  s_wl_1: { es: "Liga de Fin de Semana 1", en: "Weekend League 1", fr: "Ligue Week-end 1", de: "Weekend League 1", it: "Weekend League 1", pt: "Weekend League 1" },
+  s_wl_2: { es: "Liga de Fin de Semana 2", en: "Weekend League 2", fr: "Ligue Week-end 2", de: "Weekend League 2", it: "Weekend League 2", pt: "Weekend League 2" },
+
   l_totw_upgrade: { es: "Mejora TOTW Activo", en: "Active TOTW Upgrade", fr: "Renfort TOTW Actif", de: "Aktives TDW-Upgrade", it: "Miglioramento TOTW Attivo", pt: "Melhoria TOTW Ativa" },
   l_flash_challenge: { es: "Desafío Relámpago", en: "Flash Challenge", fr: "Défi Flash", de: "Blitz-Challenge", it: "Sfida Lampo", pt: "Desafio Relâmpago" },
   l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)", fr: "Martin Ødegaard (91 POTM)", de: "Martin Ødegaard (91 POTM)", it: "Martin Ødegaard (91 POTM)", pt: "Martin Ødegaard (91 POTM)" }
 };
+
+/* DICCIONARIO DE RECOMPENSAS / PREMIOS */
+var ptcRewards = {
+  b_bronze_group: {
+    type: 'player', name: 'Moore', pos: 'ST', rating: 75
+  },
+  b_silver_group: {
+    type: 'player', name: 'Bueno', pos: 'CB', rating: 78
+  },
+  b_gold_group: {
+    type: 'player', name: 'Merino', pos: 'CM', rating: 83
+  },
+  s_wl_1: {
+    type: 'pack', minRating: 81, event: 'Weekend League', draft: '1/3'
+  },
+  s_wl_2: {
+    type: 'pack', minRating: 84, event: 'Weekend League', draft: '1/3'
+  }
+};
+
+function formatPtcReward(ptcId) {
+  var r = ptcRewards[ptcId];
+  if (!r) return '';
+
+  if (r.type === 'player') {
+    var localizedPos = displayPosition(r.pos);
+    return r.name + ' (' + localizedPos + ') ⭐ ' + r.rating;
+  }
+
+  if (r.type === 'pack') {
+    var packWord = {
+      es: 'Sobre', en: 'Pack', fr: 'Pack', de: 'Pack', it: 'Pacchetto', pt: 'Pacote'
+    }[currentLang] || 'Sobre';
+
+    return packWord + ' ' + r.minRating + '+ ' + r.event + ' (' + r.draft + ' Draft)';
+  }
+
+  return '';
+}
+
+function createBlankRankSubchallenges(prefixKey) {
+  return [1, 2, 3, 4].map(function(num) {
+    return {
+      subKey: prefixKey,
+      num: num,
+      players: 0,
+      target: 0,
+      isPending: true
+    };
+  });
+}
+
+function formatSubChallengeName(sub) {
+  var t = i18n[currentLang] || i18n.es;
+  if (sub.subKey) {
+    var baseTitle = getPtcTitle(sub.subKey);
+    return baseTitle + ' - ' + t.challengeWord + ' ' + sub.num;
+  }
+  if (sub.isTargetSquad) {
+    return t.squadWord + ' ' + sub.target;
+  }
+  return sub.name || '';
+}
 
 /* DEFINICIÓN COMPLETA DE LOS PTCS */
 var ptcList = [
@@ -476,7 +590,6 @@ var ptcList = [
     id: "b_bronze_group",
     category: "basic",
     isRepeatable: false,
-    reward: "Moore (DC) ⭐ 75",
     subchallenges: [
       { name: "Bronce 1", players: 0, target: 0, isPending: true },
       { name: "Bronce 2", players: 0, target: 0, isPending: true },
@@ -487,7 +600,6 @@ var ptcList = [
     id: "b_silver_group",
     category: "basic",
     isRepeatable: false,
-    reward: "Bueno (DFC) ⭐ 78",
     subchallenges: [
       { name: "Plata 1", players: 0, target: 0, isPending: true },
       { name: "Plata 2", players: 0, target: 0, isPending: true },
@@ -498,7 +610,6 @@ var ptcList = [
     id: "b_gold_group",
     category: "basic",
     isRepeatable: false,
-    reward: "Merino (MC) ⭐ 83",
     subchallenges: [
       { name: "Oro 1", players: 0, target: 0, isPending: true },
       { name: "Oro 2", players: 0, target: 0, isPending: true },
@@ -506,9 +617,35 @@ var ptcList = [
     ]
   },
 
-  // --- DE TEMPORADA ---
-  { id: "s_tots_warm", category: "season", isRepeatable: false, players: 11, target: 84 },
-  { id: "s_league_sbc", category: "season", isRepeatable: false, players: 11, target: 82 },
+  // --- DE TEMPORADA: RANGOS (CON 4 SUB-PTCS EN BLANCO) ---
+  { id: "s_aficionado_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_1") },
+  { id: "s_aficionado_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_2") },
+  { id: "s_aficionado_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_3") },
+  { id: "s_semipro_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_1") },
+  { id: "s_semipro_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_2") },
+  { id: "s_semipro_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_3") },
+  { id: "s_pro_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_1") },
+  { id: "s_pro_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_2") },
+  { id: "s_pro_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_3") },
+  { id: "s_legend_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_legend_1") },
+
+  // --- DE TEMPORADA: WEEKEND LEAGUE ---
+  {
+    id: "s_wl_1",
+    category: "season",
+    isRepeatable: false,
+    players: 3,
+    target: 78,
+    requiredRarity: "weekend_league"
+  },
+  {
+    id: "s_wl_2",
+    category: "season",
+    isRepeatable: false,
+    players: 7,
+    target: 81,
+    requiredRarity: "weekend_league"
+  },
 
   // --- TIEMPO LIMITADO ---
   {
@@ -516,11 +653,11 @@ var ptcList = [
     category: "limited",
     isRepeatable: false,
     subchallenges: [
-      { name: "Plantilla 84", players: 11, target: 84 },
-      { name: "Plantilla 86", players: 11, target: 86 },
-      { name: "Plantilla 88", players: 11, target: 88 },
-      { name: "Plantilla 89", players: 11, target: 89 },
-      { name: "Plantilla 90", players: 11, target: 90 }
+      { isTargetSquad: true, players: 11, target: 84 },
+      { isTargetSquad: true, players: 11, target: 86 },
+      { isTargetSquad: true, players: 11, target: 88 },
+      { isTargetSquad: true, players: 11, target: 89 },
+      { isTargetSquad: true, players: 11, target: 90 }
     ]
   },
   { id: "l_totw_upgrade", category: "limited", isRepeatable: false, players: 11, target: 83 },
@@ -562,9 +699,9 @@ function getDatabasePlayers() {
   return [];
 }
 
-/* OBTENER PRECIOS MÍNIMOS POR MEDIA SEGÚN FUENTE SELECCIONADA */
-function getActivePrices() {
-  if (priceSource === 'manual') {
+/* OBTENER PRECIOS MÍNIMOS POR MEDIA SEGÚN FUENTE Y FILTRO DE RAREZA */
+function getActivePrices(filterRarity) {
+  if (priceSource === 'manual' && !filterRarity) {
     var raw = localStorage.getItem('ufm_ptc_prices');
     var manualPrices = {};
     if (raw) {
@@ -584,10 +721,10 @@ function getActivePrices() {
     return manualPrices;
   }
 
-  // Por defecto: desde la base de datos
   var players = getDatabasePlayers();
   var minPrices = {};
   players.forEach(function(p) {
+    if (filterRarity && p.rarity !== filterRarity) return;
     var rat = parseInt(p.rating, 10);
     var pr = (p.price !== '' && p.price != null) ? parseInt(p.price, 10) : null;
     if (rat >= 50 && rat <= 99 && pr !== null && !isNaN(pr) && pr > 0) {
@@ -647,7 +784,8 @@ function solveSbc(n, target, prices) {
   return { cost: best.cost, bestSum: bestSum, counts: best.counts };
 }
 
-function getCardClass(rating) {
+function getCardClass(rating, rarity) {
+  if (rarity === 'weekend_league') return 'weekend_league';
   var rat = +rating || 0;
   if (rat <= 64) return 'bronze';
   if (rat <= 74) return 'silver';
@@ -665,7 +803,7 @@ function setPriceSource(src) {
 function renderPtcList() {
   var t = i18n[currentLang] || i18n.es;
   var db = getDatabasePlayers();
-  var prices = getActivePrices();
+  var defaultPrices = getActivePrices(null);
 
   document.getElementById('statDbCount').textContent = db.length;
   document.getElementById('statPtcCount').textContent = ptcList.length;
@@ -682,12 +820,15 @@ function renderPtcList() {
     var badgeInfo = getPtcBadgeInfo(ptc);
     var localizedTitle = getPtcTitle(ptc.id);
 
-    var rewardHtml = ptc.reward 
-      ? `<div class="ptc-reward"><span>🎁 ${t.rewardLabel}</span> <b>${ptc.reward}</b></div>` 
+    var rewardFormatted = formatPtcReward(ptc.id);
+    var rewardHtml = rewardFormatted 
+      ? `<div class="ptc-reward"><span>🎁</span> <b>${rewardFormatted}</b></div>` 
       : '';
 
     var reqHtml = '';
     var costText = '—';
+
+    var prices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
 
     // Desafío compuesto (Multi-plantilla)
     if (ptc.subchallenges && ptc.subchallenges.length) {
@@ -712,9 +853,14 @@ function renderPtcList() {
         costText = Number(totalCost).toLocaleString('es-ES') + ' 🪙';
       }
     } else {
+      var rarityHint = ptc.requiredRarity === 'weekend_league' 
+        ? `<div class="ptc-req-item"><span>${t.reqRarity}</span> <b style="color:var(--accent)">Weekend League</b></div>` 
+        : '';
+
       reqHtml = `
         <div class="ptc-req-item"><span>${t.reqPlayers}</span> <b>${ptc.players}</b></div>
         <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${ptc.target}</b></div>
+        ${rarityHint}
       `;
       var sol = solveSbc(ptc.players, ptc.target, prices);
       if (sol) costText = Number(sol.cost).toLocaleString('es-ES') + ' 🪙';
@@ -750,7 +896,8 @@ function openPtcModal(ptc) {
     subTabsWrap.style.display = 'flex';
     subTabsWrap.innerHTML = ptc.subchallenges.map(function(sub, idx) {
       var targetLabel = sub.isPending ? 'Pendiente' : ('⭐ ' + sub.target);
-      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${sub.name} (${targetLabel})</button>`;
+      var subName = formatSubChallengeName(sub);
+      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${subName} (${targetLabel})</button>`;
     }).join('');
   } else {
     subTabsWrap.style.display = 'none';
@@ -775,13 +922,15 @@ function renderModalContent() {
 
   var isMulti = ptc.subchallenges && ptc.subchallenges.length;
   var currentTargetPtc = isMulti ? ptc.subchallenges[activeSubIndex] : ptc;
+  var filterRarity = currentTargetPtc.requiredRarity || ptc.requiredRarity || null;
   
-  var prices = getActivePrices();
+  var prices = getActivePrices(filterRarity);
   var db = priceSource === 'db' ? getDatabasePlayers() : [];
 
   var localizedTitle = getPtcTitle(ptc.id);
   if (isMulti) {
-    localizedTitle = localizedTitle + ' - ' + currentTargetPtc.name;
+    var subName = formatSubChallengeName(currentTargetPtc);
+    localizedTitle = localizedTitle + ' - ' + subName;
   }
 
   var squadGrid = document.getElementById('squadGrid');
@@ -802,6 +951,9 @@ function renderModalContent() {
 
   var subtitleTemplate = t.modalSubtitle || "{players} jugadores · Media {target}";
   var localizedSubtitle = subtitleTemplate.replace('{players}', currentTargetPtc.players).replace('{target}', currentTargetPtc.target);
+  if (filterRarity === 'weekend_league') {
+    localizedSubtitle += ' · [Weekend League]';
+  }
 
   document.getElementById('modalPtcTitle').textContent = localizedTitle;
   document.getElementById('modalPtcSubtitle').textContent = localizedSubtitle;
@@ -836,6 +988,7 @@ function renderModalContent() {
     var chosen = null;
     if (priceSource === 'db') {
       var candidates = db.filter(function(p) {
+        if (filterRarity && p.rarity !== filterRarity) return false;
         return parseInt(p.rating, 10) === rat && p.price && !usedPlayerIds.has(p.id);
       }).sort(function(a, b) { return (+a.price) - (+b.price); });
       chosen = candidates[0];
@@ -843,14 +996,14 @@ function renderModalContent() {
 
     if (chosen) {
       usedPlayerIds.add(chosen.id);
-      var cClass = getCardClass(chosen.rating);
+      var cClass = getCardClass(chosen.rating, chosen.rarity);
       var img = chosen.image ? chosen.image : DEFAULT_AVATAR;
 
       slot.innerHTML = `
         <div class="mini-card ${cClass}">
           <div class="mini-card-top">
             <span class="mini-card-rat">${chosen.rating}</span>
-            <span class="mini-card-pos">${chosen.position || '—'}</span>
+            <span class="mini-card-pos">${displayPosition(chosen.position)}</span>
           </div>
           <img class="mini-card-img" src="${img}" onerror="this.src='${DEFAULT_AVATAR}'">
           <div class="mini-card-name">${chosen.name}</div>
@@ -860,10 +1013,11 @@ function renderModalContent() {
       `;
     } else {
       var minP = prices[rat] ? Number(prices[rat]).toLocaleString('es-ES') + ' 🪙' : '—';
+      var raritySubText = filterRarity === 'weekend_league' ? ' (WL)' : '';
       slot.innerHTML = `
         <div class="squad-slot-empty">
           <b>⭐ ${rat}</b>
-          <span>${t.anyPlayer} ⭐ ${rat}</span>
+          <span>${t.anyPlayer} ⭐ ${rat}${raritySubText}</span>
           <div class="mini-card-price" style="margin-top:8px">${minP}</div>
         </div>
       `;
