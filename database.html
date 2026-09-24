@@ -3,64 +3,60 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>UFM 27 - Database Hub</title>
+  <title>UFM 27 - Base de Datos</title>
   <link rel="stylesheet" href="styles.css">
   <style>
-    /* Estilos específicos de database.html */
     .wrap { max-width: 1800px; margin: auto; padding: 18px; }
 
     .header {
       display: grid; grid-template-columns: auto 1fr auto; align-items: center;
-      gap: 20px; padding: 14px 16px; margin-bottom: 14px;
+      gap: 20px; padding: 14px 18px; margin-bottom: 14px;
     }
     .db-badge-logo {
       display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; line-height: 0.9;
     }
-    .db-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
-    h1 { font-size: 20px; text-align: center; margin: 0; }
-    .toolbar { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+    .db-badge-logo small { font-size: 9px; color: var(--gold); letter-spacing: 1.5px; }
+    h1 { font-size: 20px; text-align: center; margin: 0; color: #fae69e; font-family: var(--font-display); letter-spacing: 1px; }
+    .toolbar { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
     
-    .sync-btn { background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3); }
-    .sync-btn:hover { border-color: var(--accent); }
+    .sync-btn { background: rgba(250, 230, 158, 0.1); color: var(--gold); border-color: #78622c; }
+    .sync-btn:hover { border-color: #fae69e; color: #fff; }
     
-    .view-toggle { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
-    .view-toggle button { border-radius: 0; border: none; font-size: 12px; padding: 8px 11px; }
-    .view-toggle button.active { background: var(--accent); color: #09241d; }
+    .view-toggle { display: flex; border: 1.5px solid #78622c; border-radius: 4px; overflow: hidden; }
+    .view-toggle button { border-radius: 0; border: none; font-size: 12px; padding: 8px 12px; font-weight: 800; }
+    .view-toggle button.active { background: var(--gold-btn); color: #120e04; }
 
-    /* Controles y Panel Avanzado */
     .controls-wrapper { margin-bottom: 14px; }
     .controls {
       padding: 13px 15px; display: grid;
       grid-template-columns: 2fr repeat(3, 1fr) 1.2fr auto auto auto; gap: 8px;
     }
     .advanced-panel {
-      display: none; padding: 14px 16px; border-top: 1px solid var(--line);
-      background: #131720; border-radius: 0 0 16px 16px;
+      display: none; padding: 14px 16px; border-top: 1.5px solid #5a481f;
+      background: #11140e; border-radius: 0 0 4px 4px;
     }
     .advanced-panel.open { display: block; }
-    .adv-title { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 8px 0 6px; }
+    .adv-title { font-size: 11px; font-weight: 800; color: var(--gold); text-transform: uppercase; margin: 8px 0 6px; letter-spacing: 0.5px; }
     .adv-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
     .adv-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
     
-    /* Vista Tabla */
     .table-wrap { overflow: auto; max-height: calc(100vh - 210px); }
     table { width: 100%; border-collapse: collapse; min-width: 1350px; }
-    th, td { padding: 11px 11px; border-bottom: 1px solid #272e3a; text-align: left; white-space: nowrap; }
-    th { position: sticky; top: 0; background: #202733; z-index: 2; color: #dfe4eb; font-size: 12px; cursor: pointer; }
+    th, td { padding: 11px 11px; border-bottom: 1px solid #302611; text-align: left; white-space: nowrap; }
+    th { position: sticky; top: 0; background: #1a1f16; z-index: 2; color: #fae69e; font-size: 12px; cursor: pointer; border-bottom: 1.5px solid #78622c; text-transform: uppercase; letter-spacing: 0.5px; }
     td { font-size: 13px; }
     .rating { font-weight: 900; color: var(--gold); }
-    .price { font-weight: 800; color: var(--accent); }
+    .price { font-weight: 800; color: var(--gold); }
     
     .col-league {
       max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    .status { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--line); }
-    .badge { display: inline-block; padding: 3px 7px; border-radius: 999px; background: rgba(0,0,0,0.5); color: #dfe4eb; font-size: 11px; font-weight: 800; }
+    .status { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1.5px solid #42361b; font-weight: 700; }
+    .badge { display: inline-block; padding: 3px 7px; border-radius: 4px; background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.1); color: #dfe4eb; font-size: 11px; font-weight: 800; }
 
-    /* Degradados en filas de la tabla */
     tbody tr { transition: 0.15s ease; border-left: 4px solid transparent; cursor: pointer; }
-    tbody tr:hover { filter: brightness(1.2); }
+    tbody tr:hover { filter: brightness(1.2); background: rgba(250, 230, 158, 0.05); }
     tbody tr.card-bronze { background: linear-gradient(90deg, rgba(68, 42, 29, 0.45), transparent 80%); border-left-color: #8d5b3e; }
     tbody tr.card-silver { background: linear-gradient(90deg, rgba(65, 73, 82, 0.45), transparent 80%); border-left-color: #94a3b8; }
     tbody tr.card-gold-light { background: linear-gradient(90deg, rgba(191, 157, 61, 0.35), transparent 80%); border-left-color: #fde047; }
@@ -74,7 +70,6 @@
     tbody tr.card-potm { background: linear-gradient(90deg, rgba(88, 28, 135, 0.55), rgba(15, 23, 42, 0.8) 60%, transparent 90%); border-left-color: #a855f7; }
     tbody tr.card-ptc { background: linear-gradient(90deg, rgba(92, 51, 23, 0.55), rgba(31, 23, 18, 0.85) 60%, transparent 90%); border-left-color: #d97706; }
 
-    /* Cuadrícula de Fichas */
     .cards-grid {
       display: none;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -88,49 +83,47 @@
     .card-item:hover .fut-card { transform: translateY(-4px); }
 
     .card-price-badge {
-      margin-top: 6px; width: 90%; background: #11151c; border: 1px solid #2e3746;
-      border-radius: 8px; padding: 5px 8px; text-align: center; font-size: 12px;
-      font-weight: 900; color: var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      margin-top: 6px; width: 90%; background: #11140e; border: 1.5px solid #5a481f;
+      border-radius: 4px; padding: 5px 8px; text-align: center; font-size: 12px;
+      font-weight: 900; color: var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.5);
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
     }
 
-    /* Formularios y Modales específicos */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 12px 0; }
     .form-grid.stats-row { grid-template-columns: repeat(6, 1fr); gap: 6px; }
     .form-grid label { font-size: 11px; color: var(--muted); font-weight: 700; }
     .form-grid input, .form-grid select { margin-top: 4px; }
     .modal textarea {
-      width: 100%; height: 160px; background: #10141b; color: var(--text);
-      border: 1px solid var(--line); border-radius: 10px; padding: 10px; font: 12px monospace;
+      width: 100%; height: 160px; background: #11140e; color: var(--text);
+      border: 1.5px solid #5a481f; border-radius: 4px; padding: 10px; font: 12px monospace;
     }
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
 
     .dropzone {
-      border: 2px dashed var(--line); border-radius: 10px; padding: 22px;
-      text-align: center; background: #10141b; cursor: pointer;
+      border: 2px dashed #78622c; border-radius: 4px; padding: 22px;
+      text-align: center; background: #11140e; cursor: pointer;
     }
-    .dropzone span { color: var(--accent); text-decoration: underline; font-weight: bold; }
+    .dropzone span { color: var(--gold); text-decoration: underline; font-weight: bold; }
     .import-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
-    .tab-btn { flex: 1; padding: 7px; font-size: 12px; background: transparent; }
-    .tab-btn.active { background: var(--card2); border-color: var(--accent); }
+    .tab-btn { flex: 1; padding: 8px; font-size: 12px; background: #181d14; border: 1.5px solid #5a481f; font-weight: 800; border-radius: 4px; color: var(--muted); }
+    .tab-btn.active { background: var(--gold-btn); color: #120e04; border-color: #fae69e; }
 
     .import-mode-select {
-      margin: 12px 0 8px; padding: 10px; background: #10141b; border-radius: 8px; border: 1px solid var(--line);
+      margin: 12px 0 8px; padding: 10px; background: #11140e; border-radius: 4px; border: 1.5px solid #5a481f;
     }
-    .import-mode-select label { font-size: 12px; font-weight: bold; color: var(--accent); display: block; margin-bottom: 5px; }
+    .import-mode-select label { font-size: 12px; font-weight: bold; color: var(--gold); display: block; margin-bottom: 5px; }
 
-    /* Menú Contextual (Clic Derecho) */
     .context-menu {
-      position: fixed; background: #181f2b; border: 1px solid var(--line); border-radius: 10px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: none; z-index: 100; min-width: 170px;
+      position: fixed; background: #181d14; border: 1.5px solid #8e7330; border-radius: 4px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8); display: none; z-index: 100; min-width: 170px;
       overflow: hidden; padding: 4px 0;
     }
     .context-menu-item {
       padding: 9px 15px; font-size: 13px; font-weight: 700; color: var(--text);
       cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.15s;
     }
-    .context-menu-item:hover { background: var(--card2); color: var(--accent); }
-    .context-menu-item.danger-item:hover { color: #f87171; background: rgba(239, 68, 68, 0.15); }
+    .context-menu-item:hover { background: #22291b; color: var(--gold); }
+    .context-menu-item.danger-item:hover { color: #fca5a5; background: rgba(239, 68, 68, 0.2); }
 
     @media(max-width: 1000px) {
       .header { grid-template-columns: 1fr; }
@@ -147,8 +140,11 @@
 
 <header class="site-nav">
   <a class="nav-brand" href="index.html">
-    <div style="font-size:24px">⚽</div>
-    <div class="nav-logo">UFM 27<br><small>MULTIMEDIA</small></div>
+    <div class="nav-brand-icon">⚽</div>
+    <div class="nav-logo">
+      <span class="nav-logo-title">UFM 27</span>
+      <span class="nav-logo-sub">MULTIMEDIA</span>
+    </div>
   </a>
   <nav class="nav-links">
     <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
@@ -170,7 +166,10 @@
   <div class="card header">
     <div class="db-badge-logo">
       <span style="font-size:22px">⚽</span>
-      <div>UFM<br><small>DATABASE</small></div>
+      <div>
+        <div style="font-family:var(--font-display); font-size:18px; color:#fff;">UFM</div>
+        <small>DATABASE</small>
+      </div>
     </div>
     <h1 id="lblPageTitle">Base de Datos SBC</h1>
     <div class="toolbar">
@@ -288,8 +287,13 @@
 <!-- Modal Principal -->
 <div id="modalBg" class="modal-bg" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
-    <h2 id="modalTitle">Modal</h2>
-    <p id="modalHelp">Descripción</p>
+    <div class="modal-top">
+      <div class="modal-title-wrap">
+        <h2 id="modalTitle" class="modal-title-gradient">Modal</h2>
+        <span id="modalHelp" class="modal-subtitle">Descripción</span>
+      </div>
+      <button type="button" class="close-btn" onclick="closeModal()">✕</button>
+    </div>
 
     <!-- Formulario Crear/Editar -->
     <form id="playerForm" onsubmit="submitPlayer(event)" style="display:none">
@@ -334,7 +338,7 @@
         <label style="grid-column: 1 / -1"><span id="lblF_image">URL Imagen / Foto</span><input id="f_image" placeholder="https://ejemplo.com/foto.png"></label>
       </div>
 
-      <p style="margin: 10px 0 4px; font-weight: bold; font-size: 12px; color: var(--accent);"><span id="lblF_substats">SUBATRIBUTOS</span></p>
+      <p style="margin: 10px 0 4px; font-weight: bold; font-size: 12px; color: var(--gold);"><span id="lblF_substats">SUBATRIBUTOS</span></p>
       <div class="form-grid stats-row">
         <label><span class="lblStatPac">RIT</span><input id="f_pac" type="number" min="1" max="99" placeholder="89"></label>
         <label><span class="lblStatSho">TIR</span><input id="f_sho" type="number" min="1" max="99" placeholder="93"></label>
@@ -345,7 +349,7 @@
       </div>
 
       <div class="modal-actions">
-        <button type="button" onclick="closeModal()" id="btnCancelPlayer">Cancelar</button>
+        <button type="button" class="danger" onclick="closeModal()" id="btnCancelPlayer">Cancelar</button>
         <button class="primary" type="submit" id="btnSubmitPlayer">Guardar jugador</button>
       </div>
     </form>
@@ -355,7 +359,7 @@
       <div class="detail-container">
         <div class="detail-left" id="detailCardTarget"></div>
         <div class="detail-right">
-          <h3 id="detName" style="margin:0 0 4px; font-size: 20px;">-</h3>
+          <h3 id="detName" style="margin:0 0 4px; font-size: 20px; color:#fff;">-</h3>
           <p id="detSub" style="margin:0 0 12px; color:var(--muted); font-size: 13px;">-</p>
           <div class="detail-grid">
             <div class="detail-item"><small id="dClub">Club</small><span id="detClub">-</span></div>
@@ -363,14 +367,14 @@
             <div class="detail-item"><small id="dCountry">Nacionalidad</small><span id="detCountry">-</span></div>
             <div class="detail-item"><small id="dAge">Edad</small><span id="detAge">-</span></div>
             <div class="detail-item"><small id="dPhys">Altura / Peso</small><span id="detPhysique">-</span></div>
-            <div class="detail-item"><small id="dPrice">Precio Mercado SBC</small><span id="detPrice" style="color:var(--accent)">-</span></div>
+            <div class="detail-item"><small id="dPrice">Precio Mercado SBC</small><span id="detPrice" style="color:var(--gold)">-</span></div>
             <div class="detail-item"><small id="dUpdated">Última Actualización</small><span id="detUpdated">-</span></div>
           </div>
         </div>
       </div>
       <div class="modal-actions">
         <button type="button" class="primary" onclick="openQuickPriceFromDetail()" id="btnEditPriceDetail">💰 Modificar Precio</button>
-        <button type="button" onclick="closeModal()" id="btnCloseDetail">Cerrar</button>
+        <button type="button" class="secondary" onclick="closeModal()" id="btnCloseDetail">Cerrar</button>
       </div>
     </div>
 
@@ -383,7 +387,7 @@
           <input type="number" id="quickPriceInput" placeholder="Ej: 45000" style="margin-top: 6px;" required>
         </label>
         <div class="modal-actions" style="margin-top: 16px;">
-          <button type="button" onclick="closeModal()" id="btnCancelQuickPrice">Cancelar</button>
+          <button type="button" class="danger" onclick="closeModal()" id="btnCancelQuickPrice">Cancelar</button>
           <button class="primary" type="submit" id="btnSaveQuickPrice">Actualizar Precio</button>
         </div>
       </form>
@@ -416,7 +420,7 @@
       <div id="importUrlSection" style="display:none">
         <p style="font-size:13px; color:var(--muted); margin-top:0" id="urlHelpText">Pega el enlace directo a tu archivo JSON en internet:</p>
         <input type="url" id="importUrlInput" placeholder="https://raw.githubusercontent.com/usuario/repo/main/players.json">
-        <small style="display:block; margin-top:6px; color:var(--accent)" id="urlSavedNote">Esta URL se guardará para que puedas actualizar con el botón "Sincronizar Web".</small>
+        <small style="display:block; margin-top:6px; color:var(--gold)" id="urlSavedNote">Esta URL se guardará para que puedas actualizar con el botón "Sincronizar Web".</small>
       </div>
 
       <div id="importTextSection" style="display:none">
@@ -424,7 +428,7 @@
       </div>
 
       <div class="modal-actions">
-        <button type="button" onclick="closeModal()" id="btnCancelImport">Cancelar</button>
+        <button type="button" class="danger" onclick="closeModal()" id="btnCancelImport">Cancelar</button>
         <button type="button" id="btnConfirmImportUrl" style="display:none" class="primary" onclick="processUrlImport()">Descargar e Importar</button>
         <button type="button" id="btnConfirmImportText" style="display:none" class="primary" onclick="processTextImport()">Importar Texto</button>
       </div>
@@ -526,7 +530,6 @@ function cleanPlayerName(name) {
   return name.replace(/\s*\([^)]*\)/g, '').trim();
 }
 
-/* LISTA DE LIGAS */
 var masterLeaguesData = [
   { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
   { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
@@ -560,7 +563,6 @@ var masterLeaguesData = [
   { id: "ch_1", code: "ch", names: { es: "Suiza (1ª Div - Super League)", en: "Switzerland (1st Div - Super League)", fr: "Suisse (1ère Div - Super League)", de: "Schweiz (1. Liga - Super League)", it: "Svizzera (1ª Div - Super League)", pt: "Suíça (1ª Div - Super League)" } }
 ];
 
-/* LISTA DE PAÍSES */
 var masterCountriesData = [
   { code: "de", names: { es: "Alemania", en: "Germany", fr: "Allemagne", de: "Deutschland", it: "Germania", pt: "Alemanha" } },
   { code: "ar", names: { es: "Argentina", en: "Argentina", fr: "Argentine", de: "Argentinien", it: "Argentina", pt: "Argentina" } },
@@ -691,7 +693,6 @@ function getFlagUrl(str) {
   return 'https://flagcdn.com/w40/' + code + '.png';
 }
 
-/* DICCIONARIO MULTILINGÜE */
 var i18n = {
   es: {
     navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
@@ -875,7 +876,7 @@ var i18n = {
     thPhys: "Alt. / Peso", thPrice: "Preço", thUpdated: "Atualizado",
     statPac: "RIT", statSho: "FIN", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "FÍS",
     adv1: "Filtros de Clube, Nacionalidade e Raridade", adv2: "Faixa de Preço e Idade", adv3: "Subatributos Mínimos (DME)",
-    btnAdvToggle: "⚙️ Filtros Avançados", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    btnAdvToggle: "⚙️ Filtros Avanzados", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
     searchPlaceholder: "Buscar jogador, clube, liga...",
     posDefault: "Posição", clubDefault: "Qualquer Clube", leagueDefault: "Qualquer Liga", countryDefault: "Qualquer País",
     rarityDefault: "Qualquer Raridade",
@@ -1045,7 +1046,7 @@ function setViewMode(mode) {
 function toggleAdvFilters() {
   var p = $('advPanel');
   p.classList.toggle('open');
-  $('btnAdvToggle').style.borderColor = p.classList.contains('open') ? 'var(--accent)' : 'var(--line)';
+  $('btnAdvToggle').style.borderColor = p.classList.contains('open') ? '#fae69e' : '#6b5523';
 }
 
 function changeSortField(f) {
@@ -1202,7 +1203,6 @@ function openPlayerDetail(index) {
   if (!p) return;
   detailTargetIndex = index;
 
-  var t = i18n[currentLang] || i18n.es;
   var cleanName = cleanPlayerName(p.name);
   $('modalTitle').textContent = cleanName;
   $('modalHelp').textContent = getRarityLabel(p.rarity, p.rating);
@@ -1669,7 +1669,6 @@ function fetchFromUrl(url) {
     return;
   }
   
-  // Si la URL es de Pastebin, pasamos por un proxy CORS para evitar el bloqueo del navegador
   var targetUrl = url;
   if (url.includes('pastebin.com')) {
     targetUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
@@ -1686,7 +1685,7 @@ function fetchFromUrl(url) {
 
       try {
         var data = JSON.parse(rawText);
-        localStorage.setItem(URL_KEY, url); // Guardamos la URL original
+        localStorage.setItem(URL_KEY, url);
         mergePlayerData(data);
       } catch(jsonErr) {
         try {

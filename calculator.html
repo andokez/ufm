@@ -6,10 +6,8 @@
 <title>UFM 27 - Calculadora SBC</title>
 <link rel="stylesheet" href="styles.css">
 <style>
-  /* Estilos específicos de calculator.html */
   .wrap { max-width: 1800px; margin: auto; padding: 18px; }
-  .card { padding: 18px 20px; box-shadow: 0 12px 35px rgba(0,0,0,.18); }
-
+  .card { padding: 18px 20px; }
   .prices-box { margin-bottom: 16px; }
   .price-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -22,46 +20,44 @@
     display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; line-height: 0.9;
     padding-right: 14px; border-right: 1px solid var(--line);
   }
-  .calc-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
-  .price-header h2 { font-size: 16px; margin: 0 0 2px 0; }
+  .calc-badge-logo small { font-size: 9px; color: var(--gold); letter-spacing: 1.5px; }
+  .price-header h2 { font-size: 16px; margin: 0 0 2px 0; color: #fff; }
   .price-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
 
   .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
   .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+  label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; font-weight: 700; }
   
   .btnrow { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
 
-  /* Cuadrícula de Precios */
   .pricegrid {
     direction: rtl; display: grid; grid-template-columns: repeat(12, minmax(85px, 1fr));
     gap: 8px; height: var(--price-height, 175px); overflow: auto; padding-right: 3px; resize: vertical; min-height: 120px; max-height: 520px;
   }
   .pricegrid::-webkit-scrollbar { width: 7px; height: 7px; }
-  .pricegrid::-webkit-scrollbar-thumb { background: #303642; border-radius: 999px; }
+  .pricegrid::-webkit-scrollbar-thumb { background: #544421; border-radius: 4px; }
   
-  .priceitem { direction: ltr; background: #11151d; border: 1px solid var(--line); border-radius: 10px; padding: 8px; text-align: center; }
+  .priceitem { direction: ltr; background: #11140e; border: 1.5px solid #5a481f; border-radius: 4px; padding: 8px; text-align: center; }
   .priceitem .rating { font-weight: 900; margin-bottom: 5px; font-size: 13px; color: var(--gold); }
-  .priceitem input { padding: 7px 4px; font-size: 13px; text-align: center; font-weight: 800; border-color: #3b4454; }
-  .priceitem input:disabled { background: #171c26; color: var(--accent); border-color: transparent; }
+  .priceitem input { padding: 7px 4px; font-size: 13px; text-align: center; font-weight: 800; border-color: #5a481f; }
+  .priceitem input:disabled { background: #181d14; color: var(--gold); border-color: transparent; }
 
-  /* Sección Resultados */
   .result { min-height: 250px; }
   .empty { color: var(--muted); display: flex; align-items: center; justify-content: center; min-height: 220px; text-align: center; }
   .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .stat { background: #11151d; border: 1px solid var(--line); border-radius: 12px; padding: 13px; text-align: center; }
-  .stat b { display: block; font-size: 22px; margin-top: 4px; text-align: center; color: var(--accent); }
-  .stat span { color: var(--muted); font-size: 12px; display: block; }
-  .solution { background: #11151d; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
-  .solution h3 { margin: 0 0 10px; font-size: 15px; }
-  .row { display: flex; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid #232a36; align-items: center; }
+  .stat { background: #11140e; border: 1.5px solid #5a481f; border-radius: 4px; padding: 13px; text-align: center; }
+  .stat b { display: block; font-size: 22px; margin-top: 4px; text-align: center; color: var(--gold); font-family: var(--font-display); }
+  .stat span { color: var(--muted); font-size: 12px; display: block; font-weight: 700; }
+  .solution { background: #11140e; border: 1.5px solid #5a481f; border-radius: 4px; padding: 14px; }
+  .solution h3 { margin: 0 0 10px; font-size: 15px; color: #fae69e; }
+  .row { display: flex; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid #332a15; align-items: center; }
   .row:last-child { border-bottom: 0; }
-  .row > b { font-size: 16px; }
-  .tag { display: inline-block; background: #1c2e28; color: var(--accent); border-radius: 999px; padding: 4px 10px; font-weight: 800; }
+  .row > b { font-size: 16px; color: #fff; }
+  .tag { display: inline-block; background: #231c0c; border: 1px solid #78622c; color: var(--gold); border-radius: 4px; padding: 4px 10px; font-weight: 800; }
   
   .density-wrap { display: flex; align-items: center; gap: 6px; }
   .density-wrap input { width: 85px; padding: 0; background: transparent; border: 0; }
-  .error { color: var(--danger); background: #2a171a; border: 1px solid #542126; border-radius: 10px; padding: 11px; }
+  .error { color: #fca5a5; background: rgba(239, 68, 68, 0.15); border: 1.5px solid rgba(239, 68, 68, 0.4); border-radius: 4px; padding: 11px; }
 
   @media(max-width: 1100px) {
     .grid { grid-template-columns: 1fr; }
@@ -82,8 +78,11 @@
 
 <header class="site-nav">
   <a class="nav-brand" href="index.html">
-    <div style="font-size:24px">⚽</div>
-    <div class="nav-logo">UFM 27<br><small>MULTIMEDIA</small></div>
+    <div class="nav-brand-icon">⚽</div>
+    <div class="nav-logo">
+      <span class="nav-logo-title">UFM 27</span>
+      <span class="nav-logo-sub">MULTIMEDIA</span>
+    </div>
   </a>
   <nav class="nav-links">
     <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
@@ -107,7 +106,10 @@
       <div class="price-header-left">
         <div class="calc-badge-logo">
           <span>⚽</span>
-          <div>UFM<br><small>CALCULATOR</small></div>
+          <div>
+            <div style="font-family:var(--font-display); font-size:18px; color:#fff;">UFM</div>
+            <small>CALCULATOR</small>
+          </div>
         </div>
         <div>
           <h2 id="lblPricesTitle">Precios de Referencia por Media</h2>
@@ -131,14 +133,14 @@
       </div>
     </div>
     
-    <div id="saveMsg" style="font-size:12px; color:var(--accent); margin-bottom:8px"></div>
+    <div id="saveMsg" style="font-size:12px; color:var(--gold); margin-bottom:8px; font-weight:700;"></div>
     <div id="pricegrid" class="pricegrid"></div>
   </div>
 
   <div class="grid">
     <section>
       <div class="card">
-        <h2 id="lblSbcData">Requisitos del Desafío</h2>
+        <h2 id="lblSbcData" style="margin-top:0; color:#fae69e; font-size:18px;">Requisitos del Desafío</h2>
         <div class="inputs">
           <div>
             <label for="players" id="lblPlayers">Número de jugadores</label>
@@ -157,7 +159,7 @@
     </section>
 
     <section class="card result">
-      <h2 id="lblResult">Resultado Óptimo</h2>
+      <h2 id="lblResult" style="margin-top:0; color:#fae69e; font-size:18px;">Resultado Óptimo</h2>
       <div id="result" class="empty">
         <span id="lblEmpty">Introduce los requisitos y pulsa <b>Calcular combinación más barata</b>.</span>
       </div>
@@ -555,7 +557,6 @@ document.getElementById('density').addEventListener('input', e => {
   localStorage.setItem('ufm_price_height', h);
 });
 
-// Inicialización
 buildPriceGrid();
 applyDensity();
 applyTranslations();
