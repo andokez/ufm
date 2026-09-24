@@ -1,0 +1,1864 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>UFM 27 - Database Hub</title>
+  <style>
+    :root {
+      --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
+      --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
+      color: var(--text); font-family: Inter, system-ui, sans-serif;
+    }
+    .wrap { max-width: 1800px; margin: auto; padding: 18px; }
+    .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; }
+    
+    /* Barra de Navegación */
+    .site-nav {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
+      position: sticky; top: 0; z-index: 10;
+    }
+    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
+    .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
+    .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
+    .nav-links { display: flex; gap: 8px; align-items: center; }
+    .nav-item {
+      padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
+      color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
+    }
+    .nav-item:hover { color: var(--text); background: var(--card2); }
+    .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
+    
+    .lang-select {
+      background: #10141b; border: 1px solid var(--line); color: var(--text);
+      border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
+    }
+    .lang-select:focus { border-color: var(--accent); }
+
+    .header {
+      display: grid; grid-template-columns: auto 1fr auto; align-items: center;
+      gap: 20px; padding: 14px 16px; margin-bottom: 14px;
+    }
+    .db-badge-logo {
+      display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; line-height: 0.9;
+    }
+    .db-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
+    h1 { font-size: 20px; text-align: center; margin: 0; }
+    .toolbar { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
+    button {
+      font: inherit; border-radius: 9px; padding: 9px 12px; cursor: pointer;
+      font-weight: 800; border: 1px solid var(--line); background: var(--card2); color: var(--text);
+    }
+    button:hover { border-color: #4b5668; }
+    .primary { background: var(--accent); color: #09241d; border-color: transparent; }
+    .danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
+    .danger:hover { border-color: var(--danger); color: #fff; }
+    .sync-btn { background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3); }
+    .sync-btn:hover { border-color: var(--accent); }
+    
+    .view-toggle { display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; }
+    .view-toggle button { border-radius: 0; border: none; font-size: 12px; padding: 8px 11px; }
+    .view-toggle button.active { background: var(--accent); color: #09241d; }
+
+    /* Controles */
+    .controls-wrapper { margin-bottom: 14px; }
+    .controls {
+      padding: 13px 15px; display: grid;
+      grid-template-columns: 2fr repeat(3, 1fr) 1.2fr auto auto auto; gap: 8px;
+    }
+    input, select {
+      width: 100%; background: #10141b; color: var(--text); border: 1px solid var(--line);
+      border-radius: 9px; padding: 9px 10px; outline: none; font-size: 13px;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+
+    .advanced-panel {
+      display: none; padding: 14px 16px; border-top: 1px solid var(--line);
+      background: #131720; border-radius: 0 0 16px 16px;
+    }
+    .advanced-panel.open { display: block; }
+    .adv-title { font-size: 11px; font-weight: 800; color: var(--accent); text-transform: uppercase; margin: 8px 0 6px; }
+    .adv-grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 10px; }
+    .adv-grid-6 { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; }
+    
+    /* Vista Tabla */
+    .table-wrap { overflow: auto; max-height: calc(100vh - 210px); }
+    table { width: 100%; border-collapse: collapse; min-width: 1350px; }
+    th, td { padding: 11px 11px; border-bottom: 1px solid #272e3a; text-align: left; white-space: nowrap; }
+    th { position: sticky; top: 0; background: #202733; z-index: 2; color: #dfe4eb; font-size: 12px; cursor: pointer; }
+    td { font-size: 13px; }
+    .rating { font-weight: 900; color: var(--gold); }
+    .price { font-weight: 800; color: var(--accent); }
+    
+    /* Celda de liga compactada */
+    .col-league {
+      max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    /* Badges de fecha con colores de estado */
+    .date-badge {
+      display: inline-block; padding: 3px 8px; border-radius: 6px;
+      font-size: 11px; font-weight: 700; border: 1px solid transparent;
+    }
+    .date-badge.green {
+      background: rgba(34, 197, 94, 0.15); color: #86efac; border-color: rgba(34, 197, 94, 0.35);
+    }
+    .date-badge.yellow {
+      background: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.35);
+    }
+    .date-badge.red {
+      background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.35);
+    }
+    .date-badge.empty {
+      color: var(--muted); font-weight: normal;
+    }
+
+    .status { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--line); }
+    .badge { display: inline-block; padding: 3px 7px; border-radius: 999px; background: rgba(0,0,0,0.5); color: #dfe4eb; font-size: 11px; font-weight: 800; }
+
+    /* Degradados en la tabla */
+    tbody tr { transition: 0.15s ease; border-left: 4px solid transparent; cursor: pointer; }
+    tbody tr:hover { filter: brightness(1.2); }
+    
+    tbody tr.card-bronze { background: linear-gradient(90deg, rgba(68, 42, 29, 0.45), transparent 80%); border-left-color: #8d5b3e; }
+    tbody tr.card-silver { background: linear-gradient(90deg, rgba(65, 73, 82, 0.45), transparent 80%); border-left-color: #94a3b8; }
+    tbody tr.card-gold-light { background: linear-gradient(90deg, rgba(191, 157, 61, 0.35), transparent 80%); border-left-color: #fde047; }
+    tbody tr.card-gold-dark { background: linear-gradient(90deg, rgba(124, 91, 15, 0.45), transparent 80%); border-left-color: #eab308; }
+    tbody tr.card-euro-evo { background: linear-gradient(90deg, rgba(109, 21, 122, 0.45), rgba(3, 105, 161, 0.25) 50%, transparent 90%); border-left-color: #38bdf8; }
+    tbody tr.card-new-season { background: linear-gradient(90deg, rgba(43, 43, 43, 0.7), transparent 80%); border-left-color: #d4af37; }
+    tbody tr.card-totw { background: linear-gradient(90deg, rgba(24, 24, 27, 0.8), rgba(133, 77, 14, 0.35) 60%, transparent 90%); border-left-color: #eab308; }
+    tbody tr.card-transfer-stars { background: linear-gradient(90deg, rgba(6, 78, 59, 0.5), transparent 80%); border-left-color: #2dd4bf; }
+    tbody tr.card-weekend-league { background: linear-gradient(90deg, rgba(20, 53, 34, 0.55), transparent 80%); border-left-color: #22c55e; }
+
+    /* Fichas */
+    .cards-grid {
+      display: none;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px 16px;
+      padding: 18px;
+      max-height: calc(100vh - 210px);
+      overflow-y: auto;
+    }
+    .cards-grid.active-view { display: grid !important; }
+    .card-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+    
+    .fut-card {
+      width: 100%;
+      border-radius: 14px;
+      padding: 8px 10px 12px;
+      position: relative;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
+      user-select: none;
+      transition: transform 0.15s ease;
+      border: 2px solid transparent;
+      overflow: hidden;
+    }
+    .card-item:hover .fut-card { transform: translateY(-4px); }
+
+    .card-rarity-tag {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      text-align: center;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.45);
+      border: 1px solid rgba(255,255,255,0.12);
+      margin-bottom: 6px;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      position: relative;
+      z-index: 3;
+    }
+
+    .fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
+    .fut-card.card-bronze .card-rat { color: #f59e0b; }
+    .fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
+    .fut-card.card-silver .card-rat { color: #e2e8f0; }
+
+    .fut-card.card-gold-light {
+      background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012);
+      border-color: #fde047;
+      color: #fffbeb;
+    }
+    .fut-card.card-gold-light .card-rat { color: #fef08a; }
+
+    .fut-card.card-gold-dark {
+      background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902);
+      border-color: #eab308;
+      color: #fef9c3;
+      box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
+    }
+    .fut-card.card-gold-dark .card-rat { color: #ffd700; }
+
+    .fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
+    .fut-card.card-euro-evo .card-rat { color: #38bdf8; }
+    .fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
+    .fut-card.card-new-season .card-rat { color: #facc15; }
+    .fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
+    .fut-card.card-totw .card-rat { color: #fef08a; }
+    .fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
+    .fut-card.card-transfer-stars .card-rat { color: #5eead4; }
+    .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
+    .fut-card.card-weekend-league .card-rat { color: #4ade80; }
+
+    /* Contenedor Superior con Capas */
+    .card-top {
+      position: relative;
+      height: 125px;
+      width: 100%;
+    }
+
+    /* Capa de Información */
+    .card-meta {
+      position: absolute;
+      left: 0;
+      top: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 44px;
+      gap: 4px;
+      z-index: 2;
+    }
+    .card-rat { font-size: 26px; font-weight: 900; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+    .card-pos { font-size: 13px; font-weight: 800; color: #e2e8f0; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+
+    .flag-rect {
+      width: 24px; height: 16px; object-fit: cover; border-radius: 2px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.6); background: #202733;
+    }
+    .shield-flag-wrap {
+      width: 24px; height: 26px; clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+      background: #000; display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.7); margin-top: 2px;
+    }
+    .shield-flag-wrap img { width: 100%; height: 100%; object-fit: cover; }
+
+    /* Capa de Imagen */
+    .card-img-wrap {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+    .card-img {
+      width: 124px;
+      height: 124px;
+      object-fit: cover;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.3) 100%);
+      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
+    }
+
+    .card-info {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      margin: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      padding-bottom: 6px;
+    }
+    .card-name { font-weight: 900; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
+    .card-club { font-size: 11px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    
+    .card-stats {
+      position: relative;
+      z-index: 2;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 10px;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .stat-row { display: flex; justify-content: space-between; font-weight: 700; }
+    .stat-num { color: #fff; }
+    .stat-lbl { color: var(--muted); font-size: 11px; }
+
+    .card-price-badge {
+      margin-top: 6px; width: 90%; background: #11151c; border: 1px solid #2e3746;
+      border-radius: 8px; padding: 5px 8px; text-align: center; font-size: 12px;
+      font-weight: 900; color: var(--accent); box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+    }
+
+    /* Modales */
+    .modal-bg {
+      position: fixed; inset: 0; background: #0009; display: none;
+      align-items: center; justify-content: center; padding: 18px; z-index: 20;
+    }
+    .modal-bg.open { display: flex; }
+    .modal { width: min(680px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; max-height: 90vh; overflow-y: auto; }
+    .modal h2 { margin: 0 0 8px; }
+    .modal p { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 12px 0; }
+    .form-grid.stats-row { grid-template-columns: repeat(6, 1fr); gap: 6px; }
+    .form-grid label { font-size: 11px; color: var(--muted); font-weight: 700; }
+    .form-grid input, .form-grid select { margin-top: 4px; }
+    .modal textarea {
+      width: 100%; height: 160px; background: #10141b; color: var(--text);
+      border: 1px solid var(--line); border-radius: 10px; padding: 10px; font: 12px monospace;
+    }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
+
+    .detail-container { display: flex; gap: 20px; align-items: flex-start; }
+    .detail-left { width: 220px; flex-shrink: 0; }
+    .detail-right { flex: 1; }
+    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+    .detail-item { background: #10141b; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); }
+    .detail-item small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+    .detail-item span { font-size: 14px; font-weight: 800; }
+
+    .dropzone {
+      border: 2px dashed var(--line); border-radius: 10px; padding: 22px;
+      text-align: center; background: #10141b; cursor: pointer;
+    }
+    .dropzone span { color: var(--accent); text-decoration: underline; font-weight: bold; }
+    .import-tabs { display: flex; gap: 8px; margin-bottom: 12px; }
+    .tab-btn { flex: 1; padding: 7px; font-size: 12px; background: transparent; }
+    .tab-btn.active { background: var(--card2); border-color: var(--accent); }
+
+    .import-mode-select {
+      margin: 12px 0 8px; padding: 10px; background: #10141b; border-radius: 8px; border: 1px solid var(--line);
+    }
+    .import-mode-select label { font-size: 12px; font-weight: bold; color: var(--accent); display: block; margin-bottom: 5px; }
+
+    /* Menú Contextual (Clic Derecho) */
+    .context-menu {
+      position: fixed; background: #181f2b; border: 1px solid var(--line); border-radius: 10px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.6); display: none; z-index: 100; min-width: 150px;
+      overflow: hidden; padding: 4px 0;
+    }
+    .context-menu-item {
+      padding: 9px 15px; font-size: 13px; font-weight: 700; color: var(--text);
+      cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.15s;
+    }
+    .context-menu-item:hover { background: var(--card2); color: var(--accent); }
+    .context-menu-item.danger-item:hover { color: #f87171; background: rgba(239, 68, 68, 0.15); }
+
+    @media(max-width: 1000px) {
+      .header { grid-template-columns: 1fr; }
+      .header h1 { text-align: left; }
+      .toolbar { justify-content: flex-start; }
+      .controls { grid-template-columns: 1fr 1fr; }
+      .controls input:first-child { grid-column: 1/-1; }
+      .adv-grid-4 { grid-template-columns: 1fr 1fr; }
+      .adv-grid-6 { grid-template-columns: repeat(3, 1fr); }
+      .detail-container { flex-direction: column; align-items: center; }
+      .detail-left { width: 100%; max-width: 220px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Cabecero con UFM 27 MULTIMEDIA -->
+<header class="site-nav">
+  <a class="nav-brand" href="index.html">
+    <div style="font-size:24px">⚽</div>
+    <div class="nav-logo">UFM 27<br><small>MULTIMEDIA</small></div>
+  </a>
+  <nav class="nav-links">
+    <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
+    <a class="nav-item active" href="database.html" id="lblNavDb">Base de Datos</a>
+    <a class="nav-item" href="calculator.html" id="lblNavCalc">Calculadora SBC</a>
+    
+    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="pt">Português</option>
+    </select>
+  </nav>
+</header>
+
+<div class="wrap">
+  <!-- Tarjeta Principal con Logo UFM DATABASE -->
+  <div class="card header">
+    <div class="db-badge-logo">
+      <span style="font-size:22px">⚽</span>
+      <div>UFM<br><small>DATABASE</small></div>
+    </div>
+    <h1 id="lblPageTitle">Base de Datos SBC</h1>
+    <div class="toolbar">
+      <div class="view-toggle">
+        <button type="button" id="btnViewTable" class="active" onclick="setViewMode('table')">📋 Lista</button>
+        <button type="button" id="btnViewCards" onclick="setViewMode('cards')">🃏 Fichas</button>
+      </div>
+      <button type="button" onclick="openImportModal()" id="btnImport">📥 Importar</button>
+      <button type="button" class="sync-btn" onclick="syncFromSavedUrl()" id="btnSyncWeb">🔄 Sincronizar Web</button>
+      <button type="button" onclick="exportJSON()" id="btnExportJSON">Exportar JSON</button>
+      <button type="button" onclick="exportCSV()" id="btnExportCSV">Exportar CSV</button>
+      <button type="button" class="danger" onclick="clearDatabase()" id="btnClear">🗑️ Borrar BD</button>
+      <button type="button" class="primary" onclick="openAdd()" id="btnAdd">+ Jugador</button>
+    </div>
+  </div>
+
+  <div class="card controls-wrapper">
+    <div class="controls">
+      <input id="search" placeholder="Buscar jugador, club, liga..." oninput="render()">
+      <select id="pos" onchange="render()"><option value="">Posición</option></select>
+      <input id="minRating" type="number" placeholder="Media mín." oninput="render()">
+      <input id="maxRating" type="number" placeholder="Media máx." oninput="render()">
+      
+      <select id="sortField" onchange="changeSortField(this.value)">
+        <option value="rating" id="optSortRating">Ordenar: Media</option>
+        <option value="price" id="optSortPrice">Ordenar: Precio</option>
+        <option value="price_date" id="optSortDate">Ordenar: Actualizado</option>
+        <option value="name" id="optSortName">Ordenar: Nombre</option>
+        <option value="pac" id="optSortPac">Ordenar: Ritmo</option>
+        <option value="sho" id="optSortSho">Ordenar: Tiro</option>
+        <option value="pas" id="optSortPas">Ordenar: Pase</option>
+        <option value="dri" id="optSortDri">Ordenar: Regate</option>
+        <option value="def" id="optSortDef">Ordenar: Defensa</option>
+        <option value="phy" id="optSortPhy">Ordenar: Físico</option>
+        <option value="age" id="optSortAge">Ordenar: Edad</option>
+      </select>
+      <button type="button" id="btnSortDir" onclick="toggleSortDir()">⬇ Desc</button>
+      <button type="button" id="btnAdvToggle" onclick="toggleAdvFilters()">⚙️ Filtros Avanzados</button>
+      <button type="button" onclick="resetFilters()" id="btnReset">Limpiar</button>
+    </div>
+
+    <!-- Panel Avanzado -->
+    <div class="advanced-panel" id="advPanel">
+      <div class="adv-title" id="lblAdvTitle1">Filtros de Club, Nacionalidad y Rareza</div>
+      <div class="adv-grid-4">
+        <select id="advRarity" onchange="render()">
+          <option value="" id="optAnyRarity">Cualquier Rareza</option>
+          <option value="normal">Normal</option>
+          <option value="euro_evo">European Evolutions</option>
+          <option value="new_season">NewSeason</option>
+          <option value="totw">Team of the Week</option>
+          <option value="transfer_stars">Transfer Stars</option>
+          <option value="weekend_league">Weekend League</option>
+        </select>
+        <select id="advClub" onchange="render()"><option value="">Cualquier Club</option></select>
+        <select id="advLeague" onchange="render()"><option value="">Cualquier Liga</option></select>
+        <select id="advCountry" onchange="render()"><option value="">Cualquier País</option></select>
+      </div>
+
+      <div class="adv-title" id="lblAdvTitle2">Rango de Precio y Edad</div>
+      <div class="adv-grid-4">
+        <input id="advMinPrice" type="number" placeholder="Precio Mínimo" oninput="render()">
+        <input id="advMaxPrice" type="number" placeholder="Precio Máximo" oninput="render()">
+        <input id="advMinAge" type="number" placeholder="Edad Mínima" oninput="render()">
+        <input id="advMaxAge" type="number" placeholder="Edad Máxima" oninput="render()">
+      </div>
+
+      <div class="adv-title" id="lblAdvTitle3">Subatributos Mínimos (Para SBCs)</div>
+      <div class="adv-grid-6">
+        <input id="advMinPac" type="number" placeholder="Mín. RIT" oninput="render()">
+        <input id="advMinSho" type="number" placeholder="Mín. TIR" oninput="render()">
+        <input id="advMinPas" type="number" placeholder="Mín. PAS" oninput="render()">
+        <input id="advMinDri" type="number" placeholder="Mín. REG" oninput="render()">
+        <input id="advMinDef" type="number" placeholder="Mín. DEF" oninput="render()">
+        <input id="advMinPhy" type="number" placeholder="Mín. FIS" oninput="render()">
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="table-wrap" id="tableView">
+      <table>
+        <thead>
+          <tr>
+            <th onclick="sortBy('name')" id="thName">Jugador</th>
+            <th onclick="sortBy('rating')" id="thRating">Media</th>
+            <th onclick="sortBy('position')" id="thPos">Pos.</th>
+            <th id="thRarity">Rareza</th>
+            <th onclick="sortBy('pac')" class="lblStatPac">RIT</th>
+            <th onclick="sortBy('sho')" class="lblStatSho">TIR</th>
+            <th onclick="sortBy('pas')" class="lblStatPas">PAS</th>
+            <th onclick="sortBy('dri')" class="lblStatDri">REG</th>
+            <th onclick="sortBy('def')" class="lblStatDef">DEF</th>
+            <th onclick="sortBy('phy')" class="lblStatPhy">FIS</th>
+            <th id="thCountry">Nacionalidad</th>
+            <th id="thClub">Club</th>
+            <th id="thLeague" style="max-width: 135px;">Liga</th>
+            <th id="thAge">Edad</th>
+            <th id="thPhys">Alt. / Peso</th>
+            <th onclick="sortBy('price')" id="thPrice">Precio</th>
+            <th onclick="sortBy('price_date')" id="thUpdated">Actualizado</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+
+    <!-- Contenedor Fichas -->
+    <div class="cards-grid" id="cardsView"></div>
+    <div id="status" class="status"></div>
+  </div>
+</div>
+
+<!-- Modal Principal -->
+<div id="modalBg" class="modal-bg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h2 id="modalTitle">Modal</h2>
+    <p id="modalHelp">Descripción</p>
+
+    <!-- Formulario Crear/Editar -->
+    <form id="playerForm" onsubmit="submitPlayer(event)" style="display:none">
+      <input type="hidden" id="f_edit_id" value="">
+      <div class="form-grid">
+        <label><span id="lblF_name">Nombre</span><input id="f_name" required placeholder="Erling Haaland"></label>
+        
+        <label><span id="lblF_pos">Posición</span>
+          <select id="f_position" required></select>
+        </label>
+        
+        <label><span id="lblF_rating">Media / Valoración</span><input id="f_rating" type="number" min="1" max="99" required value="80"></label>
+        
+        <label><span id="lblF_rarity">Rareza</span>
+          <select id="f_rarity">
+            <option value="normal">Normal</option>
+            <option value="euro_evo">European Evolutions</option>
+            <option value="new_season">NewSeason</option>
+            <option value="totw">Team of the Week</option>
+            <option value="transfer_stars">Transfer Stars</option>
+            <option value="weekend_league">Weekend League</option>
+          </select>
+        </label>
+        
+        <label><span id="lblF_club">Club</span><input id="f_club" placeholder="Manchester City"></label>
+        
+        <label><span id="lblF_league">Liga</span>
+          <select id="f_league" required></select>
+        </label>
+        
+        <label><span id="lblF_country">Nacionalidad</span>
+          <select id="f_country" required></select>
+        </label>
+        
+        <label><span id="lblF_age">Edad</span><input id="f_age" type="number" placeholder="24"></label>
+        <label><span id="lblF_height">Altura (cm)</span><input id="f_height" type="number" placeholder="195"></label>
+        <label><span id="lblF_weight">Peso (kg)</span><input id="f_weight" type="number" placeholder="94"></label>
+        <label><span id="lblF_price">Precio SBC / Mercado</span><input id="f_price" type="number" placeholder="45000"></label>
+        <label style="grid-column: 1 / -1"><span id="lblF_image">URL Imagen / Foto</span><input id="f_image" placeholder="https://ejemplo.com/foto.png"></label>
+      </div>
+
+      <p style="margin: 10px 0 4px; font-weight: bold; font-size: 12px; color: var(--accent);"><span id="lblF_substats">SUBATRIBUTOS</span></p>
+      <div class="form-grid stats-row">
+        <label><span class="lblStatPac">RIT</span><input id="f_pac" type="number" min="1" max="99" placeholder="89"></label>
+        <label><span class="lblStatSho">TIR</span><input id="f_sho" type="number" min="1" max="99" placeholder="93"></label>
+        <label><span class="lblStatPas">PAS</span><input id="f_pas" type="number" min="1" max="99" placeholder="66"></label>
+        <label><span class="lblStatDri">REG</span><input id="f_dri" type="number" min="1" max="99" placeholder="80"></label>
+        <label><span class="lblStatDef">DEF</span><input id="f_def" type="number" min="1" max="99" placeholder="45"></label>
+        <label><span class="lblStatPhy">FIS</span><input id="f_phy" type="number" min="1" max="99" placeholder="88"></label>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" onclick="closeModal()" id="btnCancelPlayer">Cancelar</button>
+        <button class="primary" type="submit" id="btnSubmitPlayer">Guardar jugador</button>
+      </div>
+    </form>
+
+    <!-- Modal Detalle del Jugador -->
+    <div id="playerDetailContainer" style="display:none">
+      <div class="detail-container">
+        <div class="detail-left" id="detailCardTarget"></div>
+        <div class="detail-right">
+          <h3 id="detName" style="margin:0 0 4px; font-size: 20px;">-</h3>
+          <p id="detSub" style="margin:0 0 12px; color:var(--muted); font-size: 13px;">-</p>
+          <div class="detail-grid">
+            <div class="detail-item"><small id="dClub">Club</small><span id="detClub">-</span></div>
+            <div class="detail-item"><small id="dLeague">Liga</small><span id="detLeague">-</span></div>
+            <div class="detail-item"><small id="dCountry">Nacionalidad</small><span id="detCountry">-</span></div>
+            <div class="detail-item"><small id="dAge">Edad</small><span id="detAge">-</span></div>
+            <div class="detail-item"><small id="dPhys">Altura / Peso</small><span id="detPhysique">-</span></div>
+            <div class="detail-item"><small id="dPrice">Precio Mercado SBC</small><span id="detPrice" style="color:var(--accent)">-</span></div>
+            <div class="detail-item"><small id="dUpdated">Última Actualización</small><span id="detUpdated">-</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="modal-actions">
+        <button type="button" onclick="closeModal()" id="btnCloseDetail">Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Modal Importación con 3 Pestañas (Archivo, Texto y URL) -->
+    <div id="importContainer" style="display:none">
+      <div class="import-tabs">
+        <button type="button" class="tab-btn active" id="tabFileBtn" onclick="switchImportTab('file')">Cargar Archivo</button>
+        <button type="button" class="tab-btn" id="tabUrlBtn" onclick="switchImportTab('url')">Desde URL / Web</button>
+        <button type="button" class="tab-btn" id="tabTextBtn" onclick="switchImportTab('text')">Pegar JSON</button>
+      </div>
+
+      <div class="import-mode-select">
+        <label id="lblImportMode">Modo de Importación:</label>
+        <select id="importMode">
+          <option value="merge" id="optImportMerge">Combinar con la lista actual (Añade nuevos y actualiza)</option>
+          <option value="replace" id="optImportReplace">Sustituir por completo (Borra la lista actual y carga solo esta)</option>
+        </select>
+      </div>
+
+      <!-- 1. Cargar Archivo -->
+      <div id="importFileSection">
+        <input type="file" id="fileInput" accept=".json,.csv" style="display:none" onchange="handleFileSelect(event)">
+        <div class="dropzone" onclick="document.getElementById('fileInput').click()">
+          <p style="margin:0 0 6px 0; font-size:14px;" id="dropzoneText">Arrastra o <span>haz clic para subir archivo</span></p>
+          <small style="color:var(--muted)">Formatos: .json o .csv</small>
+        </div>
+      </div>
+
+      <!-- 2. Cargar desde Dirección Web (URL) -->
+      <div id="importUrlSection" style="display:none">
+        <p style="font-size:13px; color:var(--muted); margin-top:0" id="urlHelpText">Pega el enlace directo a tu archivo JSON en internet:</p>
+        <input type="url" id="importUrlInput" placeholder="https://raw.githubusercontent.com/usuario/repo/main/players.json">
+        <small style="display:block; margin-top:6px; color:var(--accent)" id="urlSavedNote">Esta URL se guardará para que puedas actualizar con el botón "Sincronizar Web".</small>
+      </div>
+
+      <!-- 3. Pegar Texto -->
+      <div id="importTextSection" style="display:none">
+        <textarea id="importTextInput" placeholder='[{"name": "Haaland", "rating": 91, ...}]'></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" onclick="closeModal()" id="btnCancelImport">Cancelar</button>
+        <button type="button" id="btnConfirmImportUrl" style="display:none" class="primary" onclick="processUrlImport()">Descargar e Importar</button>
+        <button type="button" id="btnConfirmImportText" style="display:none" class="primary" onclick="processTextImport()">Importar Texto</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Menú Contextual (Clic Derecho) -->
+<div id="contextMenu" class="context-menu">
+  <div class="context-menu-item" onclick="onContextEdit()"><span id="ctxEdit">✏️ Modificar</span></div>
+  <div class="context-menu-item danger-item" onclick="onContextDelete()"><span id="ctxDelete">🗑️ Eliminar</span></div>
+</div>
+
+<script>
+var KEY = 'ufm27_database_v3';
+var URL_KEY = 'ufm27_database_online_url';
+var fields = ['id','name','rating','position','rarity','pac','sho','pas','dri','def','phy','country','club','league','age','height','weight','price','price_date','image'];
+var players = [];
+
+// Imagen SVG por defecto
+var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%234b5668'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+
+// Helper para analizar la antigüedad de la fecha de actualización
+function getDateStatus(isoDate) {
+  if (!isoDate) {
+    return { text: '—', colorClass: 'empty', diffDays: Infinity, title: 'Sin fecha registrada' };
+  }
+  
+  var target = new Date(isoDate);
+  if (isNaN(target.getTime())) {
+    return { text: isoDate, colorClass: 'red', diffDays: 99, title: isoDate };
+  }
+
+  var now = new Date();
+  // Comparación por día natural
+  var todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  var targetMidnight = new Date(target.getFullYear(), target.getMonth(), target.getDate());
+  
+  var diffTime = todayMidnight.getTime() - targetMidnight.getTime();
+  var diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+  var dateFormatted = target.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
+
+  var t = i18n[currentLang] || i18n.es;
+  var colorClass = 'red';
+  var statusLabel = '';
+
+  if (diffDays <= 0) {
+    colorClass = 'green';
+    statusLabel = t.statusToday || 'Hoy';
+  } else if (diffDays <= 3) {
+    colorClass = 'yellow';
+    statusLabel = (t.statusDaysAgo || 'Hace {n}d').replace('{n}', diffDays);
+  } else {
+    colorClass = 'red';
+    statusLabel = (t.statusDaysAgo || 'Hace {n}d').replace('{n}', diffDays);
+  }
+
+  return {
+    text: dateFormatted,
+    colorClass: colorClass,
+    diffDays: diffDays,
+    title: (t.updatedOn || 'Actualizado:') + ' ' + dateFormatted + ' (' + statusLabel + ')'
+  };
+}
+
+// Helper para construir siempre la clave única sin discrepancias
+function getPlayerKey(name, pos, rarity) {
+  var cleanN = cleanPlayerName(name);
+  var normP = normalizePosition(pos);
+  var normR = (rarity || 'normal').toLowerCase();
+  return cleanN.toLowerCase() + '_' + normP.toLowerCase() + '_' + normR;
+}
+
+// Recuperación de datos desde cualquier clave anterior
+(function loadInitialData() {
+  var candidateKeys = [KEY, 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4', 'ufm_database_players_v2'];
+  for (var i = 0; i < candidateKeys.length; i++) {
+    try {
+      var raw = localStorage.getItem(candidateKeys[i]);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          players = parsed;
+          localStorage.setItem(KEY, JSON.stringify(players));
+          break;
+        }
+      }
+    } catch(e) {}
+  }
+})();
+
+var sortKey = 'rating', sortDir = -1;
+var viewMode = 'table';
+var currentLang = localStorage.getItem('ufm_lang') || 'es';
+var contextTargetIndex = -1;
+
+function $(id) { return document.getElementById(id); }
+function esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, function(m) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]; }); }
+
+function cleanPlayerName(name) {
+  if (!name) return '';
+  return name.replace(/\s*\([^)]*\)/g, '').trim();
+}
+
+/* LISTA DE LIGAS CON TRADUCCIÓN COMPLETA EN 6 IDIOMAS Y CÓDIGO DE BANDERA */
+var masterLeaguesData = [
+  { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
+  { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
+  { id: "eng_2", code: "gb-eng", names: { es: "Inglaterra (2ª Div - Championship)", en: "England (2nd Div - Championship)", fr: "Angleterre (2ème Div - Championship)", de: "England (2. Liga - Championship)", it: "Inghilterra (2ª Div - Championship)", pt: "Inglaterra (2ª Div - Championship)" } },
+  { id: "eng_3", code: "gb-eng", names: { es: "Inglaterra (3ª Div - League One)", en: "England (3rd Div - League One)", fr: "Angleterre (3ème Div - League One)", de: "England (3. Liga - League One)", it: "Inghilterra (3ª Div - League One)", pt: "Inglaterra (3ª Div - League One)" } },
+  { id: "eng_4", code: "gb-eng", names: { es: "Inglaterra (4ª Div - League Two)", en: "England (4th Div - League Two)", fr: "Angleterre (4ème Div - League Two)", de: "England (4. Liga - League Two)", it: "Inghilterra (4ª Div - League Two)", pt: "Inglaterra (4ª Div - League Two)" } },
+  { id: "fr_1", code: "fr", names: { es: "Francia (1ª Div - Ligue 1)", en: "France (1st Div - Ligue 1)", fr: "France (1ère Div - Ligue 1)", de: "Frankreich (1. Liga - Ligue 1)", it: "Francia (1ª Div - Ligue 1)", pt: "França (1ª Div - Ligue 1)" } },
+  { id: "fr_2", code: "fr", names: { es: "Francia (2ª Div - Ligue 2)", en: "France (2nd Div - Ligue 2)", fr: "France (2ème Div - Ligue 2)", de: "Frankreich (2. Liga - Ligue 2)", it: "Francia (2ª Div - Ligue 2)", pt: "França (2ª Div - Ligue 2)" } },
+  { id: "de_1", code: "de", names: { es: "Alemania (1ª Div - Bundesliga)", en: "Germany (1st Div - Bundesliga)", fr: "Allemagne (1ère Div - Bundesliga)", de: "Deutschland (1. Liga - Bundesliga)", it: "Germania (1ª Div - Bundesliga)", pt: "Alemanha (1ª Div - Bundesliga)" } },
+  { id: "de_2", code: "de", names: { es: "Alemania (2ª Div - 2. Bundesliga)", en: "Germany (2nd Div - 2. Bundesliga)", fr: "Allemagne (2ème Div - 2. Bundesliga)", de: "Deutschland (2. Liga - 2. Bundesliga)", it: "Germania (2ª Div - 2. Bundesliga)", pt: "Alemanha (2ª Div - 2. Bundesliga)" } },
+  { id: "de_3", code: "de", names: { es: "Alemania (3ª Div - 3. Liga)", en: "Germany (3rd Div - 3. Liga)", fr: "Allemagne (3ème Div - 3. Liga)", de: "Deutschland (3. Liga)", it: "Germania (3ª Div - 3. Liga)", pt: "Alemanha (3ª Div - 3. Liga)" } },
+  { id: "it_1", code: "it", names: { es: "Italia (1ª Div - Serie A)", en: "Italy (1st Div - Serie A)", fr: "Italie (1ère Div - Serie A)", de: "Italien (1. Liga - Serie A)", it: "Italia (1ª Div - Serie A)", pt: "Itália (1ª Div - Serie A)" } },
+  { id: "it_2", code: "it", names: { es: "Italia (2ª Div - Serie B)", en: "Italy (2nd Div - Serie B)", fr: "Italie (2ème Div - Serie B)", de: "Italien (2. Liga - Serie B)", it: "Italia (2ª Div - Serie B)", pt: "Itália (2ª Div - Serie B)" } },
+  { id: "nl_1", code: "nl", names: { es: "Holanda (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)", fr: "Pays-Bas (1ère Div - Eredivisie)", de: "Niederlande (1. Liga - Eredivisie)", it: "Paesi Bassi (1ª Div - Eredivisie)", pt: "Holanda (1ª Div - Eredivisie)" } },
+  { id: "pt_1", code: "pt", names: { es: "Portugal (1ª Div - Liga Portugal)", en: "Portugal (1st Div - Liga Portugal)", fr: "Portugal (1ère Div - Liga Portugal)", de: "Portugal (1. Liga - Liga Portugal)", it: "Portogallo (1ª Div - Liga Portugal)", pt: "Portugal (1ª Div - Liga Portugal)" } },
+  { id: "es_1", code: "es", names: { es: "España (1ª Div - LaLiga)", en: "Spain (1st Div - LaLiga)", fr: "Espagne (1ère Div - LaLiga)", de: "Spanien (1. Liga - LaLiga)", it: "Spagna (1ª Div - LaLiga)", pt: "Espanha (1ª Div - LaLiga)" } },
+  { id: "es_2", code: "es", names: { es: "España (2ª Div - LaLiga Hypermotion)", en: "Spain (2nd Div - Hypermotion)", fr: "Espagne (2ème Div - Hypermotion)", de: "Spanien (2. Liga - Hypermotion)", it: "Spagna (2ª Div - Hypermotion)", pt: "Espanha (2ª Div - Hypermotion)" } },
+  { id: "tr_1", code: "tr", names: { es: "Turquía (1ª Div - Süper Lig)", en: "Turkey (1st Div - Süper Lig)", fr: "Turquie (1ère Div - Süper Lig)", de: "Türkei (1. Liga - Süper Lig)", it: "Turchia (1ª Div - Süper Lig)", pt: "Turquia (1ª Div - Süper Lig)" } },
+  { id: "ar_1", code: "ar", names: { es: "Argentina (1ª Div - Liga Profesional)", en: "Argentina (1st Div)", fr: "Argentine (1ère Div)", de: "Argentinien (1. Liga)", it: "Argentina (1ª Div)", pt: "Argentina (1ª Div)" } },
+  { id: "au_1", code: "au", names: { es: "Australia (1ª Div - A-League)", en: "Australia (1st Div - A-League)", fr: "Australie (1ère Div - A-League)", de: "Australien (1. Liga - A-League)", it: "Australia (1ª Div - A-League)", pt: "Austrália (1ª Div - A-League)" } },
+  { id: "at_1", code: "at", names: { es: "Austria (1ª Div - Bundesliga)", en: "Austria (1st Div - Bundesliga)", fr: "Autriche (1ère Div - Bundesliga)", de: "Österreich (1. Liga - Bundesliga)", it: "Austria (1ª Div - Bundesliga)", pt: "Áustria (1ª Div - Bundesliga)" } },
+  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)", fr: "Brésil (1ère Div - Brasileirão)", de: "Brasilien (1. Liga - Brasileirão)", it: "Brasile (1ª Div - Brasileirão)", pt: "Brasil (1ª Div - Brasileirão)" } },
+  { id: "dk_1", code: "dk", names: { es: "Dinamarca (1ª Div - Superliga)", en: "Denmark (1st Div - Superliga)", fr: "Danemark (1ère Div - Superliga)", de: "Dänemark (1. Liga - Superliga)", it: "Danimarca (1ª Div - Superliga)", pt: "Dinamarca (1ª Div - Superliga)" } },
+  { id: "ie_1", code: "ie", names: { es: "Irlanda (1ª Div - Premier Div)", en: "Ireland (1st Div - Premier Div)", fr: "Irlande (1ère Div - Premier Div)", de: "Irland (1. Liga - Premier Div)", it: "Irlanda (1ª Div - Premier Div)", pt: "Irlanda (1ª Div - Premier Div)" } },
+  { id: "no_1", code: "no", names: { es: "Noruega (1ª Div - Eliteserien)", en: "Norway (1st Div - Eliteserien)", fr: "Norvège (1ère Div - Eliteserien)", de: "Norwegen (1. Liga - Eliteserien)", it: "Norvegia (1ª Div - Eliteserien)", pt: "Noruega (1ª Div - Eliteserien)" } },
+  { id: "pl_1", code: "pl", names: { es: "Polonia (1ª Div - Ekstraklasa)", en: "Poland (1st Div - Ekstraklasa)", fr: "Pologne (1ère Div - Ekstraklasa)", de: "Polen (1. Liga - Ekstraklasa)", it: "Polonia (1ª Div - Ekstraklasa)", pt: "Polónia (1ª Div - Ekstraklasa)" } },
+  { id: "ro_1", code: "ro", names: { es: "Rumanía (1ª Div - Liga I)", en: "Romania (1st Div - Liga I)", fr: "Roumanie (1ère Div - Liga I)", de: "Rumänien (1. Liga - Liga I)", it: "Romania (1ª Div - Liga I)", pt: "Roménia (1ª Div - Liga I)" } },
+  { id: "sct_1", code: "gb-sct", names: { es: "Escocia (1ª Div - Premiership)", en: "Scotland (1st Div - Premiership)", fr: "Écosse (1ère Div - Premiership)", de: "Schottland (1. Liga - Premiership)", it: "Scozia (1ª Div - Premiership)", pt: "Escócia (1ª Div - Premiership)" } },
+  { id: "kr_1", code: "kr", names: { es: "Corea del Sur (1ª Div - K League)", en: "South Korea (1st Div - K League)", fr: "Corée du Sud (1ère Div - K League)", de: "Südkorea (1. Liga - K League)", it: "Corea del Sud (1ª Div - K League)", pt: "Coreia do Sul (1ª Div - K League)" } },
+  { id: "se_1", code: "se", names: { es: "Suecia (1ª Div - Allsvenskan)", en: "Sweden (1st Div - Allsvenskan)", fr: "Suède (1ère Div - Allsvenskan)", de: "Schweden (1. Liga - Allsvenskan)", it: "Svezia (1ª Div - Allsvenskan)", pt: "Suécia (1ª Div - Allsvenskan)" } },
+  { id: "ch_1", code: "ch", names: { es: "Suiza (1ª Div - Super League)", en: "Switzerland (1st Div - Super League)", fr: "Suisse (1ère Div - Super League)", de: "Schweiz (1. Liga - Super League)", it: "Svizzera (1ª Div - Super League)", pt: "Suíça (1ª Div - Super League)" } }
+];
+
+/* LISTA DE PAÍSES */
+var masterCountriesData = [
+  { code: "de", names: { es: "Alemania", en: "Germany", fr: "Allemagne", de: "Deutschland", it: "Germania", pt: "Alemanha" } },
+  { code: "ar", names: { es: "Argentina", en: "Argentina", fr: "Argentine", de: "Argentinien", it: "Argentina", pt: "Argentina" } },
+  { code: "au", names: { es: "Australia", en: "Australia", fr: "Australie", de: "Australien", it: "Australia", pt: "Austrália" } },
+  { code: "at", names: { es: "Austria", en: "Austria", fr: "Autriche", de: "Österreich", it: "Austria", pt: "Áustria" } },
+  { code: "be", names: { es: "Bélgica", en: "Belgium", fr: "Belgique", de: "Belgien", it: "Belgio", pt: "Bélgica" } },
+  { code: "br", names: { es: "Brasil", en: "Brazil", fr: "Brésil", de: "Brasilien", it: "Brasile", pt: "Brasil" } },
+  { code: "co", names: { es: "Colombia", en: "Colombia", fr: "Colombie", de: "Kolumbien", it: "Colombia", pt: "Colômbia" } },
+  { code: "kr", names: { es: "Corea del Sur", en: "South Korea", fr: "Corée du Sud", de: "Südkorea", it: "Corea del Sud", pt: "Coreia do Sul" } },
+  { code: "hr", names: { es: "Croacia", en: "Croatia", fr: "Croatie", de: "Kroatien", it: "Croazia", pt: "Croácia" } },
+  { code: "dk", names: { es: "Dinamarca", en: "Denmark", fr: "Danemark", de: "Dänemark", it: "Danimarca", pt: "Dinamarca" } },
+  { code: "ec", names: { es: "Ecuador", en: "Ecuador", fr: "Équateur", de: "Ecuador", it: "Ecuador", pt: "Equador" } },
+  { code: "gb-sct", names: { es: "Escocia", en: "Scotland", fr: "Écosse", de: "Schottland", it: "Scozia", pt: "Escócia" } },
+  { code: "es", names: { es: "España", en: "Spain", fr: "Espagne", de: "Spanien", it: "Spagna", pt: "Espanha" } },
+  { code: "us", names: { es: "Estados Unidos", en: "USA", fr: "États-Unis", de: "USA", it: "Stati Uniti", pt: "Estados Unidos" } },
+  { code: "fr", names: { es: "Francia", en: "France", fr: "France", de: "Frankreich", it: "Francia", pt: "França" } },
+  { code: "gb-wls", names: { es: "Gales", en: "Wales", fr: "Pays de Galles", de: "Wales", it: "Galles", pt: "País de Gales" } },
+  { code: "nl", names: { es: "Holanda", en: "Netherlands", fr: "Pays-Bas", de: "Niederlande", it: "Paesi Bassi", pt: "Holanda" } },
+  { code: "gb-eng", names: { es: "Inglaterra", en: "England", fr: "Angleterre", de: "England", it: "Inghilterra", pt: "Inglaterra" } },
+  { code: "ie", names: { es: "Irlanda", en: "Ireland", fr: "Irlande", de: "Irland", it: "Irlanda", pt: "Irlanda" } },
+  { code: "it", names: { es: "Italia", en: "Italy", fr: "Italie", de: "Italien", it: "Italia", pt: "Itália" } },
+  { code: "jp", names: { es: "Japón", en: "Japan", fr: "Japon", de: "Japan", it: "Giappone", pt: "Japão" } },
+  { code: "ma", names: { es: "Marruecos", en: "Morocco", fr: "Maroc", de: "Marokko", it: "Marocco", pt: "Marrocos" } },
+  { code: "mx", names: { es: "México", en: "Mexico", fr: "Mexique", de: "Mexiko", it: "Messico", pt: "México" } },
+  { code: "ng", names: { es: "Nigeria", en: "Nigeria", fr: "Nigeria", de: "Nigeria", it: "Nigeria", pt: "Nigéria" } },
+  { code: "no", names: { es: "Noruega", en: "Norway", fr: "Norvège", de: "Norwegen", it: "Norvegia", pt: "Noruega" } },
+  { code: "pl", names: { es: "Polonia", en: "Poland", fr: "Pologne", de: "Polen", it: "Polonia", pt: "Polónia" } },
+  { code: "pt", names: { es: "Portugal", en: "Portugal", fr: "Portugal", de: "Portugal", it: "Portogallo", pt: "Portugal" } },
+  { code: "ro", names: { es: "Rumanía", en: "Romania", fr: "Roumanie", de: "Rumänien", it: "Romania", pt: "Roménia" } },
+  { code: "sn", names: { es: "Senegal", en: "Senegal", fr: "Sénégal", de: "Senegal", it: "Senegal", pt: "Senegal" } },
+  { code: "rs", names: { es: "Serbia", en: "Serbia", fr: "Serbie", de: "Serbien", it: "Serbia", pt: "Sérvia" } },
+  { code: "se", names: { es: "Suecia", en: "Sweden", fr: "Suède", de: "Schweden", it: "Svezia", pt: "Suécia" } },
+  { code: "ch", names: { es: "Suiza", en: "Switzerland", fr: "Suisse", de: "Schweiz", it: "Svizzera", pt: "Suíça" } },
+  { code: "tr", names: { es: "Turquía", en: "Turkey", fr: "Turquie", de: "Türkei", it: "Turchia", pt: "Turquia" } },
+  { code: "uy", names: { es: "Uruguay", en: "Uruguay", fr: "Uruguay", de: "Uruguay", it: "Uruguay", pt: "Uruguai" } }
+];
+
+/* Posiciones estándar */
+var standardPositions = ["ST", "RW", "LW", "CAM", "CM", "CDM", "RM", "LM", "CB", "RB", "LB", "GK"];
+
+var posTranslations = {
+  es: { 'ST':'DC', 'RW':'ED', 'LW':'EI', 'RM':'MD', 'LM':'MI', 'CM':'MC', 'CDM':'MCD', 'CAM':'MCO', 'CB':'DFC', 'RB':'LD', 'LB':'LI', 'GK':'POR' },
+  en: { 'ST':'ST', 'RW':'RW', 'LW':'LW', 'RM':'RM', 'LM':'LM', 'CM':'CM', 'CDM':'CDM', 'CAM':'CAM', 'CB':'CB', 'RB':'RB', 'LB':'LB', 'GK':'GK' },
+  fr: { 'ST':'BU', 'RW':'AD', 'LW':'AG', 'RM':'MD', 'LM':'MG', 'CM':'MC', 'CDM':'MDC', 'CAM':'MOC', 'CB':'DC', 'RB':'DD', 'LB':'DG', 'GK':'G' },
+  de: { 'ST':'ST', 'RW':'RF', 'LW':'LF', 'RM':'RM', 'LM':'LM', 'CM':'ZM', 'CDM':'ZDM', 'CAM':'ZOM', 'CB':'IV', 'RB':'RV', 'LB':'LV', 'GK':'TW' },
+  it: { 'ST':'ATT', 'RW':'AD', 'LW':'AS', 'RM':'ED', 'LM':'ES', 'CM':'CC', 'CDM':'CDC', 'CAM':'COC', 'CB':'DC', 'RB':'TD', 'LB':'TS', 'GK':'POR' },
+  pt: { 'ST':'PL', 'RW':'PD', 'LW':'PE', 'RM':'MD', 'LM':'ME', 'CM':'MC', 'CDM':'VOL', 'CAM':'MEI', 'CB':'ZAG', 'RB':'LD', 'LB':'LE', 'GK':'GR' }
+};
+
+var reversePosLookup = {
+  'DC':'ST', 'ED':'RW', 'EI':'LW', 'DFC':'CB', 'LD':'RB', 'LI':'LB', 'POR':'GK', 'MCD':'CDM', 'MCO':'CAM',
+  'BU':'ST', 'AD':'RW', 'AG':'LW', 'MDC':'CDM', 'MOC':'CAM', 'DD':'RB', 'DG':'LB', 'G':'GK',
+  'RF':'RW', 'LF':'LW', 'ZM':'CM', 'ZDM':'CDM', 'ZOM':'CAM', 'IV':'CB', 'RV':'RB', 'LV':'LB', 'TW':'GK',
+  'ATT':'ST', 'AS':'LW', 'CC':'CM', 'CDC':'CDM', 'COC':'CAM', 'TD':'RB', 'TS':'LB',
+  'PL':'ST', 'PD':'RW', 'PE':'LW', 'VOL':'CDM', 'MEI':'CAM', 'ZAG':'CB', 'LE':'LB', 'GR':'GK'
+};
+
+function normalizePosition(p) {
+  if (!p) return 'ST';
+  var up = p.trim().toUpperCase();
+  return reversePosLookup[up] || up;
+}
+
+function displayPosition(p) {
+  if (!p) return '—';
+  var standard = normalizePosition(p);
+  var dict = posTranslations[currentLang] || posTranslations.es;
+  return dict[standard] || standard;
+}
+
+function getLeagueDisplayName(lItem) {
+  if (!lItem) return '';
+  return lItem.names[currentLang] || lItem.names.es || lItem.names.en;
+}
+
+function getCountryDisplayName(cItem) {
+  if (!cItem) return '';
+  return cItem.names[currentLang] || cItem.names.es || cItem.names.en;
+}
+
+function populateFormSelects() {
+  var t = i18n[currentLang] || i18n.es;
+  
+  var lHtml = '<option value="">' + t.selLeague + '</option>';
+  masterLeaguesData.forEach(function(item) {
+    var dName = getLeagueDisplayName(item);
+    lHtml += '<option value="' + esc(item.names.es) + '">' + esc(dName) + '</option>';
+  });
+  $('f_league').innerHTML = lHtml;
+
+  var cHtml = '<option value="">' + t.selCountry + '</option>';
+  var sortedCountries = masterCountriesData.slice().sort(function(a, b) {
+    return getCountryDisplayName(a).localeCompare(getCountryDisplayName(b));
+  });
+
+  sortedCountries.forEach(function(item) {
+    var cName = getCountryDisplayName(item);
+    cHtml += '<option value="' + esc(item.names.es) + '">' + esc(cName) + '</option>';
+  });
+  $('f_country').innerHTML = cHtml;
+
+  var pHtml = '';
+  standardPositions.forEach(function(pos) {
+    var label = displayPosition(pos);
+    pHtml += '<option value="' + pos + '">' + label + '</option>';
+  });
+  $('f_position').innerHTML = pHtml;
+}
+
+function getFlagUrl(str) {
+  if (!str) return 'https://flagcdn.com/w40/un.png';
+  var clean = str.trim().toLowerCase();
+
+  var foundLeague = masterLeaguesData.find(function(l) {
+    return Object.values(l.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean.includes(l.code);
+  });
+  if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
+
+  var foundCountry = masterCountriesData.find(function(c) {
+    return Object.values(c.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean === c.code;
+  });
+  if (foundCountry) return 'https://flagcdn.com/w40/' + foundCountry.code + '.png';
+
+  var fallbackDict = {
+    'premier league': 'gb-eng', 'laliga': 'es', 'la liga': 'es', 'serie a': 'it', 'bundesliga': 'de',
+    'ligue 1': 'fr', 'eredivisie': 'nl', 'spain': 'es', 'england': 'gb-eng', 'france': 'fr', 'germany': 'de'
+  };
+  var code = fallbackDict[clean] || 'un';
+  return 'https://flagcdn.com/w40/' + code + '.png';
+}
+
+/* DICCIONARIO MULTILINGÜE */
+var i18n = {
+  es: {
+    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
+    pageTitle: "Base de Datos SBC", btnImport: "📥 Importar", btnAdd: "+ Jugador",
+    btnSyncWeb: "🔄 Sincronizar Web",
+    btnExportJSON: "Exportar JSON", btnExportCSV: "Exportar CSV",
+    btnViewTable: "📋 Lista", btnViewCards: "🃏 Fichas",
+    btnClear: "🗑️ Borrar BD", btnReset: "Limpiar",
+    thName: "Jugador", thRating: "Media", thPos: "Pos.", thRarity: "Rareza",
+    thCountry: "Nacionalidad", thClub: "Club", thLeague: "Liga", thAge: "Edad",
+    thPhys: "Alt. / Peso", thPrice: "Precio", thUpdated: "Actualizado",
+    statPac: "RIT", statSho: "TIR", statPas: "PAS", statDri: "REG", statDef: "DEF", statPhy: "FIS",
+    adv1: "Filtros de Club, Nacionalidad y Rareza", adv2: "Rango de Precio y Edad", adv3: "Subatributos Mínimos (Para SBCs)",
+    btnAdvToggle: "⚙️ Filtros Avanzados", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    searchPlaceholder: "Buscar jugador, club, liga...",
+    posDefault: "Posición", clubDefault: "Cualquier Club", leagueDefault: "Cualquier Liga", countryDefault: "Cualquier País",
+    rarityDefault: "Cualquier Rareza",
+    sortRating: "Ordenar: Media", sortPrice: "Ordenar: Precio", sortDate: "Ordenar: Actualizado", sortName: "Ordenar: Nombre",
+    sortPac: "Ordenar: Ritmo", sortSho: "Ordenar: Tiro", sortPas: "Ordenar: Pase",
+    sortDri: "Ordenar: Regate", sortDef: "Ordenar: Defensa", sortPhy: "Ordenar: Físico", sortAge: "Ordenar: Edad",
+    modalAddTitle: "Añadir Jugador", modalAddHelp: "Introduce los datos del jugador.",
+    modalEditTitle: "Modificar Jugador", modalEditHelp: "Edita los atributos del jugador y guarda los cambios.",
+    btnSavePlayer: "Guardar jugador", btnUpdatePlayer: "Actualizar Jugador", btnCancel: "Cancelar",
+    fName: "Nombre", fPos: "Posición", fRating: "Media / Valoración", fRarity: "Rareza",
+    fClub: "Club", fLeague: "Liga", fCountry: "Nacionalidad", fAge: "Edad",
+    fHeight: "Altura (cm)", fWeight: "Peso (kg)", fPrice: "Precio SBC / Mercado",
+    fImage: "URL Imagen / Foto", fSubstats: "SUBATRIBUTOS",
+    selLeague: "-- Seleccionar Liga --", selCountry: "-- Seleccionar País --",
+    ctxEdit: "✏️ Modificar", ctxDelete: "🗑️ Eliminar",
+    updatedOn: "Actualizado:", lastUpdate: "Última Actualización",
+    statusToday: "Hoy", statusDaysAgo: "Hace {n}d"
+  },
+  en: {
+    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
+    pageTitle: "SBC Player Database", btnImport: "📥 Import", btnAdd: "+ Player",
+    btnSyncWeb: "🔄 Sync Web",
+    btnExportJSON: "Export JSON", btnExportCSV: "Export CSV",
+    btnViewTable: "📋 List", btnViewCards: "🃏 Cards",
+    btnClear: "🗑️ Clear DB", btnReset: "Reset",
+    thName: "Player", thRating: "OVR", thPos: "POS", thRarity: "Rarity",
+    thCountry: "Nation", thClub: "Club", thLeague: "League", thAge: "Age",
+    thPhys: "H / W", thPrice: "Price", thUpdated: "Updated",
+    statPac: "PAC", statSho: "SHO", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
+    adv1: "Club, Nation & Rarity Filters", adv2: "Price & Age Range", adv3: "Minimum Sub-attributes (For SBCs)",
+    btnAdvToggle: "⚙️ Advanced Filters", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    searchPlaceholder: "Search player, club, league...",
+    posDefault: "Position", clubDefault: "Any Club", leagueDefault: "Any League", countryDefault: "Any Nation",
+    rarityDefault: "Any Rarity",
+    sortRating: "Sort: OVR", sortPrice: "Sort: Price", sortDate: "Sort: Updated", sortName: "Sort: Name",
+    sortPac: "Sort: Pace", sortSho: "Sort: Shooting", sortPas: "Sort: Passing",
+    sortDri: "Sort: Dribbling", sortDef: "Sort: Defending", sortPhy: "Sort: Physical", sortAge: "Sort: Age",
+    modalAddTitle: "Add Player", modalAddHelp: "Enter player attributes.",
+    modalEditTitle: "Edit Player", modalEditHelp: "Update player attributes and save.",
+    btnSavePlayer: "Save player", btnUpdatePlayer: "Update Player", btnCancel: "Cancel",
+    fName: "Name", fPos: "Position", fRating: "OVR / Rating", fRarity: "Rarity",
+    fClub: "Club", fLeague: "League", fCountry: "Nation", fAge: "Age",
+    fHeight: "Height (cm)", fWeight: "Weight (kg)", fPrice: "SBC Price / Market",
+    fImage: "Image URL / Photo", fSubstats: "SUB-ATTRIBUTES",
+    selLeague: "-- Select League --", selCountry: "-- Select Nation --",
+    ctxEdit: "✏️ Edit", ctxDelete: "🗑️ Delete",
+    updatedOn: "Updated:", lastUpdate: "Last Update",
+    statusToday: "Today", statusDaysAgo: "{n}d ago"
+  },
+  fr: {
+    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
+    pageTitle: "Base de Données DCE", btnImport: "📥 Importer", btnAdd: "+ Joueur",
+    btnSyncWeb: "🔄 Sync Web",
+    btnExportJSON: "Exporter JSON", btnExportCSV: "Exporter CSV",
+    btnViewTable: "📋 Liste", btnViewCards: "🃏 Cartes",
+    btnClear: "🗑️ Suppr. BD", btnReset: "Réinitialiser",
+    thName: "Joueur", thRating: "GÉN", thPos: "POS", thRarity: "Rareté",
+    thCountry: "Nationalité", thClub: "Club", thLeague: "Ligue", thAge: "Âge",
+    thPhys: "T / P", thPrice: "Prix", thUpdated: "Mis à jour",
+    statPac: "VIT", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DÉF", statPhy: "PHY",
+    adv1: "Filtres Club, Nationalité et Rareté", adv2: "Fourchette Prix et Âge", adv3: "Sous-attributs Minimaux (DCE)",
+    btnAdvToggle: "⚙️ Filtres Avancés", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    searchPlaceholder: "Chercher joueur, club, ligue...",
+    posDefault: "Position", clubDefault: "Tout Club", leagueDefault: "Toute Ligue", countryDefault: "Tout Pays",
+    rarityDefault: "Toute Rareté",
+    sortRating: "Trier: GÉN", sortPrice: "Trier: Prix", sortDate: "Trier: Mis à jour", sortName: "Trier: Nom",
+    sortPac: "Trier: Vitesse", sortSho: "Trier: Tir", sortPas: "Trier: Passe",
+    sortDri: "Trier: Dribble", sortDef: "Trier: Défense", sortPhy: "Trier: Physique", sortAge: "Trier: Âge",
+    modalAddTitle: "Ajouter un Joueur", modalAddHelp: "Entrez les données du joueur.",
+    modalEditTitle: "Modifier le Joueur", modalEditHelp: "Modifiez les attributs et sauvegardez.",
+    btnSavePlayer: "Enregistrer", btnUpdatePlayer: "Mettre à jour", btnCancel: "Annuler",
+    fName: "Nom", fPos: "Position", fRating: "Note / GÉN", fRarity: "Rareté",
+    fClub: "Club", fLeague: "Ligue", fCountry: "Nationalité", fAge: "Âge",
+    fHeight: "Taille (cm)", fWeight: "Poids (kg)", fPrice: "Prix DCE / Marché",
+    fImage: "URL Image / Photo", fSubstats: "SOUS-ATTRIBUTS",
+    selLeague: "-- Choisir la Ligue --", selCountry: "-- Choisir la Nationalité --",
+    ctxEdit: "✏️ Modifier", ctxDelete: "🗑️ Supprimer",
+    updatedOn: "Mis à jour:", lastUpdate: "Dernière Mise à Jour",
+    statusToday: "Aujourd'hui", statusDaysAgo: "Il y a {n}j"
+  },
+  de: {
+    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
+    pageTitle: "SBC-Spielerdatenbank", btnImport: "📥 Importieren", btnAdd: "+ Spieler",
+    btnSyncWeb: "🔄 Web Sync",
+    btnExportJSON: "JSON Exportieren", btnExportCSV: "CSV Exportieren",
+    btnViewTable: "📋 Liste", btnViewCards: "🃏 Karten",
+    btnClear: "🗑️ DB Löschen", btnReset: "Zurücksetzen",
+    thName: "Spieler", thRating: "GES", thPos: "POS", thRarity: "Seltenheit",
+    thCountry: "Nation", thClub: "Verein", thLeague: "Liga", thAge: "Alter",
+    thPhys: "Gr. / Gew.", thPrice: "Preis", thUpdated: "Aktualisiert",
+    statPac: "TEM", statSho: "SCH", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
+    adv1: "Vereins-, Nations- & Seltenheitsfilter", adv2: "Preis- und Altersbereich", adv3: "Mindestattribute (SBC)",
+    btnAdvToggle: "⚙️ Erweiterte Filter", btnSortDesc: "⬇ Ab", btnSortAsc: "⬆ Auf",
+    searchPlaceholder: "Spieler, Verein, Liga suchen...",
+    posDefault: "Position", clubDefault: "Jeder Verein", leagueDefault: "Jede Liga", countryDefault: "Jede Nation",
+    rarityDefault: "Jede Seltenheit",
+    sortRating: "Sortieren: GES", sortPrice: "Sortieren: Preis", sortDate: "Sortieren: Aktualisiert", sortName: "Sortieren: Name",
+    sortPac: "Sortieren: Tempo", sortSho: "Sortieren: Schuss", sortPas: "Sortieren: Passen",
+    sortDri: "Sortieren: Dribbling", sortDef: "Sortieren: Abwehr", sortPhy: "Sortieren: Physis", sortAge: "Sortieren: Alter",
+    modalAddTitle: "Spieler Hinzufügen", modalAddHelp: "Spielerattribute eingeben.",
+    modalEditTitle: "Spieler Bearbeiten", modalEditHelp: "Attribute anpassen und speichern.",
+    btnSavePlayer: "Speichern", btnUpdatePlayer: "Aktualisieren", btnCancel: "Abbrechen",
+    fName: "Name", fPos: "Position", fRating: "GES / Bewertung", fRarity: "Seltenheit",
+    fClub: "Verein", fLeague: "Liga", fCountry: "Nation", fAge: "Alter",
+    fHeight: "Größe (cm)", fWeight: "Gewicht (kg)", fPrice: "SBC-Preis / Markt",
+    fImage: "Bild-URL / Foto", fSubstats: "UNTERATTRIBUTE",
+    selLeague: "-- Liga Auswählen --", selCountry: "-- Nation Auswählen --",
+    ctxEdit: "✏️ Bearbeiten", ctxDelete: "🗑️ Löschen",
+    updatedOn: "Aktualisiert:", lastUpdate: "Letzte Aktualisierung",
+    statusToday: "Heute", statusDaysAgo: "Vor {n}T"
+  },
+  it: {
+    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
+    pageTitle: "Database Giocatori SCR", btnImport: "📥 Importa", btnAdd: "+ Giocatore",
+    btnSyncWeb: "🔄 Sincro Web",
+    btnExportJSON: "Esporta JSON", btnExportCSV: "Esporta CSV",
+    btnViewTable: "📋 Lista", btnViewCards: "🃏 Carte",
+    btnClear: "🗑️ Elimina DB", btnReset: "Ripristina",
+    thName: "Giocatore", thRating: "VAL", thPos: "RUO", thRarity: "Rarità",
+    thCountry: "Nazionalità", thClub: "Club", thLeague: "Campionato", thAge: "Età",
+    thPhys: "Alt. / Peso", thPrice: "Prezzo", thUpdated: "Aggiornato",
+    statPac: "VEL", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DIF", statPhy: "FIS",
+    adv1: "Filtri Club, Nazionalità e Rarità", adv2: "Fascia Prezzo ed Età", adv3: "Sotto-attributi Minimi (SCR)",
+    btnAdvToggle: "⚙️ Filtri Avanzati", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    searchPlaceholder: "Cerca giocatore, club, campionato...",
+    posDefault: "Ruolo", clubDefault: "Qualsiasi Club", leagueDefault: "Qualsiasi Campionato", countryDefault: "Qualsiasi Nazione",
+    rarityDefault: "Qualsiasi Rarità",
+    sortRating: "Ordina: VAL", sortPrice: "Ordina: Prezzo", sortDate: "Ordina: Aggiornato", sortName: "Ordina: Nome",
+    sortPac: "Ordina: Velocità", sortSho: "Ordina: Tiro", sortPas: "Ordina: Passaggio",
+    sortDri: "Ordina: Dribbling", sortDef: "Ordina: Difesa", sortPhy: "Ordina: Fisico", sortAge: "Ordina: Età",
+    modalAddTitle: "Aggiungi Giocatore", modalAddHelp: "Inserisci i dati del giocatore.",
+    modalEditTitle: "Modifica Giocatore", modalEditHelp: "Modifica gli attributi e salva.",
+    btnSavePlayer: "Salva giocatore", btnUpdatePlayer: "Aggiorna Giocatore", btnCancel: "Annulla",
+    fName: "Nome", fPos: "Ruolo", fRating: "Valutazione / VAL", fRarity: "Rarità",
+    fClub: "Club", fLeague: "Campionato", fCountry: "Nazionalità", fAge: "Età",
+    fHeight: "Altezza (cm)", fWeight: "Peso (kg)", fPrice: "Prezzo SCR / Mercato",
+    fImage: "URL Immagine / Foto", fSubstats: "SOTTO-ATTRIBUTI",
+    selLeague: "-- Seleziona Campionato --", selCountry: "-- Seleziona Nazione --",
+    ctxEdit: "✏️ Modifica", ctxDelete: "🗑️ Elimina",
+    updatedOn: "Aggiornato:", lastUpdate: "Ultimo Aggiornamento",
+    statusToday: "Oggi", statusDaysAgo: "{n}g fa"
+  },
+  pt: {
+    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
+    pageTitle: "Base de Dados DME", btnImport: "📥 Importar", btnAdd: "+ Jogador",
+    btnSyncWeb: "🔄 Sincronizar",
+    btnExportJSON: "Exportar JSON", btnExportCSV: "Exportar CSV",
+    btnViewTable: "📋 Lista", btnViewCards: "🃏 Cartas",
+    btnClear: "🗑️ Limpar BD", btnReset: "Limpar",
+    thName: "Jogador", thRating: "GER", thPos: "POS", thRarity: "Raridade",
+    thCountry: "Nacionalidade", thClub: "Clube", thLeague: "Liga", thAge: "Idade",
+    thPhys: "Alt. / Peso", thPrice: "Preço", thUpdated: "Atualizado",
+    statPac: "RIT", statSho: "FIN", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "FÍS",
+    adv1: "Filtros de Clube, Nacionalidade e Raridade", adv2: "Faixa de Preço e Idade", adv3: "Subatributos Mínimos (DME)",
+    btnAdvToggle: "⚙️ Filtros Avançados", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    searchPlaceholder: "Buscar jogador, clube, liga...",
+    posDefault: "Posição", clubDefault: "Qualquer Clube", leagueDefault: "Qualquer Liga", countryDefault: "Qualquer País",
+    rarityDefault: "Qualquer Raridade",
+    sortRating: "Ordenar: GER", sortPrice: "Ordenar: Preço", sortDate: "Ordenar: Atualizado", sortName: "Ordenar: Nome",
+    sortPac: "Ordenar: Ritmo", sortSho: "Ordenar: Finalização", sortPas: "Ordenar: Passe",
+    sortDri: "Ordenar: Drible", sortDef: "Ordenar: Defesa", sortPhy: "Ordenar: Físico", sortAge: "Ordenar: Idade",
+    modalAddTitle: "Adicionar Jogador", modalAddHelp: "Insira os dados do jogador.",
+    modalEditTitle: "Modificar Jogador", modalEditHelp: "Edite os atributos e salve.",
+    btnSavePlayer: "Salvar jogador", btnUpdatePlayer: "Atualizar Jogador", btnCancel: "Cancelar",
+    fName: "Nome", fPos: "Posição", fRating: "Classificação / GER", fRarity: "Raridade",
+    fClub: "Clube", fLeague: "Liga", fCountry: "Nacionalidade", fAge: "Idade",
+    fHeight: "Altura (cm)", fWeight: "Peso (kg)", fPrice: "Preço DME / Mercado",
+    fImage: "URL Imagem / Foto", fSubstats: "SUBATRIBUTOS",
+    selLeague: "-- Selecionar Liga --", selCountry: "-- Selecionar País --",
+    ctxEdit: "✏️ Modificar", ctxDelete: "🗑️ Eliminar",
+    updatedOn: "Atualizado:", lastUpdate: "Última Atualização",
+    statusToday: "Hoje", statusDaysAgo: "Há {n}d"
+  }
+};
+
+function changeLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('ufm_lang', currentLang);
+  applyTranslations();
+  populateFormSelects();
+  render();
+}
+
+function applyTranslations() {
+  var t = i18n[currentLang] || i18n.es;
+  if ($('langSelect')) $('langSelect').value = currentLang;
+  $('lblNavHome').textContent = t.navHome;
+  $('lblNavDb').textContent = t.navDb;
+  $('lblNavCalc').textContent = t.navCalc;
+  $('lblPageTitle').textContent = t.pageTitle;
+  $('btnImport').textContent = t.btnImport;
+  $('btnAdd').textContent = t.btnAdd;
+  $('btnSyncWeb').textContent = t.btnSyncWeb;
+  $('btnExportJSON').textContent = t.btnExportJSON;
+  $('btnExportCSV').textContent = t.btnExportCSV;
+  $('btnViewTable').textContent = t.btnViewTable;
+  $('btnViewCards').textContent = t.btnViewCards;
+  $('btnClear').textContent = t.btnClear;
+  $('btnReset').textContent = t.btnReset;
+
+  $('search').placeholder = t.searchPlaceholder;
+  $('btnAdvToggle').textContent = t.btnAdvToggle;
+  $('btnSortDir').textContent = sortDir === -1 ? t.btnSortDesc : t.btnSortAsc;
+
+  $('optSortRating').textContent = t.sortRating;
+  $('optSortPrice').textContent = t.sortPrice;
+  $('optSortDate').textContent = t.sortDate;
+  $('optSortName').textContent = t.sortName;
+  $('optSortPac').textContent = t.sortPac;
+  $('optSortSho').textContent = t.sortSho;
+  $('optSortPas').textContent = t.sortPas;
+  $('optSortDri').textContent = t.sortDri;
+  $('optSortDef').textContent = t.sortDef;
+  $('optSortPhy').textContent = t.sortPhy;
+  $('optSortAge').textContent = t.sortAge;
+
+  $('optAnyRarity').textContent = t.rarityDefault;
+
+  $('thName').textContent = t.thName;
+  $('thRating').textContent = t.thRating;
+  $('thPos').textContent = t.thPos;
+  $('thRarity').textContent = t.thRarity;
+  $('thCountry').textContent = t.thCountry;
+  $('thClub').textContent = t.thClub;
+  $('thLeague').textContent = t.thLeague;
+  $('thAge').textContent = t.thAge;
+  $('thPhys').textContent = t.thPhys;
+  $('thPrice').textContent = t.thPrice;
+  $('thUpdated').textContent = t.thUpdated;
+
+  $('lblAdvTitle1').textContent = t.adv1;
+  $('lblAdvTitle2').textContent = t.adv2;
+  $('lblAdvTitle3').textContent = t.adv3;
+
+  $('lblF_name').textContent = t.fName;
+  $('lblF_pos').textContent = t.fPos;
+  $('lblF_rating').textContent = t.fRating;
+  $('lblF_rarity').textContent = t.fRarity;
+  $('lblF_club').textContent = t.fClub;
+  $('lblF_league').textContent = t.fLeague;
+  $('lblF_country').textContent = t.fCountry;
+  $('lblF_age').textContent = t.fAge;
+  $('lblF_height').textContent = t.fHeight;
+  $('lblF_weight').textContent = t.fWeight;
+  $('lblF_price').textContent = t.fPrice;
+  $('lblF_image').textContent = t.fImage;
+  $('lblF_substats').textContent = t.fSubstats;
+  $('btnCancelPlayer').textContent = t.btnCancel;
+  $('btnCloseDetail').textContent = t.btnCancel;
+  $('btnCancelImport').textContent = t.btnCancel;
+
+  $('ctxEdit').textContent = t.ctxEdit;
+  $('ctxDelete').textContent = t.ctxDelete;
+
+  document.querySelectorAll('.lblStatPac').forEach(e => e.textContent = t.statPac);
+  document.querySelectorAll('.lblStatSho').forEach(e => e.textContent = t.statSho);
+  document.querySelectorAll('.lblStatPas').forEach(e => e.textContent = t.statPas);
+  document.querySelectorAll('.lblStatDri').forEach(e => e.textContent = t.statDri);
+  document.querySelectorAll('.lblStatDef').forEach(e => e.textContent = t.statDef);
+  document.querySelectorAll('.lblStatPhy').forEach(e => e.textContent = t.statPhy);
+}
+
+function getRarityClass(rarity, rating) {
+  var r = (rarity || 'normal').toLowerCase();
+  var rat = +rating || 0;
+  if (r === 'normal') {
+    if (rat <= 64) return 'card-bronze';
+    if (rat <= 74) return 'card-silver';
+    if (rat <= 82) return 'card-gold-light';
+    return 'card-gold-dark';
+  }
+  if (r === 'euro_evo') return 'card-euro-evo';
+  if (r === 'new_season') return 'card-new-season';
+  if (r === 'totw') return 'card-totw';
+  if (r === 'transfer_stars') return 'card-transfer-stars';
+  if (r === 'weekend_league') return 'card-weekend-league';
+  return 'card-gold-dark';
+}
+
+function getRarityLabel(r, rat) {
+  var norm = (r || 'normal').toLowerCase();
+  if (norm === 'normal') return 'Normal';
+  var labels = {
+    euro_evo: 'European Evolutions',
+    new_season: 'NewSeason',
+    totw: 'Team of the Week',
+    transfer_stars: 'Transfer Stars',
+    weekend_league: 'Weekend League'
+  };
+  return labels[norm] || r;
+}
+
+function setViewMode(mode) {
+  viewMode = mode;
+  if (mode === 'table') {
+    $('tableView').style.display = 'block';
+    $('cardsView').classList.remove('active-view');
+    $('btnViewTable').classList.add('active');
+    $('btnViewCards').classList.remove('active');
+  } else {
+    $('tableView').style.display = 'none';
+    $('cardsView').classList.add('active-view');
+    $('btnViewCards').classList.add('active');
+    $('btnViewTable').classList.remove('active');
+  }
+  render();
+}
+
+function toggleAdvFilters() {
+  var p = $('advPanel');
+  p.classList.toggle('open');
+  $('btnAdvToggle').style.borderColor = p.classList.contains('open') ? 'var(--accent)' : 'var(--line)';
+}
+
+function changeSortField(f) {
+  sortKey = f;
+  render();
+}
+
+function toggleSortDir() {
+  var t = i18n[currentLang] || i18n.es;
+  sortDir *= -1;
+  $('btnSortDir').textContent = sortDir === -1 ? t.btnSortDesc : t.btnSortAsc;
+  render();
+}
+
+function save() {
+  try {
+    localStorage.setItem(KEY, JSON.stringify(players));
+  } catch(e) {
+    alert("Memoria local llena.");
+  }
+}
+
+function clearDatabase() {
+  var msg = currentLang === 'es' ? "¿Estás seguro de que quieres BORRAR TODOS los jugadores?" : "Are you sure you want to DELETE ALL players?";
+  if (confirm(msg)) {
+    players = [];
+    save();
+    render();
+    alert(currentLang === 'es' ? "Base de datos borrada con éxito." : "Database successfully cleared.");
+  }
+}
+
+function rebuildFilters() {
+  var t = i18n[currentLang] || i18n.es;
+  var ps = [...new Set(players.map(p => displayPosition(p.position)).filter(Boolean))].sort();
+  var cs = [...new Set(players.map(p => p.club).filter(Boolean))].sort();
+
+  var pv = $('pos').value, cv = $('advClub').value, lv = $('advLeague').value, nv = $('advCountry').value;
+
+  $('pos').innerHTML = '<option value="">' + t.posDefault + '</option>' + ps.map(x => '<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
+  $('advClub').innerHTML = '<option value="">' + t.clubDefault + '</option>' + cs.map(x => '<option value="'+esc(x)+'">'+esc(x)+'</option>').join('');
+  
+  var lFilterHtml = '<option value="">' + t.leagueDefault + '</option>';
+  masterLeaguesData.forEach(function(l) {
+    var lName = getLeagueDisplayName(l);
+    lFilterHtml += '<option value="' + esc(l.names.es) + '">' + esc(lName) + '</option>';
+  });
+  $('advLeague').innerHTML = lFilterHtml;
+
+  var cFilterHtml = '<option value="">' + t.countryDefault + '</option>';
+  var sortedCountries = masterCountriesData.slice().sort(function(a, b) {
+    return getCountryDisplayName(a).localeCompare(getCountryDisplayName(b));
+  });
+
+  sortedCountries.forEach(function(c) {
+    var cName = getCountryDisplayName(c);
+    cFilterHtml += '<option value="' + esc(c.names.es) + '">' + esc(cName) + '</option>';
+  });
+  $('advCountry').innerHTML = cFilterHtml;
+
+  $('pos').value = pv; $('advClub').value = cv; $('advLeague').value = lv; $('advCountry').value = nv;
+}
+
+function getFilteredData() {
+  var q = ($('search').value || '').toLowerCase();
+  var pos = $('pos').value;
+  var minRating = +$('minRating').value || -Infinity, maxRating = +$('maxRating').value || Infinity;
+
+  var rarity = $('advRarity').value;
+  var club = $('advClub').value;
+  var league = $('advLeague').value;
+  var country = $('advCountry').value;
+  var minPrice = +$('advMinPrice').value || -Infinity, maxPrice = +$('advMaxPrice').value || Infinity;
+  var minAge = +$('advMinAge').value || -Infinity, maxAge = +$('advMaxAge').value || Infinity;
+  var minPac = +$('advMinPac').value || 0;
+  var minSho = +$('advMinSho').value || 0;
+  var minPas = +$('advMinPas').value || 0;
+  var minDri = +$('advMinDri').value || 0;
+  var minDef = +$('advMinDef').value || 0;
+  var minPhy = +$('advMinPhy').value || 0;
+
+  return players.filter(function(p) {
+    var rat = +p.rating || 0;
+    var pr = p.price !== '' && p.price != null ? +p.price : -1;
+    var ag = +p.age || 0;
+    var dispPos = displayPosition(p.position);
+    var cleanName = cleanPlayerName(p.name);
+
+    return (!q || [cleanName, p.club, p.country, p.league, dispPos, p.position].join(' ').toLowerCase().includes(q))
+      && (!pos || dispPos === pos || p.position === pos)
+      && (rat >= minRating && rat <= maxRating)
+      && (!rarity || p.rarity === rarity)
+      && (!club || p.club === club)
+      && (!league || p.league === league)
+      && (!country || p.country === country)
+      && (minPrice === -Infinity || (pr !== -1 && pr >= minPrice))
+      && (maxPrice === Infinity || (pr !== -1 && pr <= maxPrice))
+      && (minAge === -Infinity || (ag > 0 && ag >= minAge))
+      && (maxAge === Infinity || (ag > 0 && ag <= maxAge))
+      && ((+p.pac || 0) >= minPac)
+      && ((+p.sho || 0) >= minSho)
+      && ((+p.pas || 0) >= minPas)
+      && ((+p.dri || 0) >= minDri)
+      && ((+p.def || 0) >= minDef)
+      && ((+p.phy || 0) >= minPhy);
+  }).sort(function(a, b) {
+    var valA = a[sortKey] != null ? a[sortKey] : '', valB = b[sortKey] != null ? b[sortKey] : '';
+    if (typeof valA === 'number' && typeof valB === 'number') return (valA - valB) * sortDir;
+    return String(valA).localeCompare(String(valB)) * sortDir;
+  });
+}
+
+function generateFutCardHtml(p) {
+  var imgUrl = p.image ? esc(p.image) : DEFAULT_AVATAR;
+  var natFlag = getFlagUrl(p.country);
+  var leagueFlag = getFlagUrl(p.league || p.country);
+  var rClass = getRarityClass(p.rarity, p.rating);
+  var rarityText = getRarityLabel(p.rarity, p.rating);
+  var cleanName = cleanPlayerName(p.name);
+  var t = i18n[currentLang] || i18n.es;
+
+  return '<div class="fut-card ' + rClass + '">' +
+    '<div class="card-rarity-tag">' + esc(rarityText) + '</div>' +
+    '<div class="card-top">' +
+      '<div class="card-meta">' +
+        '<span class="card-rat">' + esc(p.rating) + '</span>' +
+        '<span class="card-pos">' + esc(displayPosition(p.position)) + '</span>' +
+        '<img class="flag-rect" title="' + esc(p.country || 'Nacionalidad') + '" src="' + natFlag + '" onerror="this.src=\'https://flagcdn.com/w40/un.png\'">' +
+        '<div class="shield-flag-wrap" title="' + esc(p.league || 'Liga') + '">' +
+          '<img src="' + leagueFlag + '" onerror="this.src=\'https://flagcdn.com/w40/un.png\'">' +
+        '</div>' +
+      '</div>' +
+      '<div class="card-img-wrap">' +
+        '<img class="card-img" src="' + imgUrl + '" onerror="this.onerror=null;this.src=\'' + DEFAULT_AVATAR + '\'">' +
+      '</div>' +
+    '</div>' +
+    '<div class="card-info">' +
+      '<div class="card-name">' + esc(cleanName) + '</div>' +
+      '<div class="card-club">' + esc(p.club || 'Sin Club') + '</div>' +
+    '</div>' +
+    '<div class="card-stats">' +
+      '<div class="stat-row"><span class="stat-num">' + (p.pac || '0') + '</span> <span class="stat-lbl">' + t.statPac + '</span></div>' +
+      '<div class="stat-row"><span class="stat-num">' + (p.dri || '0') + '</span> <span class="stat-lbl">' + t.statDri + '</span></div>' +
+      '<div class="stat-row"><span class="stat-num">' + (p.sho || '0') + '</span> <span class="stat-lbl">' + t.statSho + '</span></div>' +
+      '<div class="stat-row"><span class="stat-num">' + (p.def || '0') + '</span> <span class="stat-lbl">' + t.statDef + '</span></div>' +
+      '<div class="stat-row"><span class="stat-num">' + (p.pas || '0') + '</span> <span class="stat-lbl">' + t.statPas + '</span></div>' +
+      '<div class="stat-row"><span class="stat-num">' + (p.phy || '0') + '</span> <span class="stat-lbl">' + t.statPhy + '</span></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function openPlayerDetail(index) {
+  var p = players[index];
+  if (!p) return;
+
+  var t = i18n[currentLang] || i18n.es;
+  var cleanName = cleanPlayerName(p.name);
+  $('modalTitle').textContent = cleanName;
+  $('modalHelp').textContent = getRarityLabel(p.rarity, p.rating);
+  $('playerForm').style.display = 'none';
+  $('importContainer').style.display = 'none';
+  $('playerDetailContainer').style.display = 'block';
+
+  $('detailCardTarget').innerHTML = generateFutCardHtml(p);
+  $('detName').textContent = cleanName + ' (' + p.rating + ')';
+  $('detSub').textContent = displayPosition(p.position) + ' · ' + getRarityLabel(p.rarity, p.rating);
+  $('detClub').textContent = p.club || '—';
+  $('detLeague').textContent = p.league || '—';
+  $('detCountry').textContent = p.country || '—';
+  $('detAge').textContent = p.age ? p.age + (currentLang === 'es' ? ' años' : ' years') : '—';
+  $('detPhysique').textContent = (p.height ? p.height + ' cm' : '—') + ' / ' + (p.weight ? p.weight + ' kg' : '—');
+  $('detPrice').textContent = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : (currentLang === 'es' ? 'Sin precio' : 'No price');
+  
+  var status = getDateStatus(p.price_date);
+  $('detUpdated').innerHTML = '<span class="date-badge ' + status.colorClass + '">' + status.text + '</span>';
+
+  $('modalBg').classList.add('open');
+}
+
+function render() {
+  rebuildFilters();
+  var d = getFilteredData();
+  var slice = d.slice(0, 300);
+
+  if (viewMode === 'table') {
+    $('tbody').innerHTML = slice.map(function(p) {
+      var origIndex = players.indexOf(p);
+      var rClass = getRarityClass(p.rarity, p.rating);
+      var cleanName = cleanPlayerName(p.name);
+      var priceFormatted = p.price ? Number(p.price).toLocaleString('es-ES') : '—';
+      var leagueText = p.league || '—';
+      
+      var status = getDateStatus(p.price_date);
+      var dateBadgeHtml = '<span class="date-badge ' + status.colorClass + '" title="' + esc(status.title) + '">' + status.text + '</span>';
+
+      return '<tr class="' + rClass + '" onclick="openPlayerDetail(' + origIndex + ')" oncontextmenu="openContextMenu(event, ' + origIndex + ')">' +
+        '<td><b>' + esc(cleanName) + '</b></td>' +
+        '<td class="rating">' + esc(p.rating) + '</td>' +
+        '<td><span class="badge">' + esc(displayPosition(p.position)) + '</span></td>' +
+        '<td><span class="badge">' + esc(getRarityLabel(p.rarity, p.rating)) + '</span></td>' +
+        '<td>' + (p.pac || '—') + '</td>' +
+        '<td>' + (p.sho || '—') + '</td>' +
+        '<td>' + (p.pas || '—') + '</td>' +
+        '<td>' + (p.dri || '—') + '</td>' +
+        '<td>' + (p.def || '—') + '</td>' +
+        '<td>' + (p.phy || '—') + '</td>' +
+        '<td>' + esc(p.country || '—') + '</td>' +
+        '<td>' + esc(p.club || '—') + '</td>' +
+        '<td class="col-league" title="' + esc(leagueText) + '">' + esc(leagueText) + '</td>' +
+        '<td>' + esc(p.age || '—') + '</td>' +
+        '<td>' + (p.height ? p.height+'cm' : '—') + ' / ' + (p.weight ? p.weight+'kg' : '—') + '</td>' +
+        '<td class="price">' + priceFormatted + '</td>' +
+        '<td>' + dateBadgeHtml + '</td>' +
+      '</tr>';
+    }).join('');
+  } else {
+    $('cardsView').innerHTML = slice.map(function(p) {
+      var origIndex = players.indexOf(p);
+      var priceStr = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : 'Sin Precio';
+      var status = getDateStatus(p.price_date);
+      var dateBadgeHtml = p.price_date ? ('<span class="date-badge ' + status.colorClass + '" title="' + esc(status.title) + '">' + status.text + '</span>') : '';
+
+      return '<div class="card-item" onclick="openPlayerDetail(' + origIndex + ')" oncontextmenu="openContextMenu(event, ' + origIndex + ')">' +
+        generateFutCardHtml(p) +
+        '<div class="card-price-badge">' +
+          '<span>' + priceStr + '</span>' +
+          dateBadgeHtml +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  $('status').textContent = currentLang === 'es'
+    ? ('Mostrando ' + slice.length + ' de ' + d.length + ' filtrados (' + players.length + ' totales)')
+    : ('Showing ' + slice.length + ' of ' + d.length + ' filtered (' + players.length + ' total)');
+}
+
+function openContextMenu(e, index) {
+  e.preventDefault();
+  contextTargetIndex = index;
+  var menu = $('contextMenu');
+  menu.style.display = 'block';
+  menu.style.left = e.pageX + 'px';
+  menu.style.top = e.pageY + 'px';
+}
+
+function hideContextMenu() {
+  $('contextMenu').style.display = 'none';
+}
+
+document.addEventListener('click', hideContextMenu);
+
+function onContextDelete() {
+  hideContextMenu();
+  if (contextTargetIndex >= 0 && contextTargetIndex < players.length) {
+    var p = players[contextTargetIndex];
+    if (confirm("¿Eliminar a " + p.name + " de la base de datos?")) {
+      players.splice(contextTargetIndex, 1);
+      save();
+      render();
+    }
+  }
+}
+
+function onContextEdit() {
+  hideContextMenu();
+  if (contextTargetIndex >= 0 && contextTargetIndex < players.length) {
+    var p = players[contextTargetIndex];
+    var t = i18n[currentLang] || i18n.es;
+    populateFormSelects();
+
+    $('modalTitle').textContent = t.modalEditTitle;
+    $('modalHelp').textContent = t.modalEditHelp;
+    $('btnSubmitPlayer').textContent = t.btnUpdatePlayer;
+
+    $('f_edit_id').value = p.id;
+    $('f_name').value = cleanPlayerName(p.name);
+    $('f_position').value = normalizePosition(p.position);
+    $('f_rating').value = p.rating || 80;
+    $('f_rarity').value = p.rarity || 'normal';
+    $('f_club').value = p.club || '';
+    $('f_league').value = p.league || '';
+    $('f_country').value = p.country || '';
+    $('f_age').value = p.age || '';
+    $('f_height').value = p.height || '';
+    $('f_weight').value = p.weight || '';
+    $('f_price').value = p.price || '';
+    $('f_image').value = p.image || '';
+
+    $('f_pac').value = p.pac || '';
+    $('f_sho').value = p.sho || '';
+    $('f_pas').value = p.pas || '';
+    $('f_dri').value = p.dri || '';
+    $('f_def').value = p.def || '';
+    $('f_phy').value = p.phy || '';
+
+    $('playerForm').style.display = 'block';
+    $('importContainer').style.display = 'none';
+    $('playerDetailContainer').style.display = 'none';
+    $('modalBg').classList.add('open');
+  }
+}
+
+function openAdd() {
+  var t = i18n[currentLang] || i18n.es;
+  populateFormSelects();
+  $('f_edit_id').value = '';
+  $('btnSubmitPlayer').textContent = t.btnSavePlayer;
+  $('modalTitle').textContent = t.modalAddTitle;
+  $('modalHelp').textContent = t.modalAddHelp;
+  
+  $('playerForm').style.display = 'block';
+  $('importContainer').style.display = 'none';
+  $('playerDetailContainer').style.display = 'none';
+
+  ['f_name','f_club','f_age','f_height','f_weight','f_price','f_image','f_pac','f_sho','f_pas','f_dri','f_def','f_phy'].forEach(function(x) { $(x).value = ''; });
+  $('f_position').value = 'ST';
+  $('f_rating').value = 80;
+  $('f_rarity').value = 'normal';
+  $('f_league').value = '';
+  $('f_country').value = '';
+  $('modalBg').classList.add('open');
+}
+
+function submitPlayer(e) {
+  e.preventDefault();
+  var editId = $('f_edit_id').value;
+  var pId = editId ? editId : ('p-' + Date.now());
+
+  var existingPlayer = editId ? players.find(function(x) { return x.id === editId; }) : null;
+  var newPrice = $('f_price').value !== '' ? +$('f_price').value : '';
+  var priceDate = existingPlayer ? (existingPlayer.price_date || '') : '';
+
+  // Si se introduce o actualiza el precio, se graba la fecha actual
+  if (newPrice !== '' && (!existingPlayer || existingPlayer.price !== newPrice)) {
+    priceDate = new Date().toISOString();
+  }
+
+  var p = {
+    id: pId,
+    name: $('f_name').value.trim(),
+    position: normalizePosition($('f_position').value),
+    rating: +$('f_rating').value,
+    rarity: $('f_rarity').value,
+    club: $('f_club').value.trim(),
+    league: $('f_league').value,
+    country: $('f_country').value,
+    age: $('f_age').value ? +$('f_age').value : '',
+    height: $('f_height').value ? +$('f_height').value : '',
+    weight: $('f_weight').value ? +$('f_weight').value : '',
+    price: newPrice,
+    price_date: priceDate,
+    image: $('f_image').value.trim(),
+    pac: $('f_pac').value ? +$('f_pac').value : '',
+    sho: $('f_sho').value ? +$('f_sho').value : '',
+    pas: $('f_pas').value ? +$('f_pas').value : '',
+    dri: $('f_dri').value ? +$('f_dri').value : '',
+    def: $('f_def').value ? +$('f_def').value : '',
+    phy: $('f_phy').value ? +$('f_phy').value : ''
+  };
+
+  if (editId) {
+    var editIdx = players.findIndex(function(x) { return x.id === editId; });
+    if (editIdx >= 0) players[editIdx] = p;
+    else players.push(p);
+  } else {
+    var key = getPlayerKey(p.name, p.position, p.rarity);
+    var idx = players.findIndex(function(x) { return getPlayerKey(x.name, x.position, x.rarity) === key; });
+    if (idx >= 0) players[idx] = p; else players.push(p);
+  }
+
+  save(); closeModal(); render();
+}
+
+function sortBy(k) {
+  if (sortKey === k) sortDir *= -1;
+  else { sortKey = k; sortDir = k === 'rating' ? -1 : 1; }
+  $('sortField').value = k;
+  render();
+}
+
+function resetFilters() {
+  ['search', 'minRating', 'maxRating', 'advMinPrice', 'advMaxPrice', 'advMinAge', 'advMaxAge', 'advMinPac', 'advMinSho', 'advMinPas', 'advMinDri', 'advMinDef', 'advMinPhy'].forEach(function(id) { $(id).value = ''; });
+  $('pos').value = '';
+  $('advRarity').value = '';
+  $('advClub').value = '';
+  $('advLeague').value = '';
+  $('advCountry').value = '';
+  render();
+}
+
+function closeModal(e) {
+  if (!e || e.target === $('modalBg')) $('modalBg').classList.remove('open');
+}
+
+function openImportModal() {
+  $('modalTitle').textContent = currentLang === 'es' ? 'Importar Base de Datos' : 'Import Database';
+  $('modalHelp').textContent = currentLang === 'es' ? 'Sube un archivo, introduce una URL o pega texto.' : 'Upload file, enter URL or paste text.';
+  $('playerForm').style.display = 'none';
+  $('playerDetailContainer').style.display = 'none';
+  $('importContainer').style.display = 'block';
+  
+  var savedUrl = localStorage.getItem(URL_KEY) || '';
+  $('importUrlInput').value = savedUrl;
+
+  switchImportTab('file');
+  $('modalBg').classList.add('open');
+}
+
+function switchImportTab(type) {
+  ['tabFileBtn','tabUrlBtn','tabTextBtn'].forEach(function(b) { $(b).classList.remove('active'); });
+  ['importFileSection','importUrlSection','importTextSection'].forEach(function(s) { $(s).style.display = 'none'; });
+  $('btnConfirmImportUrl').style.display = 'none';
+  $('btnConfirmImportText').style.display = 'none';
+
+  if (type === 'file') {
+    $('tabFileBtn').classList.add('active');
+    $('importFileSection').style.display = 'block';
+  } else if (type === 'url') {
+    $('tabUrlBtn').classList.add('active');
+    $('importUrlSection').style.display = 'block';
+    $('btnConfirmImportUrl').style.display = 'inline-block';
+  } else {
+    $('tabTextBtn').classList.add('active');
+    $('importTextSection').style.display = 'block';
+    $('btnConfirmImportText').style.display = 'inline-block';
+  }
+}
+
+function mergePlayerData(incomingList) {
+  if (!incomingList) {
+    alert("Error: Datos no válidos.");
+    return;
+  }
+
+  if (!Array.isArray(incomingList)) {
+    if (incomingList.players && Array.isArray(incomingList.players)) {
+      incomingList = incomingList.players;
+    } else if (incomingList.data && Array.isArray(incomingList.data)) {
+      incomingList = incomingList.data;
+    } else {
+      incomingList = [incomingList];
+    }
+  }
+
+  if (incomingList.length === 0) {
+    alert("El archivo no contiene jugadores válidos.");
+    return;
+  }
+  
+  var mode = $('importMode') ? $('importMode').value : 'merge';
+  var baseList = (mode === 'replace') ? [] : players;
+  
+  var map = new Map(baseList.map(function(p) { 
+    return [getPlayerKey(p.name, p.position, p.rarity), p]; 
+  }));
+  var count = 0;
+
+  incomingList.forEach(function(p) {
+    if (p && p.name) {
+      var normPos = normalizePosition(p.position);
+      var pRarity = p.rarity || 'normal';
+      var key = getPlayerKey(p.name, normPos, pRarity);
+      
+      var existing = map.get(key);
+      var assignedId = (existing && existing.id) ? existing.id : (p.id || ('p-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5)));
+      var inPrice = (p.price !== '' && p.price != null) ? +p.price : '';
+
+      var pDate = p.price_date || (existing ? existing.price_date : '');
+      if (inPrice !== '' && (!existing || existing.price !== inPrice) && !p.price_date) {
+        pDate = new Date().toISOString();
+      }
+
+      map.set(key, Object.assign({}, existing || {}, p, {
+        id: assignedId,
+        name: cleanPlayerName(p.name),
+        position: normPos,
+        rating: +p.rating || 0,
+        rarity: pRarity,
+        price: inPrice,
+        price_date: pDate,
+        age: p.age ? +p.age : '',
+        pac: p.pac ? +p.pac : '',
+        sho: p.sho ? +p.sho : '',
+        pas: p.pas ? +p.pas : '',
+        dri: p.dri ? +p.dri : '',
+        def: p.def ? +p.def : '',
+        phy: p.phy ? +p.phy : ''
+      }));
+      count++;
+    }
+  });
+
+  players = [...map.values()];
+  save(); closeModal(); render();
+  alert((mode === 'replace' ? "Base sustituida por completo con " : "Se han combinado ") + count + " jugadores.");
+}
+
+function handleFileSelect(e) {
+  var file = e.target.files[0];
+  if (file) parseFile(file);
+}
+
+function parseFile(file) {
+  var reader = new FileReader();
+  reader.onload = function(ev) {
+    var rawText = (ev.target.result || '').trim();
+    if (rawText.charCodeAt(0) === 0xFEFF) {
+      rawText = rawText.substr(1);
+    }
+    
+    if (file.name.endsWith('.json') || rawText.startsWith('[') || rawText.startsWith('{')) {
+      try {
+        var json = JSON.parse(rawText);
+        mergePlayerData(json);
+      } catch(err) {
+        alert("Error al leer el archivo JSON: formato no válido.");
+      }
+    } else {
+      try {
+        var parsed = parseCSV(rawText);
+        mergePlayerData(parsed);
+      } catch(err) {
+        alert("Error al procesar el archivo CSV.");
+      }
+    }
+  };
+  reader.readAsText(file, "UTF-8");
+}
+
+function parseCSV(text) {
+  var lines = text.trim().split(/\r\n|\n/);
+  if (lines.length < 2) return [];
+  var headers = lines[0].split(',').map(function(h) { return h.trim().replace(/^"|"$/g, ''); });
+  return lines.slice(1).map(function(line) {
+    var values = line.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g) || [];
+    var obj = {};
+    headers.forEach(function(h, idx) {
+      var val = values[idx] ? values[idx].replace(/^"|"$/g, '').trim() : '';
+      obj[h] = val;
+    });
+    return obj;
+  });
+}
+
+function processTextImport() {
+  try {
+    var rawText = ($('importTextInput').value || '').trim();
+    if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substr(1);
+    var d = JSON.parse(rawText);
+    mergePlayerData(d);
+  } catch(e) {
+    alert('JSON no válido. Comprueba el formato del texto ingresado.');
+  }
+}
+
+function fetchFromUrl(url) {
+  if (!url) {
+    alert("Por favor introduce una dirección URL válida.");
+    return;
+  }
+  
+  fetch(url)
+    .then(function(res) {
+      if (!res.ok) throw new Error("Error en la conexión con el servidor (HTTP " + res.status + ")");
+      return res.text();
+    })
+    .then(function(text) {
+      var rawText = (text || '').trim();
+      if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substr(1);
+
+      try {
+        var data = JSON.parse(rawText);
+        localStorage.setItem(URL_KEY, url);
+        mergePlayerData(data);
+      } catch(jsonErr) {
+        try {
+          var csvData = parseCSV(rawText);
+          if (csvData.length > 0) {
+            localStorage.setItem(URL_KEY, url);
+            mergePlayerData(csvData);
+          } else {
+            throw new Error();
+          }
+        } catch(csvErr) {
+          alert("El archivo descargado de la URL no es un JSON ni CSV válido.");
+        }
+      }
+    })
+    .catch(function(err) {
+      alert("No se pudo cargar desde la URL: " + err.message + "\n\nAsegúrate de que el enlace sea 'Raw' directo y permita CORS.");
+    });
+}
+
+function processUrlImport() {
+  var url = $('importUrlInput').value.trim();
+  fetchFromUrl(url);
+}
+
+function syncFromSavedUrl() {
+  var savedUrl = localStorage.getItem(URL_KEY);
+  if (!savedUrl) {
+    alert(currentLang === 'es' 
+      ? "Aún no has importado ninguna lista desde una URL web. Usa 'Importar -> Desde URL' primero." 
+      : "No online URL saved yet. Use 'Import -> From URL' first.");
+    openImportModal();
+    switchImportTab('url');
+    return;
+  }
+  fetchFromUrl(savedUrl);
+}
+
+function download(filename, data, type) {
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(new Blob([data], { type: type }));
+  a.download = filename;
+  a.click();
+  setTimeout(function() { URL.revokeObjectURL(a.href); }, 500);
+}
+
+function exportJSON() {
+  download('ufm27_players.json', JSON.stringify(players, null, 2), 'application/json');
+}
+
+function exportCSV() {
+  var lines = [fields.join(',')];
+  players.forEach(function(p) {
+    lines.push(fields.map(function(c) { return '"' + String(p[c] == null ? '' : p[c]).replaceAll('"', '""') + '"'; }).join(','));
+  });
+  download('ufm27_players.csv', lines.join('\n'), 'text/csv;charset=utf-8');
+}
+
+populateFormSelects();
+applyTranslations();
+render();
+</script>
+</body>
+</html>

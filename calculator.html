@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UFM 27 - Calculadora SBC</title>
+<style>
+  :root {
+    --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
+    --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
+    --danger: #ef4444;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
+    color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  }
+  .wrap { max-width: 1800px; margin: auto; padding: 18px; }
+  .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: 0 12px 35px rgba(0,0,0,.18); }
+  
+  /* Barra de Navegación */
+  .site-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
+  .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
+  .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
+  .nav-links { display: flex; gap: 8px; align-items: center; }
+  .nav-item {
+    padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
+    color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
+  }
+  .nav-item:hover { color: var(--text); background: var(--card2); }
+  .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
+  
+  .lang-select {
+    background: #10141b; border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
+  }
+  .lang-select:focus { border-color: var(--accent); }
+
+  /* Bloque de Precios con Logo integrado a la izquierda */
+  .prices-box { margin-bottom: 16px; }
+  .price-header {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 16px; flex-wrap: wrap; margin-bottom: 12px;
+  }
+  .price-header-left {
+    display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .calc-badge-logo {
+    display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; line-height: 0.9;
+    padding-right: 14px; border-right: 1px solid var(--line);
+  }
+  .calc-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
+  .price-header h2 { font-size: 16px; margin: 0 0 2px 0; }
+  .price-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  
+  .source-selector {
+    display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #11151d;
+  }
+  .source-btn {
+    border: 0; padding: 7px 12px; font-size: 12px; font-weight: 700; background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .source-btn.active {
+    background: var(--accent); color: #09241d;
+  }
+
+  .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
+  .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; font-weight: 600; }
+  input, select, button { font: inherit; }
+  input, select { width: 100%; background: #11151d; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
+  input:focus, select:focus { border-color: var(--accent); }
+  
+  .btnrow { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
+  button { border: 0; border-radius: 9px; padding: 9px 14px; cursor: pointer; font-weight: 800; }
+  .primary { background: var(--accent); color: #09241d; }
+  .secondary { background: var(--card2); color: var(--text); border: 1px solid var(--line); }
+  .secondary:hover { border-color: #4b5668; }
+  .danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .danger:hover { border-color: var(--danger); color: #fff; }
+
+  /* Cuadrícula de Precios */
+  .pricegrid {
+    direction: rtl; display: grid; grid-template-columns: repeat(12, minmax(85px, 1fr));
+    gap: 8px; height: var(--price-height, 175px); overflow: auto; padding-right: 3px; resize: vertical; min-height: 120px; max-height: 520px;
+  }
+  .pricegrid::-webkit-scrollbar { width: 7px; height: 7px; }
+  .pricegrid::-webkit-scrollbar-thumb { background: #303642; border-radius: 999px; }
+  
+  .priceitem { direction: ltr; background: #11151d; border: 1px solid var(--line); border-radius: 10px; padding: 8px; text-align: center; }
+  .priceitem .rating { font-weight: 900; margin-bottom: 5px; font-size: 13px; color: var(--gold); }
+  .priceitem input { padding: 7px 4px; font-size: 13px; text-align: center; font-weight: 800; border-color: #3b4454; }
+  .priceitem input:disabled { background: #171c26; color: var(--accent); border-color: transparent; }
+
+  /* Sección Resultados */
+  .result { min-height: 250px; }
+  .empty { color: var(--muted); display: flex; align-items: center; justify-content: center; min-height: 220px; text-align: center; }
+  .summary { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat { background: #11151d; border: 1px solid var(--line); border-radius: 12px; padding: 13px; text-align: center; }
+  .stat b { display: block; font-size: 22px; margin-top: 4px; text-align: center; color: var(--accent); }
+  .stat span { color: var(--muted); font-size: 12px; display: block; }
+  .solution { background: #11151d; border: 1px solid var(--line); border-radius: 12px; padding: 14px; }
+  .solution h3 { margin: 0 0 10px; font-size: 15px; }
+  .row { display: flex; justify-content: space-between; gap: 15px; padding: 9px 0; border-bottom: 1px solid #232a36; align-items: center; }
+  .row:last-child { border-bottom: 0; }
+  .row > b { font-size: 16px; }
+  .tag { display: inline-block; background: #1c2e28; color: var(--accent); border-radius: 999px; padding: 4px 10px; font-weight: 800; }
+  
+  .density-wrap { display: flex; align-items: center; gap: 6px; }
+  .density-wrap input { width: 85px; padding: 0; background: transparent; border: 0; }
+  .error { color: var(--danger); background: #2a171a; border: 1px solid #542126; border-radius: 10px; padding: 11px; }
+
+  @media(max-width: 1100px) {
+    .grid { grid-template-columns: 1fr; }
+    .pricegrid { grid-template-columns: repeat(8, minmax(80px, 1fr)); }
+  }
+  @media(max-width: 800px) {
+    .calc-badge-logo { border-right: none; padding-right: 0; }
+    .pricegrid { grid-template-columns: repeat(5, minmax(78px, 1fr)); }
+  }
+  @media(max-width: 500px) {
+    .inputs { grid-template-columns: 1fr; }
+    .summary { grid-template-columns: 1fr; }
+    .pricegrid { grid-template-columns: repeat(3, minmax(75px, 1fr)); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Cabecero con UFM 27 MULTIMEDIA -->
+<header class="site-nav">
+  <a class="nav-brand" href="index.html">
+    <div style="font-size:24px">⚽</div>
+    <div class="nav-logo">UFM 27<br><small>MULTIMEDIA</small></div>
+  </a>
+  <nav class="nav-links">
+    <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
+    <a class="nav-item" href="database.html" id="lblNavDb">Base de Datos</a>
+    <a class="nav-item active" href="calculator.html" id="lblNavCalc">Calculadora SBC</a>
+    
+    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="pt">Português</option>
+    </select>
+  </nav>
+</header>
+
+<div class="wrap">
+  <!-- Panel de Configuración de Precios con Logo Integrado a la Izquierda -->
+  <div class="card prices-box">
+    <div class="price-header">
+      <div class="price-header-left">
+        <div class="calc-badge-logo">
+          <span>⚽</span>
+          <div>UFM<br><small>CALCULATOR</small></div>
+        </div>
+        <div>
+          <h2 id="lblPricesTitle">Precios de Referencia por Media</h2>
+          <small id="lblSourceHint" style="color:var(--muted)">Selecciona el origen de los precios</small>
+        </div>
+      </div>
+
+      <div class="price-toolbar">
+        <div class="source-selector">
+          <button type="button" class="source-btn active" id="btnSourceDb" onclick="setPriceSource('db')">🗄️ Base de Datos</button>
+          <button type="button" class="source-btn" id="btnSourceManual" onclick="setPriceSource('manual')">✏️ Manual</button>
+        </div>
+
+        <div class="density-wrap" title="Ajustar altura de cuadrícula">
+          <span style="font-size:12px; color:var(--muted)">↕</span>
+          <input id="density" type="range" min="125" max="520" value="175">
+        </div>
+
+        <button type="button" class="secondary" onclick="saveManualPrices()" id="btnSaveManual">Guardar</button>
+        <button type="button" class="danger" onclick="confirmClearPrices()" id="btnClearPrices">×</button>
+      </div>
+    </div>
+    
+    <div id="saveMsg" style="font-size:12px; color:var(--accent); margin-bottom:8px"></div>
+    <div id="pricegrid" class="pricegrid"></div>
+  </div>
+
+  <div class="grid">
+    <!-- Formulario de requerimientos del SBC -->
+    <section>
+      <div class="card">
+        <h2 id="lblSbcData">Requisitos del Desafío</h2>
+        <div class="inputs">
+          <div>
+            <label for="players" id="lblPlayers">Número de jugadores</label>
+            <input id="players" type="number" min="5" max="30" value="11">
+          </div>
+          <div>
+            <label for="target" id="lblTarget">Media exigida</label>
+            <input id="target" type="number" min="50" max="99" value="80">
+          </div>
+        </div>
+        <div class="btnrow">
+          <button type="button" class="primary" onclick="calculate()" id="btnCalculate">Calcular combinación más barata</button>
+          <button type="button" class="secondary" onclick="clearResult()" id="btnClearResult">Limpiar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Visualización del Resultado -->
+    <section class="card result">
+      <h2 id="lblResult">Resultado Óptimo</h2>
+      <div id="result" class="empty">
+        <span id="lblEmpty">Introduce los requisitos y pulsa <b>Calcular combinación más barata</b>.</span>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+const MIN = 50, MAX = 99;
+const grid = document.getElementById('pricegrid');
+
+var currentLang = localStorage.getItem('ufm_lang') || 'es';
+var priceSource = 'db';
+var messageTimer = null;
+
+var translations = {
+  es: {
+    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
+    pricesTitle: "Precios de Referencia por Media",
+    sourceDb: "🗄️ Base de Datos", sourceManual: "✏️ Manual",
+    sourceHintDb: "Usando los precios más baratos encontrados en tu Base de Datos",
+    sourceHintManual: "Precios definidos manualmente por ti",
+    save: "Guardar", clearPrices: "Borrar precios",
+    sbcData: "Requisitos del Desafío", playersLabel: "Número de jugadores", targetLabel: "Media exigida",
+    calculate: "Calcular combinación más barata", clear: "Limpiar", result: "Resultado Óptimo",
+    emptyResult: "Introduce los requisitos y pulsa <b>Calcular combinación más barata</b>.",
+    totalCost: "Coste total estimado", realRating: "Media exacta obtenida", targetRating: "Media exigida",
+    cheapest: "Combinación de medias sugerida", totalPlayers: "Total jugadores", ratingSum: "Suma de medias",
+    noPrices: "No hay precios disponibles para calcular. Revisa la base de datos o introduce precios en modo Manual.",
+    noSolution: "No existe una combinación factible con los precios actuales. Prueba a cargar jugadores de medias más altas en la base de datos.",
+    invalid: "Revisa los campos: jugadores (5-30) y valoración (50-99).",
+    saved: "Precios guardados.", cleared: "Precios manuales borrados."
+  },
+  en: {
+    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
+    pricesTitle: "Rating Reference Prices",
+    sourceDb: "🗄️ Database", sourceManual: "✏️ Manual",
+    sourceHintDb: "Using the lowest price per rating found in your Database",
+    sourceHintManual: "Prices manually defined by you",
+    save: "Save", clearPrices: "Clear prices",
+    sbcData: "Challenge Requirements", playersLabel: "Number of players", targetLabel: "Required rating",
+    calculate: "Calculate cheapest squad", clear: "Clear", result: "Optimal Result",
+    emptyResult: "Enter requirements and click <b>Calculate cheapest squad</b>.",
+    totalCost: "Estimated Total Cost", realRating: "Actual Squad Rating", targetRating: "Target Rating",
+    cheapest: "Suggested Rating Composition", totalPlayers: "Total Players", ratingSum: "Rating Sum",
+    noPrices: "No prices available to calculate. Check your database or input manual prices.",
+    noSolution: "No valid combination found with current prices. Try adding higher rated players to the database.",
+    invalid: "Check fields: players (5-30) and rating (50-99).",
+    saved: "Prices saved.", cleared: "Manual prices cleared."
+  },
+  fr: {
+    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
+    pricesTitle: "Prix de Référence par Note",
+    sourceDb: "🗄️ Base de Données", sourceManual: "✏️ Manuel",
+    sourceHintDb: "Utilise le prix le plus bas trouvé dans votre Base de Données",
+    sourceHintManual: "Prix définis manuellement",
+    save: "Enregistrer", clearPrices: "Effacer les prix",
+    sbcData: "Conditions du Défi", playersLabel: "Nombre de joueurs", targetLabel: "Note requise",
+    calculate: "Calculer la combinaison la moins chère", clear: "Effacer", result: "Résultat Optimal",
+    emptyResult: "Saisissez les critères puis cliquez sur <b>Calculer la combinaison la moins chère</b>.",
+    totalCost: "Coût Total Estimé", realRating: "Note d'équipe réelle", targetRating: "Note requise",
+    cheapest: "Composition de notes recommandée", totalPlayers: "Joueurs totaux", ratingSum: "Somme des notes",
+    noPrices: "Aucun prix disponible. Vérifiez votre base ou entrez des prix en mode Manuel.",
+    noSolution: "Aucune combinaison possible avec les prix actuels. Ajoutez des joueurs de note supérieure.",
+    invalid: "Vérifiez les valeurs : joueurs (5-30) et note (50-99).",
+    saved: "Prix enregistrés.", cleared: "Prix manuels effacés."
+  },
+  de: {
+    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
+    pricesTitle: "Richtpreise nach Wertung",
+    sourceDb: "🗄️ Datenbank", sourceManual: "✏️ Manuell",
+    sourceHintDb: "Verwendet den günstigsten Preis aus deiner Datenbank",
+    sourceHintManual: "Manuell eingegebene Preise",
+    save: "Speichern", clearPrices: "Preise löschen",
+    sbcData: "Challenge-Anforderungen", playersLabel: "Anzahl Spieler", targetLabel: "Benötigte Wertung",
+    calculate: "Günstigste Kombination berechnen", clear: "Löschen", result: "Optimales Ergebnis",
+    emptyResult: "Anforderungen eingeben und <b>Günstigste Kombination berechnen</b> klicken.",
+    totalCost: "Geschätzte Gesamtkosten", realRating: "Tatsächliche Gesamtwertung", targetRating: "Ziel-Wertung",
+    cheapest: "Empfohlene Wertungszusammensetzung", totalPlayers: "Spieler gesamt", ratingSum: "Wertungssumme",
+    noPrices: "Keine Preise verfügbar. Datenbank prüfen oder manuelle Preise eingeben.",
+    noSolution: "Keine Kombination mit aktuellen Preisen möglich. Höher gewertete Spieler ergänzen.",
+    invalid: "Werte prüfen: Spieler (5-30) und Wertung (50-99).",
+    saved: "Preise gespeichert.", cleared: "Manuelle Preise gelöscht."
+  },
+  it: {
+    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
+    pricesTitle: "Prezzi di Riferimento per Valutazione",
+    sourceDb: "🗄️ Database", sourceManual: "✏️ Manuale",
+    sourceHintDb: "Usa il prezzo più basso trovato nel tuo Database",
+    sourceHintManual: "Prezzi inseriti manualmente da te",
+    save: "Salva", clearPrices: "Cancella prezzi",
+    sbcData: "Requisiti Sfida", playersLabel: "Numero di giocatori", targetLabel: "Valutazione richiesta",
+    calculate: "Calcola combinazione più economica", clear: "Pulisci", result: "Risultato Ottimale",
+    emptyResult: "Inserisci i dati e premi <b>Calcola combinazione più economica</b>.",
+    totalCost: "Costo totale stimato", realRating: "Valutazione reale squadra", targetRating: "Valutazione richiesta",
+    cheapest: "Composizione valutazioni suggerita", totalPlayers: "Giocatori totali", ratingSum: "Somma valutazioni",
+    noPrices: "Nessun prezzo disponibile. Controlla il database o inserisci prezzi manuali.",
+    noSolution: "Nessuna combinazione possibile. Prova ad aggiungere giocatori con valutazione più alta.",
+    invalid: "Controlla i campi: giocatori (5-30) e valutazione (50-99).",
+    saved: "Prezzi salvati.", cleared: "Prezzi manuali cancellati."
+  },
+  pt: {
+    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
+    pricesTitle: "Preços de Referência por Classificação",
+    sourceDb: "🗄️ Base de Dados", sourceManual: "✏️ Manual",
+    sourceHintDb: "Utilizando os preços mais baratos encontrados na sua Base de Dados",
+    sourceHintManual: "Preços definidos manualmente por si",
+    save: "Guardar", clearPrices: "Apagar preços",
+    sbcData: "Requisitos do Desafio", playersLabel: "Número de jogadores", targetLabel: "Classificação exigida",
+    calculate: "Calcular combinação mais barata", clear: "Limpar", result: "Resultado Ideal",
+    emptyResult: "Insira os requisitos e clique em <b>Calcular combinação mais barata</b>.",
+    totalCost: "Custo total estimado", realRating: "Classificação real obtida", targetRating: "Classificação exigida",
+    cheapest: "Composição de notas sugerida", totalPlayers: "Total de jogadores", ratingSum: "Soma das notas",
+    noPrices: "Sem preços disponíveis. Verifique a base de dados ou insira preços no modo manual.",
+    noSolution: "Nenhuma combinação possível com os preços atuais. Adicione jogadores de notas superiores.",
+    invalid: "Verifique os dados: jogadores (5-30) e nota (50-99).",
+    saved: "Preços guardados.", cleared: "Preços manuais apagados."
+  }
+};
+
+function buildPriceGrid() {
+  grid.innerHTML = '';
+  for (let r = MAX; r >= MIN; r--) {
+    const d = document.createElement('div');
+    d.className = 'priceitem';
+    d.innerHTML = `
+      <div class="rating">⭐ ${r}</div>
+      <input id="p${r}" type="text" autocomplete="off" placeholder="—">
+    `;
+    grid.appendChild(d);
+  }
+}
+
+function formatInputValue(input) {
+  const digits = String(input.value).replace(/[^0-9]/g, '');
+  if (digits === '') { input.value = ''; return; }
+  input.value = digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+}
+
+function parsePrice(v) {
+  if (!v) return null;
+  const digits = String(v).replace(/[^0-9]/g, '');
+  if (digits === '') return null;
+  const n = parseInt(digits, 10);
+  return Number.isFinite(n) && n >= 0 ? n : null;
+}
+
+function fmt(n) {
+  return Number(n).toLocaleString('es-ES', { maximumFractionDigits: 0 });
+}
+
+function fmtDec(n) {
+  return Number(n).toFixed(2).replace('.', ',');
+}
+
+function getPricesFromDatabase() {
+  const candidateKeys = ['ufm27_database_v3', 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4'];
+  let playersList = [];
+  for (let k of candidateKeys) {
+    try {
+      const raw = localStorage.getItem(k);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          playersList = parsed;
+          break;
+        }
+      }
+    } catch(e) {}
+  }
+
+  const minPrices = {};
+  playersList.forEach(p => {
+    const rat = parseInt(p.rating, 10);
+    const pr = p.price !== '' && p.price != null ? parseInt(p.price, 10) : null;
+    if (rat >= MIN && rat <= MAX && pr !== null && !isNaN(pr) && pr > 0) {
+      if (!minPrices[rat] || pr < minPrices[rat]) {
+        minPrices[rat] = pr;
+      }
+    }
+  });
+
+  return minPrices;
+}
+
+function updatePriceGridDisplay() {
+  const isDb = priceSource === 'db';
+  const dbPrices = isDb ? getPricesFromDatabase() : {};
+  const manualRaw = localStorage.getItem('ufm_ptc_prices');
+  let manualData = {};
+  if (manualRaw) {
+    try { manualData = JSON.parse(manualRaw); } catch(e) {}
+  }
+
+  for (let r = MIN; r <= MAX; r++) {
+    const input = document.getElementById('p' + r);
+    if (!input) continue;
+
+    if (isDb) {
+      input.disabled = true;
+      input.value = dbPrices[r] ? fmt(dbPrices[r]) : '';
+    } else {
+      input.disabled = false;
+      input.value = manualData[r] || '';
+      formatInputValue(input);
+    }
+  }
+
+  const t = translations[currentLang] || translations.es;
+  document.getElementById('lblSourceHint').textContent = isDb ? t.sourceHintDb : t.sourceHintManual;
+}
+
+function setPriceSource(source) {
+  priceSource = source;
+  document.getElementById('btnSourceDb').classList.toggle('active', source === 'db');
+  document.getElementById('btnSourceManual').classList.toggle('active', source === 'manual');
+  document.getElementById('btnSaveManual').style.display = source === 'manual' ? 'inline-block' : 'none';
+  document.getElementById('btnClearPrices').style.display = source === 'manual' ? 'inline-block' : 'none';
+  updatePriceGridDisplay();
+}
+
+function saveManualPrices() {
+  const data = {};
+  for (let r = MIN; r <= MAX; r++) {
+    data[r] = document.getElementById('p' + r).value;
+  }
+  localStorage.setItem('ufm_ptc_prices', JSON.stringify(data));
+  const t = translations[currentLang] || translations.es;
+  showMessage(t.saved);
+}
+
+function confirmClearPrices() {
+  const t = translations[currentLang] || translations.es;
+  if (confirm(t.clearPrices + "?")) {
+    for (let r = MIN; r <= MAX; r++) document.getElementById('p' + r).value = '';
+    localStorage.removeItem('ufm_ptc_prices');
+    showMessage(t.cleared);
+  }
+}
+
+function showMessage(msg) {
+  const el = document.getElementById('saveMsg');
+  el.textContent = msg;
+  if (messageTimer) clearTimeout(messageTimer);
+  messageTimer = setTimeout(() => el.textContent = '', 4000);
+}
+
+function getActivePrices() {
+  const prices = {};
+  for (let r = MIN; r <= MAX; r++) {
+    const val = parsePrice(document.getElementById('p' + r).value);
+    if (val !== null && val > 0) prices[r] = val;
+  }
+  return prices;
+}
+
+function thresholdFor(n, target) {
+  return target * n - Math.floor(n / 2);
+}
+
+function calculate() {
+  const n = parseInt(document.getElementById('players').value, 10);
+  const target = parseInt(document.getElementById('target').value, 10);
+  const out = document.getElementById('result');
+  const t = translations[currentLang] || translations.es;
+
+  if (!Number.isInteger(n) || n < 5 || n > 30 || !Number.isInteger(target) || target < 50 || target > 99) {
+    out.className = '';
+    out.innerHTML = `<div class="error">${t.invalid}</div>`;
+    return;
+  }
+
+  const prices = getActivePrices();
+  const ratings = Object.keys(prices).map(Number).sort((a, b) => a - b);
+  if (!ratings.length) {
+    out.className = '';
+    out.innerHTML = `<div class="error">${t.noPrices}</div>`;
+    return;
+  }
+
+  const minSum = thresholdFor(n, target);
+  const maxSum = n * MAX;
+
+  let dp = new Array(maxSum + 1).fill(null);
+  dp[0] = { cost: 0, counts: new Map() };
+
+  for (let slot = 0; slot < n; slot++) {
+    const ndp = new Array(maxSum + 1).fill(null);
+    for (let s = 0; s <= MAX * slot; s++) {
+      const state = dp[s];
+      if (!state) continue;
+      for (const r of ratings) {
+        const ns = s + r;
+        const nc = state.cost + prices[r];
+        const old = ndp[ns];
+        if (!old || nc < old.cost) {
+          const counts = new Map(state.counts);
+          counts.set(r, (counts.get(r) || 0) + 1);
+          ndp[ns] = { cost: nc, counts };
+        }
+      }
+    }
+    dp = ndp;
+  }
+
+  let best = null, bestSum = null;
+  for (let s = minSum; s <= maxSum; s++) {
+    if (dp[s] && (!best || dp[s].cost < best.cost || (dp[s].cost === best.cost && s < bestSum))) {
+      best = dp[s];
+      bestSum = s;
+    }
+  }
+
+  if (!best) {
+    out.className = '';
+    out.innerHTML = `<div class="error">${t.noSolution}</div>`;
+    return;
+  }
+
+  const avg = bestSum / n;
+  const rows = [...best.counts.entries()].sort((a, b) => b[0] - a[0]);
+  const composition = rows.map(([r, c]) => `
+    <div class="row">
+      <span><span class="tag">${c} × ⭐ ${r}</span></span>
+      <b>${fmt(prices[r] * c)} monedas</b>
+    </div>
+  `).join('');
+
+  out.className = '';
+  out.innerHTML = `
+    <div class="summary">
+      <div class="stat"><span>${t.totalCost}</span><b>${fmt(best.cost)}</b></div>
+      <div class="stat"><span>${t.realRating}</span><b>${fmtDec(avg)}</b></div>
+      <div class="stat"><span>${t.targetRating}</span><b>${target}</b></div>
+    </div>
+    <div class="solution">
+      <h3>${t.cheapest}</h3>
+      ${composition}
+      <div class="row" style="margin-top:6px;padding-top:12px"><span>${t.totalPlayers}</span><b>${n}</b></div>
+      <div class="row"><span>${t.ratingSum}</span><b>${bestSum}</b></div>
+    </div>
+  `;
+}
+
+function clearResult() {
+  const t = translations[currentLang] || translations.es;
+  const out = document.getElementById('result');
+  out.className = 'empty';
+  out.innerHTML = `<span>${t.emptyResult}</span>`;
+}
+
+function applyTranslations() {
+  const t = translations[currentLang] || translations.es;
+  document.documentElement.lang = currentLang;
+  document.getElementById('langSelect').value = currentLang;
+
+  document.getElementById('lblNavHome').textContent = t.navHome;
+  document.getElementById('lblNavDb').textContent = t.navDb;
+  document.getElementById('lblNavCalc').textContent = t.navCalc;
+
+  document.getElementById('lblPricesTitle').textContent = t.pricesTitle;
+  document.getElementById('btnSourceDb').textContent = t.sourceDb;
+  document.getElementById('btnSourceManual').textContent = t.sourceManual;
+  document.getElementById('btnSaveManual').textContent = t.save;
+
+  document.getElementById('lblSbcData').textContent = t.sbcData;
+  document.getElementById('lblPlayers').textContent = t.playersLabel;
+  document.getElementById('lblTarget').textContent = t.targetLabel;
+  document.getElementById('btnCalculate').textContent = t.calculate;
+  document.getElementById('btnClearResult').textContent = t.clear;
+  document.getElementById('lblResult').textContent = t.result;
+
+  const result = document.getElementById('result');
+  if (result.classList.contains('empty')) {
+    result.innerHTML = `<span>${t.emptyResult}</span>`;
+  }
+}
+
+function changeLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('ufm_lang', currentLang);
+  applyTranslations();
+  updatePriceGridDisplay();
+}
+
+function applyDensity() {
+  const val = localStorage.getItem('ufm_price_height') || '175';
+  document.documentElement.style.setProperty('--price-height', val + 'px');
+  document.getElementById('density').value = val;
+}
+
+document.getElementById('density').addEventListener('input', e => {
+  const h = e.target.value;
+  document.documentElement.style.setProperty('--price-height', h + 'px');
+  localStorage.setItem('ufm_price_height', h);
+});
+
+// Inicialización
+buildPriceGrid();
+applyDensity();
+applyTranslations();
+setPriceSource('db');
+</script>
+</body>
+</html>

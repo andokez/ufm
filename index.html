@@ -3,471 +3,846 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>UFM PTC Calculator</title>
+<title>UFM 27 - Hub de Desafíos PTC</title>
 <style>
-  :root { --bg:#0f1117; --card:#181c25; --card2:#202632; --text:#f2f4f8; --muted:#9da6b5; --accent:#63e6be; --danger:#ff8787; --border:#303746; }
-  *{box-sizing:border-box}
-  body{margin:0;background:linear-gradient(135deg,#0f1117,#151a23);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  .wrap{width:100%;max-width:1800px;margin:0 auto;padding:24px 18px 45px}
-  h1{margin:0 0 6px;font-size:30px}
-  h2{margin:0 0 14px;font-size:20px}
-  .sub{color:var(--muted);margin:0 0 24px}
-  .grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
-  .card{background:rgba(24,28,37,.96);border:1px solid var(--border);border-radius:16px;padding:20px;box-shadow:0 12px 35px rgba(0,0,0,.18)}
-  .inputs{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-  label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
-  input,select,button{font:inherit}
-  input,select{width:100%;background:#11151d;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:11px 12px;outline:none}
-  input:focus,select:focus{border-color:var(--accent)}
-  .btnrow{display:flex;gap:10px;margin-top:14px;flex-wrap:wrap}
-  button{border:0;border-radius:10px;padding:11px 15px;cursor:pointer;font-weight:700}
-  .primary{background:var(--accent);color:#09241d}
-  .secondary{background:var(--card2);color:var(--text);border:1px solid var(--border)}
-  .danger{background:#4a1d22;color:#ff8787;border:1px solid #713039;font-size:18px;line-height:1;padding:10px 13px}
-  .small{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.45}
-  .result{min-height:250px}
-  .empty{color:var(--muted);display:flex;align-items:center;justify-content:center;min-height:220px;text-align:center}
-  .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
-  .stat{background:#11151d;border:1px solid var(--border);border-radius:12px;padding:13px;text-align:center}
-  .stat b{display:block;font-size:22px;margin-top:4px;text-align:center}
-  .stat span{color:var(--muted);font-size:12px;text-align:center;display:block}
-  .solution{background:#11151d;border:1px solid var(--border);border-radius:12px;padding:14px}
-  .solution h3{margin:0 0 10px;font-size:15px}
-  .row{display:flex;justify-content:space-between;gap:15px;padding:9px 0;border-bottom:1px solid #252b36;align-items:center}
-  .row:last-child{border-bottom:0}.row>b{font-size:17px}
-  .tag{display:inline-block;background:#26302e;color:var(--accent);border-radius:999px;padding:4px 8px;font-weight:800}
-  .prices{margin-top:0}
-  .price-header{display:grid;grid-template-columns:180px 1fr auto;align-items:center;gap:18px}
-  .price-header h2{text-align:center;margin:0}
-  .price-header .toolbar{margin:0;justify-content:flex-end}
-  .logo{display:flex;align-items:center;gap:9px;font-weight:900;font-size:20px;line-height:.85;white-space:nowrap}
-  .logo span{font-size:16px;letter-spacing:.5px}
-  .logo small{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:1px}
-  .pricegrid{direction:rtl;display:grid;grid-template-columns:repeat(12,minmax(85px,1fr));grid-auto-flow:row;gap:8px;height:var(--price-height,190px);overflow:auto;padding-right:3px;resize:vertical;min-height:125px;max-height:520px}
-
-  .pricegrid{scrollbar-width:thin;scrollbar-color:#303642 transparent}
-  .pricegrid::-webkit-scrollbar{width:7px;height:7px}
-  .pricegrid::-webkit-scrollbar-track{background:transparent}
-  .pricegrid::-webkit-scrollbar-thumb{background:#303642;border-radius:999px}
-  .pricegrid::-webkit-scrollbar-thumb:hover{background:#3a424f}
-  .priceitem{direction:ltr;background:#11151d;border:1px solid var(--border);border-radius:10px;padding:9px;min-width:0;text-align:center}
-  .priceitem .rating{font-weight:900;margin-bottom:7px;text-align:center;font-size:14px;color:#ffd43b}
-  .priceitem input{padding:9px 6px;font-size:14px;text-align:center;font-weight:900;border-color:#454d5c}
-  .toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
-  .lang-wrap{position:relative}
-  .icon-btn{min-width:40px;padding:8px 10px;font-size:16px}
-  .lang-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:20;display:none;min-width:150px;background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:6px;box-shadow:0 12px 30px rgba(0,0,0,.35)}
-  .lang-menu.open{display:block}
-  .lang-option{width:100%;display:flex;align-items:center;gap:9px;background:transparent;color:var(--text);border:0;border-radius:8px;padding:9px 10px;text-align:left;font-size:13px}
-  .lang-option:hover{background:#2a313d}
-  .density-wrap{display:flex;align-items:center;gap:6px}
-  .density-wrap input{width:92px;padding:4px 0;background:transparent;border:0}
-  .density-label{font-size:12px;color:var(--muted);white-space:nowrap}
-  .toolbar button{padding:8px 10px;font-size:12px}
-  .error{color:var(--danger);background:#2a171a;border:1px solid #542126;border-radius:10px;padding:11px}
-  .success{color:var(--accent);font-size:13px;margin-top:8px}
-  .formula{margin-top:13px;padding:10px;background:#141922;border-radius:10px;color:#c5ccd7;font-size:13px;line-height:1.5}
-  .ptc-section{grid-column:1;grid-row:1;min-width:0}
-  .result-section{grid-column:2;grid-row:1;min-width:0}
-
-  @media(max-width:1100px){
-    .grid{grid-template-columns:1fr}
-    .ptc-section,.result-section{grid-column:1;grid-row:auto}
-    .pricegrid{grid-template-columns:repeat(8,minmax(80px,1fr))}
-    .grid{grid-template-columns:1fr}
+  :root {
+    --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
+    --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
+    --danger: #ef4444;
   }
-  @media(max-width:800px){
-    .price-header{grid-template-columns:1fr auto;gap:10px}
-    .price-header h2{grid-column:1/-1;grid-row:1;text-align:left}
-    .logo{grid-row:2}
-    .price-header .toolbar{grid-row:2}
-    .pricegrid{grid-template-columns:repeat(5,minmax(78px,1fr))}
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
+    color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
   }
-  @media(max-width:500px){
-    .inputs{grid-template-columns:1fr}
-    .summary{grid-template-columns:1fr 1fr}
-    .pricegrid{grid-template-columns:repeat(3,minmax(75px,1fr))}
-    .price-header{grid-template-columns:1fr}
-    .price-header h2{text-align:center}
-    .logo,.price-header .toolbar{justify-self:center}
+  .wrap { max-width: 1400px; margin: auto; padding: 20px 18px; }
+  .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; }
+
+  /* Barra de Navegación */
+  .site-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
+  .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
+  .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
+  .nav-links { display: flex; gap: 8px; align-items: center; }
+  .nav-item {
+    padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
+    color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
+  }
+  .nav-item:hover { color: var(--text); background: var(--card2); }
+  .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
+
+  .lang-select {
+    background: #10141b; border: 1px solid var(--line); color: var(--text);
+    border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
+  }
+  .lang-select:focus { border-color: var(--accent); }
+
+  /* Hero Banner */
+  .hero {
+    padding: 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
+    background: radial-gradient(circle at 10% 20%, #1e293b 0%, #111722 100%);
+    border: 1px solid var(--line); border-radius: 16px;
+  }
+  .hero-info h1 { margin: 0 0 6px 0; font-size: 24px; font-weight: 900; }
+  .hero-info p { margin: 0; color: var(--muted); font-size: 14px; }
+  .hero-stats { display: flex; gap: 14px; }
+  .hero-stat-badge {
+    background: #10141d; border: 1px solid var(--line); padding: 8px 16px; border-radius: 12px; text-align: center;
+  }
+  .hero-stat-badge b { display: block; font-size: 18px; color: var(--accent); }
+  .hero-stat-badge span { font-size: 11px; color: var(--muted); font-weight: 700; }
+
+  /* Barra de herramientas de PTC */
+  .ptc-toolbar {
+    display: flex; justify-content: space-between; align-items: center;
+    gap: 12px; margin-bottom: 20px; flex-wrap: wrap;
+    border-bottom: 1px solid var(--line); padding-bottom: 14px;
+  }
+  .category-tabs { display: flex; gap: 8px; flex-wrap: wrap; }
+  .tab-button {
+    background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    font-size: 13px; font-weight: 800; padding: 9px 16px; border-radius: 10px; cursor: pointer; transition: 0.15s;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .tab-button:hover { color: var(--text); background: var(--card2); }
+  .tab-button.active {
+    background: var(--accent); color: #09241d; border-color: transparent;
+  }
+
+  .source-selector {
+    display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #11151d;
+  }
+  .source-btn {
+    border: 0; padding: 8px 13px; font-size: 12px; font-weight: 700; background: transparent; color: var(--muted); cursor: pointer;
+  }
+  .source-btn.active {
+    background: var(--accent); color: #09241d;
+  }
+
+  /* Cuadrícula de Desafíos (PTCs) */
+  .ptc-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px;
+  }
+  .ptc-card {
+    background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; cursor: pointer; transition: 0.2s ease; position: relative;
+    display: flex; flex-direction: column; justify-content: space-between;
+  }
+  .ptc-card:hover {
+    transform: translateY(-4px); border-color: var(--accent); box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  }
+  .ptc-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; gap: 6px; }
+  .ptc-title { font-size: 16px; font-weight: 900; margin: 0; color: #fff; line-height: 1.2; }
+  .ptc-badge-type {
+    font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 7px;
+    border-radius: 6px; background: rgba(99, 230, 190, 0.15); color: var(--accent); border: 1px solid rgba(99, 230, 190, 0.3);
+    white-space: nowrap;
+  }
+  .ptc-badge-type.limited {
+    background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3);
+  }
+  .ptc-badge-type.season {
+    background: rgba(255, 212, 59, 0.15); color: var(--gold); border-color: rgba(255, 212, 59, 0.3);
+  }
+  .ptc-reqs { font-size: 13px; color: var(--muted); margin-bottom: 14px; display: flex; flex-direction: column; gap: 4px; }
+  .ptc-req-item { display: flex; justify-content: space-between; }
+  .ptc-footer {
+    display: flex; justify-content: space-between; align-items: center;
+    border-top: 1px solid #232a36; padding-top: 10px; margin-top: auto;
+  }
+  .ptc-cost { font-weight: 900; color: var(--accent); font-size: 14px; }
+  .ptc-action { font-size: 12px; font-weight: 800; color: var(--muted); }
+
+  /* Modal de Solución */
+  .modal-bg {
+    position: fixed; inset: 0; background: #000b; display: none;
+    align-items: center; justify-content: center; padding: 18px; z-index: 50;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    width: min(1000px, 98%); background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 22px; max-height: 92vh; overflow-y: auto;
+  }
+  .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
+  .close-btn { background: var(--card2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 16px; padding: 6px 12px; cursor: pointer; }
+
+  /* Pestañas de sub-plantillas dentro del modal */
+  .sub-tabs-wrap {
+    display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px;
+  }
+  .sub-tab-btn {
+    background: #11151e; border: 1px solid var(--line); color: var(--muted);
+    border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;
+  }
+  .sub-tab-btn.active {
+    background: var(--card2); color: var(--accent); border-color: var(--accent);
+  }
+
+  .summary-banner {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
+  }
+  .summary-box { background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
+  .summary-box small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
+  .summary-box span { display: block; font-size: 20px; font-weight: 900; color: var(--accent); margin-top: 2px; }
+
+  /* Grid de Jugadores en Alineación */
+  .squad-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; justify-content: center; margin-top: 10px;
+  }
+  .squad-slot { display: flex; flex-direction: column; align-items: center; }
+
+  /* Tarjeta FUT Mini */
+  .mini-card {
+    width: 100%; border-radius: 12px; padding: 8px; position: relative;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.5); user-select: none; border: 1px solid transparent; text-align: center;
+  }
+  .mini-card.bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; }
+  .mini-card.silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; }
+  .mini-card.gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; }
+  .mini-card.gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; }
+  .mini-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
+  .mini-card-rat { font-size: 18px; font-weight: 900; color: var(--gold); }
+  .mini-card-pos { font-size: 11px; font-weight: 800; color: #fff; }
+  .mini-card-img { width: 56px; height: 56px; border-radius: 50%; object-fit: cover; background: #0004; margin: auto; display: block; }
+  .mini-card-name { font-weight: 900; font-size: 12px; margin-top: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-card-club { font-size: 10px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .mini-card-price {
+    margin-top: 6px; background: #11151c; border: 1px solid var(--line); border-radius: 6px;
+    padding: 3px 6px; font-size: 11px; font-weight: 900; color: var(--accent);
+  }
+
+  .squad-slot-empty {
+    border: 2px dashed var(--line); border-radius: 12px; width: 100%; min-height: 140px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #11151d; color: var(--muted); font-size: 12px; padding: 10px; text-align: center;
+  }
+  .squad-slot-empty b { color: var(--gold); font-size: 16px; margin-bottom: 4px; }
+
+  @media(max-width: 900px) {
+    .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
+    .ptc-toolbar { flex-direction: column; align-items: stretch; }
+    .source-selector { width: 100%; justify-content: center; }
+    .summary-banner { grid-template-columns: 1fr; }
+    .squad-grid { grid-template-columns: repeat(2, 1fr); }
   }
 </style>
 </head>
 <body>
+
+<!-- Cabecero Principal -->
+<header class="site-nav">
+  <a class="nav-brand" href="index.html">
+    <div style="font-size:24px">⚽</div>
+    <div class="nav-logo">UFM 27<br><small>MULTIMEDIA</small></div>
+  </a>
+  <nav class="nav-links">
+    <a class="nav-item active" href="index.html" id="lblNavHome">Inicio</a>
+    <a class="nav-item" href="database.html" id="lblNavDb">Base de Datos</a>
+    <a class="nav-item" href="calculator.html" id="lblNavCalc">Calculadora SBC</a>
+    
+    <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+      <option value="es">Español</option>
+      <option value="en">English</option>
+      <option value="fr">Français</option>
+      <option value="de">Deutsch</option>
+      <option value="it">Italiano</option>
+      <option value="pt">Português</option>
+    </select>
+  </nav>
+</header>
+
 <div class="wrap">
-  <div class="card prices">
-    <div class="price-header">
-      <div class="logo">⚽ <span>UFM<br><small>Calculator</small></span></div>
-      <h2 data-i18n="pricesTitle">Precios por estrella</h2>
-      <div class="toolbar">
-        <div class="density-wrap" title="Tamaño de la cuadrícula">
-          <span class="density-label">↕</span>
-          <input id="density" type="range" min="125" max="520" value="190" aria-label="Tamaño de la cuadrícula">
-        </div>
-        <div class="lang-wrap">
-          <button id="langButton" class="secondary icon-btn" onclick="toggleLangMenu()" aria-label="Idioma">🇪🇸</button>
-          <div id="langMenu" class="lang-menu">
-            <button class="lang-option" onclick="setLanguage('es')">🇪🇸 Español</button>
-            <button class="lang-option" onclick="setLanguage('en')">🇬🇧 English</button>
-            <button class="lang-option" onclick="setLanguage('fr')">🇫🇷 Français</button>
-            <button class="lang-option" onclick="setLanguage('de')">🇩🇪 Deutsch</button>
-            <button class="lang-option" onclick="setLanguage('it')">🇮🇹 Italiano</button>
-            <button class="lang-option" onclick="setLanguage('pt')">🇵🇹 Português</button>
-          </div>
-        </div>
-        <button class="secondary" onclick="savePrices()" data-i18n="save">Guardar</button>
-        <button class="secondary" onclick="loadPrices()" data-i18n="load">Cargar</button>
-        <button class="danger" onclick="confirmClearPrices()" title="Borrar precios" data-i18n-title="clearPrices">×</button>
+  <!-- Hero Banner -->
+  <div class="hero">
+    <div class="hero-info">
+      <h1 id="lblHeroTitle">Desafíos de Creación de Plantillas (PTC)</h1>
+      <p id="lblHeroSubtitle">Explora los desafíos activos y obtén la solución más barata con precios de la base de datos o de la calculadora.</p>
+    </div>
+    <div class="hero-stats">
+      <div class="hero-stat-badge">
+        <b id="statDbCount">0</b>
+        <span id="lblStatPlayers">Jugadores en BD</span>
+      </div>
+      <div class="hero-stat-badge">
+        <b id="statPtcCount">13</b>
+        <span id="lblStatActive">PTCs Activos</span>
       </div>
     </div>
-    <div id="saveMsg" class="small"></div>
-    <div id="pricegrid" class="pricegrid"></div>
   </div>
 
-  <div class="grid">
-    <section class="ptc-section">
-      <div class="card">
-        <h2 data-i18n="ptcData">Datos del PTC</h2>
-        <div class="inputs">
-          <div>
-            <label for="players" data-i18n="playersLabel">Número de jugadores</label>
-            <input id="players" type="number" min="5" max="30" value="11">
-          </div>
-          <div>
-            <label for="target" data-i18n="targetLabel">Media exigida</label>
-            <input id="target" type="number" min="50" max="99" value="80">
-          </div>
-          </div>
-        <div class="btnrow">
-          <button class="primary" onclick="calculate()" data-i18n="calculate">Calcular combinación más barata</button>
-          <button class="secondary" onclick="clearResult()" data-i18n="clear">Limpiar</button>
-        </div>
-      </div>
-    </section>
+  <!-- Barra de Herramientas y Filtros -->
+  <div class="ptc-toolbar">
+    <div class="category-tabs">
+      <button type="button" class="tab-button active" onclick="switchCategory('basic')" id="tabBasic">🔄 Básicos Repetibles</button>
+      <button type="button" class="tab-button" onclick="switchCategory('season')" id="tabSeason">🏆 De Temporada</button>
+      <button type="button" class="tab-button" onclick="switchCategory('limited')" id="tabLimited">⏳ Tiempo Limitado</button>
+    </div>
 
-    <section class="card result result-section">
-      <h2 data-i18n="result">Resultado</h2>
-      <div id="result" class="empty"><span data-i18n="emptyResult">Introduce los precios y pulsa <b style="margin-left:5px">Calcular combinación más barata</b>.</span></div>
-    </section>
+    <!-- Selector de Origen de Precios -->
+    <div class="source-selector">
+      <button type="button" class="source-btn active" id="btnSrcDb" onclick="setPriceSource('db')">🗄️ Base de Datos</button>
+      <button type="button" class="source-btn" id="btnSrcManual" onclick="setPriceSource('manual')">✏️ Calculadora Manual</button>
+    </div>
+  </div>
+
+  <!-- Grid de Desafíos -->
+  <div class="ptc-grid" id="ptcGrid"></div>
+</div>
+
+<!-- Modal de Solución con Alineación de Fichas -->
+<div class="modal-bg" id="modalBg" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-top">
+      <div>
+        <h2 id="modalPtcTitle">-</h2>
+        <small id="modalPtcSubtitle" style="color:var(--muted)">Alineación recomendada más barata</small>
+      </div>
+      <button type="button" class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+
+    <!-- Pestañas internas para desafíos de varias plantillas -->
+    <div id="subTabsWrap" class="sub-tabs-wrap" style="display:none"></div>
+
+    <div class="summary-banner">
+      <div class="summary-box">
+        <small id="lblSumCost">Coste Estimado Plantilla</small>
+        <span id="solCost">-</span>
+      </div>
+      <div class="summary-box">
+        <small id="lblSumTarget">Media Exigida</small>
+        <span id="solTarget">-</span>
+      </div>
+      <div class="summary-box">
+        <small id="lblSumExact">Media Exacta Obtenida</small>
+        <span id="solAvg">-</span>
+      </div>
+    </div>
+
+    <h3 style="margin: 18px 0 8px; font-size: 15px; color: var(--accent)" id="lblSquadTitle">Alineación Sugerida</h3>
+    <div class="squad-grid" id="squadGrid"></div>
   </div>
 </div>
 
 <script>
-const MIN=50, MAX=99;
-const grid=document.getElementById('pricegrid');
+var DB_KEY = 'ufm27_database_v3';
+var currentLang = localStorage.getItem('ufm_lang') || 'es';
+var currentCategory = 'basic';
+var priceSource = 'db'; // 'db' o 'manual'
+var activeModalPtc = null;
+var activeSubIndex = 0;
 
-const translations={
-  es:{
-    pricesTitle:'Precios por estrella', save:'Guardar', load:'Cargar', clearPrices:'Borrar precios',
-    ptcData:'Datos del PTC', playersLabel:'Número de jugadores', targetLabel:'Media exigida',
-    calculate:'Calcular combinación más barata', clear:'Limpiar', result:'Resultado',
-    emptyResult:'Introduce los precios y pulsa <b style="margin-left:5px">Calcular combinación más barata</b>.',
-    pricePlaceholder:'Precio (€)', totalCost:'Coste total', realRating:'⭐ Estrella real',
-    ptcRating:'⭐ Estrella PTC', cheapest:'Combinación más barata encontrada',
-    totalPlayers:'Total jugadores', ratingSum:'Suma de medias',
-    invalid:'Revisa los datos: jugadores 5–30 y media 50–99.',
-    noPrices:'No hay precios introducidos.',
-    noSolution:'No existe una combinación posible con los precios que has introducido. Prueba a añadir precios de medias más altas.',
-    cleared:'Borrado.', saved:'Guardado.', loaded:'Cargado.', noSaved:'No hay datos guardados.',
-    overwrite:'Ya hay datos guardados. ¿Quieres sobreescribirlos?',
-    clearConfirm:'¿Seguro que quieres borrar todos los precios?',
-    gridSize:'Tamaño de la cuadrícula'
+var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%234b5668'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
+
+/* DICCIONARIO MULTILINGÜE */
+var i18n = {
+  es: {
+    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
+    heroTitle: "Desafíos de Creación de Plantillas (PTC)",
+    heroSubtitle: "Explora los desafíos activos y obtén la solución más barata con precios de la base de datos o de la calculadora.",
+    statPlayers: "Jugadores en BD", statActive: "PTCs Activos",
+    tabBasic: "🔄 Básicos Repetibles", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tiempo Limitado",
+    btnSrcDb: "🗄️ Base de Datos", btnSrcManual: "✏️ Calculadora Manual",
+    reqPlayers: "Jugadores:", reqTarget: "Media requerida:",
+    reqSquads: "Plantillas requeridas:",
+    viewSolution: "Ver alineación óptima →",
+    estCost: "Coste estimado:",
+    sumCost: "Coste Plantilla", sumTotalCost: "Coste Total Desafío",
+    sumTarget: "Media Exigida", sumExact: "Media Exacta",
+    squadTitle: "Alineación Sugerida",
+    noPricesWarning: "No hay precios disponibles. Revisa la Base de Datos o introduce precios en el modo Manual de la calculadora.",
+    anyPlayer: "Cualquier jugador de",
+    badgeBasic: "Básico", badgeSeason: "Temporada", badgeLimited: "Limitado",
+    modalSubtitle: "{players} jugadores · Media {target}",
+    multiSquadTitle: "{title} ({current} de {total})"
   },
-  en:{
-    pricesTitle:'Price by rating', save:'Save', load:'Load', clearPrices:'Clear prices',
-    ptcData:'PTC Data', playersLabel:'Number of players', targetLabel:'Required rating',
-    calculate:'Calculate cheapest combination', clear:'Clear', result:'Result',
-    emptyResult:'Enter the prices and click <b style="margin-left:5px">Calculate cheapest combination</b>.',
-    pricePlaceholder:'Price (€)', totalCost:'Total cost', realRating:'⭐ Actual rating',
-    ptcRating:'⭐ PTC rating', cheapest:'Cheapest combination found',
-    totalPlayers:'Total players', ratingSum:'Rating sum',
-    invalid:'Check the values: players 5–30 and rating 50–99.',
-    noPrices:'No prices entered.',
-    noSolution:'No possible combination exists with the prices entered. Try adding prices for higher ratings.',
-    cleared:'Cleared.', saved:'Saved.', loaded:'Loaded.', noSaved:'No saved data.',
-    overwrite:'Saved data already exists. Do you want to overwrite it?',
-    clearConfirm:'Are you sure you want to clear all prices?',
-    gridSize:'Grid size'
+  en: {
+    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
+    heroTitle: "Squad Building Challenges (PTC)",
+    heroSubtitle: "Explore active challenges and get the cheapest squad solution using database or calculator manual prices.",
+    statPlayers: "Players in DB", statActive: "Active PTCs",
+    tabBasic: "🔄 Repeatable Basics", tabSeason: "🏆 Season Challenges", tabLimited: "⏳ Limited Time",
+    btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Manual Calculator",
+    reqPlayers: "Players:", reqTarget: "Target Rating:",
+    reqSquads: "Required Squads:",
+    viewSolution: "View cheapest squad →",
+    estCost: "Estimated Cost:",
+    sumCost: "Squad Cost", sumTotalCost: "Total Challenge Cost",
+    sumTarget: "Target Rating", sumExact: "Exact Rating",
+    squadTitle: "Suggested Squad",
+    noPricesWarning: "No prices available. Check your Database or enter manual prices in the calculator.",
+    anyPlayer: "Any player of",
+    badgeBasic: "Basic", badgeSeason: "Season", badgeLimited: "Limited",
+    modalSubtitle: "{players} players · Rating {target}",
+    multiSquadTitle: "{title} ({current} of {total})"
   },
-  fr:{
-    pricesTitle:'Prix par note', save:'Enregistrer', load:'Charger', clearPrices:'Effacer les prix',
-    ptcData:'Données du PTC', playersLabel:'Nombre de joueurs', targetLabel:'Note requise',
-    calculate:'Calculer la combinaison la moins chère', clear:'Effacer', result:'Résultat',
-    emptyResult:'Saisissez les prix puis cliquez sur <b style="margin-left:5px">Calculer la combinaison la moins chère</b>.',
-    pricePlaceholder:'Prix (€)', totalCost:'Coût total', realRating:'⭐ Note réelle',
-    ptcRating:'⭐ Note PTC', cheapest:'Combinaison la moins chère trouvée',
-    totalPlayers:'Total des joueurs', ratingSum:'Somme des notes',
-    invalid:'Vérifiez les valeurs : joueurs 5–30 et note 50–99.',
-    noPrices:'Aucun prix saisi.',
-    noSolution:'Aucune combinaison possible avec les prix saisis. Ajoutez des prix pour des notes plus élevées.',
-    cleared:'Effacé.', saved:'Enregistré.', loaded:'Chargé.', noSaved:'Aucune donnée enregistrée.',
-    overwrite:'Des données sont déjà enregistrées. Voulez-vous les remplacer?',
-    clearConfirm:'Voulez-vous vraiment effacer tous les prix?',
-    gridSize:'Taille de la grille'
+  fr: {
+    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
+    heroTitle: "Défis de Création d'Équipe (DCE)",
+    heroSubtitle: "Découvrez les défis actifs et obtenez la solution la moins chère avec votre base de données ou la calculatrice.",
+    statPlayers: "Joueurs en BD", statActive: "DCE Actifs",
+    tabBasic: "🔄 Répétables Basiques", tabSeason: "🏆 De Saison", tabLimited: "⏳ Temps Limité",
+    btnSrcDb: "🗄️ Base de Données", btnSrcManual: "✏️ Calculateur Manuel",
+    reqPlayers: "Joueurs :", reqTarget: "Note Requise :",
+    reqSquads: "Équipes Requises :",
+    viewSolution: "Voir l'équipe optimale →",
+    estCost: "Coût estimé :",
+    sumCost: "Coût de l'équipe", sumTotalCost: "Coût Total du Défi",
+    sumTarget: "Note Requise", sumExact: "Note Réelle",
+    squadTitle: "Équipe Recommandée",
+    noPricesWarning: "Aucun prix disponible. Vérifiez la base ou entrez des prix dans le calculateur manuel.",
+    anyPlayer: "Tout joueur de",
+    badgeBasic: "Basique", badgeSeason: "Saison", badgeLimited: "Limité",
+    modalSubtitle: "{players} joueurs · Note {target}",
+    multiSquadTitle: "{title} ({current} sur {total})"
   },
-  de:{
-    pricesTitle:'Preis nach Wertung', save:'Speichern', load:'Laden', clearPrices:'Preise löschen',
-    ptcData:'PTC-Daten', playersLabel:'Anzahl Spieler', targetLabel:'Benötigte Wertung',
-    calculate:'Günstigste Kombination berechnen', clear:'Löschen', result:'Ergebnis',
-    emptyResult:'Preise eingeben und <b style="margin-left:5px">Günstigste Kombination berechnen</b> klicken.',
-    pricePlaceholder:'Preis (€)', totalCost:'Gesamtkosten', realRating:'⭐ Tatsächliche Wertung',
-    ptcRating:'⭐ PTC-Wertung', cheapest:'Günstigste gefundene Kombination',
-    totalPlayers:'Spieler gesamt', ratingSum:'Wertungssumme',
-    invalid:'Werte prüfen: Spieler 5–30 und Wertung 50–99.',
-    noPrices:'Keine Preise eingegeben.',
-    noSolution:'Mit den eingegebenen Preisen ist keine Kombination möglich. Preise für höhere Wertungen hinzufügen.',
-    cleared:'Gelöscht.', saved:'Gespeichert.', loaded:'Geladen.', noSaved:'Keine gespeicherten Daten.',
-    overwrite:'Es sind bereits Daten gespeichert. Möchtest du sie überschreiben?',
-    clearConfirm:'Möchtest du wirklich alle Preise löschen?',
-    gridSize:'Rastergröße'
+  de: {
+    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
+    heroTitle: "Squad Building Challenges (PTC)",
+    heroSubtitle: "Finde die günstigste SBC-Kombination mit Datenbank- oder manuellen Rechnerpreisen.",
+    statPlayers: "Spieler in DB", statActive: "Aktive PTCs",
+    tabBasic: "🔄 Wiederholbar Basis", tabSeason: "🏆 Saison-PTC", tabLimited: "⏳ Zeitlich Begrenzt",
+    btnSrcDb: "🗄️ Datenbank", btnSrcManual: "✏️ Rechner Manuell",
+    reqPlayers: "Spieler:", reqTarget: "Benötigte Wertung:",
+    reqSquads: "Erforderliche Teams:",
+    viewSolution: "Günstigste Aufstellung →",
+    estCost: "Geschätzte Kosten:",
+    sumCost: "Team-Kosten", sumTotalCost: "Gesamtkosten Challenge",
+    sumTarget: "Ziel-Wertung", sumExact: "Genaue Wertung",
+    squadTitle: "Empfohlene Aufstellung",
+    noPricesWarning: "Keine Preise verfügbar. Bitte Datenbank oder manuelle Preise im Rechner prüfen.",
+    anyPlayer: "Jeder Spieler mit",
+    badgeBasic: "Basis", badgeSeason: "Saison", badgeLimited: "Begrenzt",
+    modalSubtitle: "{players} Spieler · Wertung {target}",
+    multiSquadTitle: "{title} ({current} von {total})"
   },
-  it:{
-    pricesTitle:'Prezzo per valutazione', save:'Salva', load:'Carica', clearPrices:'Cancella prezzi',
-    ptcData:'Dati PTC', playersLabel:'Numero di giocatori', targetLabel:'Valutazione richiesta',
-    calculate:'Calcola la combinazione più economica', clear:'Pulisci', result:'Risultato',
-    emptyResult:'Inserisci i prezzi e premi <b style="margin-left:5px">Calcola la combinazione più economica</b>.',
-    pricePlaceholder:'Prezzo (€)', totalCost:'Costo totale', realRating:'⭐ Valutazione reale',
-    ptcRating:'⭐ Valutazione PTC', cheapest:'Combinazione più economica trovata',
-    totalPlayers:'Giocatori totali', ratingSum:'Somma valutazioni',
-    invalid:'Controlla i dati: giocatori 5–30 e valutazione 50–99.',
-    noPrices:'Nessun prezzo inserito.',
-    noSolution:'Nessuna combinazione possibile con i prezzi inseriti. Prova ad aggiungere prezzi per valutazioni più alte.',
-    cleared:'Cancellato.', saved:'Salvato.', loaded:'Caricato.', noSaved:'Nessun dato salvato.',
-    overwrite:'Esistono già dati salvati. Vuoi sovrascriverli?',
-    clearConfirm:'Sei sicuro di voler cancellare tutti i prezzi?',
-    gridSize:'Dimensione griglia'
+  it: {
+    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
+    heroTitle: "Sfide Creazione Rosa (PTC)",
+    heroSubtitle: "Trova la combinazione più economica usando i prezzi del database o del calcolatore manuale.",
+    statPlayers: "Giocatori in BD", statActive: "PTC Attivi",
+    tabBasic: "🔄 Ripetibili Base", tabSeason: "🏆 Stagionali", tabLimited: "⏳ Tempo Limitato",
+    btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Calcolatore Manuale",
+    reqPlayers: "Giocatori:", reqTarget: "Valutazione richiesta:",
+    reqSquads: "Rose richieste:",
+    viewSolution: "Vedi rosa migliore →",
+    estCost: "Costo stimato:",
+    sumCost: "Costo Rosa", sumTotalCost: "Costo Totale Sfida",
+    sumTarget: "Valutazione Richiesta", sumExact: "Valutazione Reale",
+    squadTitle: "Rosa Suggerita",
+    noPricesWarning: "Nessun prezzo disponibile. Controlla il database o inserisci prezzi nel calcolatore.",
+    anyPlayer: "Qualsiasi giocatore da",
+    badgeBasic: "Base", badgeSeason: "Stagione", badgeLimited: "Limitato",
+    modalSubtitle: "{players} giocatori · Valutazione {target}",
+    multiSquadTitle: "{title} ({current} di {total})"
   },
-  pt:{
-    pricesTitle:'Preço por classificação', save:'Guardar', load:'Carregar', clearPrices:'Apagar preços',
-    ptcData:'Dados do PTC', playersLabel:'Número de jogadores', targetLabel:'Classificação exigida',
-    calculate:'Calcular combinação mais barata', clear:'Limpar', result:'Resultado',
-    emptyResult:'Introduza os preços e clique em <b style="margin-left:5px">Calcular combinação mais barata</b>.',
-    pricePlaceholder:'Preço (€)', totalCost:'Custo total', realRating:'⭐ Classificação real',
-    ptcRating:'⭐ Classificação PTC', cheapest:'Combinação mais barata encontrada',
-    totalPlayers:'Total de jogadores', ratingSum:'Soma das classificações',
-    invalid:'Verifique os dados: jogadores 5–30 e classificação 50–99.',
-    noPrices:'Não foram introduzidos preços.',
-    noSolution:'Não existe uma combinação possível com os preços introduzidos. Tente adicionar preços de classificações mais altas.',
-    cleared:'Apagado.', saved:'Guardado.', loaded:'Carregado.', noSaved:'Não existem dados guardados.',
-    overwrite:'Já existem dados guardados. Quer substituí-los?',
-    clearConfirm:'Tem a certeza de que quer apagar todos os preços?',
-    gridSize:'Tamanho da grelha'
+  pt: {
+    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
+    heroTitle: "Desafios de Montagem de Elenco (DME)",
+    heroSubtitle: "Encontre a solução mais barata para os desafios usando preços da base de dados ou da calculadora.",
+    statPlayers: "Jogadores na BD", statActive: "DMEs Ativos",
+    tabBasic: "🔄 Básicos Repetíveis", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tempo Limitado",
+    btnSrcDb: "🗄️ Base de Dados", btnSrcManual: "✏️ Calculadora Manual",
+    reqPlayers: "Jogadores:", reqTarget: "Classificação exigida:",
+    reqSquads: "Elencos exigidos:",
+    viewSolution: "Ver elenco ideal →",
+    estCost: "Custo estimado:",
+    sumCost: "Custo do Elenco", sumTotalCost: "Custo Total do Desafio",
+    sumTarget: "Nota Exigida", sumExact: "Nota Exata",
+    squadTitle: "Elenco Sugerido",
+    noPricesWarning: "Sem preços disponíveis. Verifique a base de dados ou insira preços manuais na calculadora.",
+    anyPlayer: "Qualquer jogador de",
+    badgeBasic: "Básico", badgeSeason: "Temporada", badgeLimited: "Limitado",
+    modalSubtitle: "{players} jogadores · Classificação {target}"
   }
 };
 
-const flags={es:'🇪🇸',en:'🇬🇧',fr:'🇫🇷',de:'🇩🇪',it:'🇮🇹',pt:'🇵🇹'};
-let currentLang=localStorage.getItem('ufm_language')||'es';
-let messageTimer=null;
+/* NOMBRES DE LOS DESAFÍOS TRADUCIDOS EN LOS 6 IDIOMAS */
+var ptcTitles = {
+  b_60: { es: "Mejora 60+", en: "60+ Upgrade", fr: "Renfort 60+", de: "60+-Upgrade", it: "Miglioramento 60+", pt: "Melhoria 60+" },
+  b_70: { es: "Mejora 70+", en: "70+ Upgrade", fr: "Renfort 70+", de: "70+-Upgrade", it: "Miglioramento 70+", pt: "Melhoria 70+" },
+  b_74: { es: "Mejora 74+", en: "74+ Upgrade", fr: "Renfort 74+", de: "74+-Upgrade", it: "Miglioramento 74+", pt: "Melhoria 74+" },
+  b_78: { es: "Mejora 78+", en: "78+ Upgrade", fr: "Renfort 78+", de: "78+-Upgrade", it: "Miglioramento 78+", pt: "Melhoria 78+" },
+  b_81: { es: "Mejora 81+", en: "81+ Upgrade", fr: "Renfort 81+", de: "81+-Upgrade", it: "Miglioramento 81+", pt: "Melhoria 81+" },
+  b_83: { es: "Mejora 83+", en: "83+ Upgrade", fr: "Renfort 83+", de: "83+-Upgrade", it: "Miglioramento 83+", pt: "Melhoria 83+" },
+  b_85: { es: "Mejora 85+", en: "85+ Upgrade", fr: "Renfort 85+", de: "85+-Upgrade", it: "Miglioramento 85+", pt: "Melhoria 85+" },
+  b_87: { es: "Mejora 87+", en: "87+ Upgrade", fr: "Renfort 87+", de: "87+-Upgrade", it: "Miglioramento 87+", pt: "Melhoria 87+" },
+  b_gold_up: { es: "Mejora de Oro Común", en: "Common Gold Upgrade", fr: "Renfort Or Commun", de: "Gewöhnliches Gold-Upgrade", it: "Miglioramento Oro Comune", pt: "Melhoria de Ouro Comum" },
+  b_silver_up: { es: "Mejora de Plata", en: "Silver Upgrade", fr: "Renfort Argent", de: "Silber-Upgrade", it: "Miglioramento Argento", pt: "Melhoria de Prata" },
+  s_tots_warm: { es: "Elección de Jugador Temporada", en: "Season Player Pick", fr: "Choix Joueur Saison", de: "Saison-Spielerwahl", it: "Scelta Giocatore Stagione", pt: "Escolha de Jogador da Temporada" },
+  s_league_sbc: { es: "Desafío de Liga Principal", en: "Major League Challenge", fr: "Défi Ligue Principale", de: "Hauptliga-Challenge", it: "Sfida Campionato Principale", pt: "Desafio da Liga Principal" },
+  l_totw_upgrade: { es: "Mejora TOTW Activo", en: "Active TOTW Upgrade", fr: "Renfort TOTW Actif", de: "Aktives TDW-Upgrade", it: "Miglioramento TOTW Attivo", pt: "Melhoria TOTW Ativa" },
+  l_flash_challenge: { es: "Desafío Relámpago", en: "Flash Challenge", fr: "Défi Flash", de: "Blitz-Challenge", it: "Sfida Lampo", pt: "Desafio Relâmpago" },
+  l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)", fr: "Martin Ødegaard (91 POTM)", de: "Martin Ødegaard (91 POTM)", it: "Martin Ødegaard (91 POTM)", pt: "Martin Ødegaard (91 POTM)" }
+};
 
-function t(key){ return translations[currentLang][key] || translations.es[key] || key; }
+/* DEFINICIÓN DE LOS PTCS */
+var ptcList = [
+  // 8 BÁSICOS REPETIBLES (5 Jugadores)
+  { id: "b_60", category: "basic", players: 5, target: 50 },
+  { id: "b_70", category: "basic", players: 5, target: 60 },
+  { id: "b_74", category: "basic", players: 5, target: 70 },
+  { id: "b_78", category: "basic", players: 5, target: 74 },
+  { id: "b_81", category: "basic", players: 5, target: 78 },
+  { id: "b_83", category: "basic", players: 5, target: 81 },
+  { id: "b_85", category: "basic", players: 5, target: 83 },
+  { id: "b_87", category: "basic", players: 5, target: 85 },
+  // De muestra en Básicos
+  { id: "b_gold_up", category: "basic", players: 11, target: 75 },
+  { id: "b_silver_up", category: "basic", players: 11, target: 65 },
 
-function applyTranslations(){
-  document.documentElement.lang=currentLang;
-  document.title='UFM PTC Calculator';
-  document.getElementById('langButton').textContent=flags[currentLang];
-  document.querySelectorAll('[data-i18n]').forEach(el=>el.innerHTML=t(el.dataset.i18n));
-  document.querySelectorAll('[data-i18n-title]').forEach(el=>el.title=t(el.dataset.i18nTitle));
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>el.placeholder=t(el.dataset.i18nPlaceholder));
-  document.getElementById('density').setAttribute('aria-label',t('gridSize'));
-  document.querySelector('.density-wrap').title=t('gridSize');
-  const result=document.getElementById('result');
-  if(result.classList.contains('empty')) result.innerHTML=`<span data-i18n="emptyResult">${t('emptyResult')}</span>`;
+  // DE TEMPORADA
+  { id: "s_tots_warm", category: "season", players: 11, target: 84 },
+  { id: "s_league_sbc", category: "season", players: 11, target: 82 },
+
+  // TIEMPO LIMITADO
+  // PTC Especial compuesto por 5 plantillas internas (Ødegaard 91)
+  {
+    id: "l_odegaard_91",
+    category: "limited",
+    subchallenges: [
+      { name: "Plantilla 84", players: 11, target: 84 },
+      { name: "Plantilla 86", players: 11, target: 86 },
+      { name: "Plantilla 88", players: 11, target: 88 },
+      { name: "Plantilla 89", players: 11, target: 89 },
+      { name: "Plantilla 90", players: 11, target: 90 }
+    ]
+  },
+  { id: "l_totw_upgrade", category: "limited", players: 11, target: 83 },
+  { id: "l_flash_challenge", category: "limited", players: 6, target: 79 }
+];
+
+function getPtcTitle(ptcId) {
+  var entry = ptcTitles[ptcId];
+  if (!entry) return ptcId;
+  return entry[currentLang] || entry.es || entry.en;
 }
 
-function setLanguage(lang){
-  if(!translations[lang]) return;
-  currentLang=lang;
-  localStorage.setItem('ufm_language',lang);
-  document.getElementById('langMenu').classList.remove('open');
-  applyTranslations();
-  if(document.getElementById('result').classList.contains('empty')) clearResult();
+function getPtcBadgeLabel(category) {
+  var t = i18n[currentLang] || i18n.es;
+  if (category === 'limited') return t.badgeLimited;
+  if (category === 'season') return t.badgeSeason;
+  return t.badgeBasic;
 }
 
-function toggleLangMenu(){
-  document.getElementById('langMenu').classList.toggle('open');
-}
-
-document.addEventListener('click',e=>{
-  const wrap=document.querySelector('.lang-wrap');
-  if(!wrap.contains(e.target)) document.getElementById('langMenu').classList.remove('open');
-});
-
-function buildPrices(){
-  for(let r=MAX;r>=MIN;r--){
-    const d=document.createElement('div');
-    d.className='priceitem';
-    d.innerHTML=`<div class="rating">⭐ ${r}</div>
-      <input id="p${r}" type="text" autocomplete="off" data-i18n-placeholder="pricePlaceholder" placeholder="${t('pricePlaceholder')}">`;
-    grid.appendChild(d);
+/* OBTENER BASE DE DATOS DE JUGADORES */
+function getDatabasePlayers() {
+  var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6'];
+  for (var i = 0; i < candidateKeys.length; i++) {
+    try {
+      var raw = localStorage.getItem(candidateKeys[i]);
+      if (raw) {
+        var parsed = JSON.parse(raw);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch(e) {}
   }
+  return [];
 }
 
-function formatInputValue(input){
-  const digits=String(input.value).replace(/[^0-9]/g,'');
-  if(digits===''){ input.value=''; return; }
-  input.value=digits.replace(/\B(?=(\d{3})+(?!\d))/g,'.');
-}
-
-function attachPriceFormatting(){
-  for(let r=MIN;r<=MAX;r++){
-    const el=document.getElementById('p'+r);
-    el.addEventListener('blur',()=>formatInputValue(el));
+/* OBTENER PRECIOS MÍNIMOS POR MEDIA SEGÚN FUENTE SELECCIONADA */
+function getActivePrices() {
+  if (priceSource === 'manual') {
+    var raw = localStorage.getItem('ufm_ptc_prices');
+    var manualPrices = {};
+    if (raw) {
+      try {
+        var parsed = JSON.parse(raw);
+        for (var r = 50; r <= 99; r++) {
+          if (parsed[r]) {
+            var digits = String(parsed[r]).replace(/[^0-9]/g, '');
+            if (digits !== '') {
+              var n = parseInt(digits, 10);
+              if (n > 0) manualPrices[r] = n;
+            }
+          }
+        }
+      } catch(e) {}
+    }
+    return manualPrices;
   }
+
+  // Por defecto: desde la base de datos
+  var players = getDatabasePlayers();
+  var minPrices = {};
+  players.forEach(function(p) {
+    var rat = parseInt(p.rating, 10);
+    var pr = (p.price !== '' && p.price != null) ? parseInt(p.price, 10) : null;
+    if (rat >= 50 && rat <= 99 && pr !== null && !isNaN(pr) && pr > 0) {
+      if (!minPrices[rat] || pr < minPrices[rat]) {
+        minPrices[rat] = pr;
+      }
+    }
+  });
+  return minPrices;
 }
 
-function parsePrice(v){
-  if(!v) return null;
-  const digits=String(v).replace(/[^0-9]/g,'');
-  if(digits==='') return null;
-  const n=parseInt(digits,10);
-  return Number.isFinite(n)&&n>=0?n:null;
-}
-function fmt(n){
-  return new Intl.NumberFormat(currentLang==='en'?'en-GB':currentLang==='de'?'de-DE':currentLang==='fr'?'fr-FR':currentLang==='it'?'it-IT':currentLang==='pt'?'pt-PT':'es-ES',{maximumFractionDigits:0}).format(Math.round(n));
-}
-function fmtDec(n){ return n.toFixed(2).replace('.',','); }
-
-function getPrices(){
-  const prices={};
-  for(let r=MIN;r<=MAX;r++){
-    const n=parsePrice(document.getElementById('p'+r).value);
-    if(n!==null) prices[r]=n;
-  }
-  return prices;
+/* LÓGICA DE CÁLCULO DE LA CALCULADORA */
+function thresholdFor(n, target) {
+  return target * n - Math.floor(n / 2);
 }
 
-function thresholdFor(n,target){
-  return target*n-Math.floor(n/2);
-}
+function solveSbc(n, target, prices) {
+  var ratings = Object.keys(prices).map(Number).sort(function(a, b) { return a - b; });
+  if (!ratings.length) return null;
 
-function calculate(){
-  const n=parseInt(document.getElementById('players').value,10);
-  const target=parseInt(document.getElementById('target').value,10);
-  const out=document.getElementById('result');
-  if(!Number.isInteger(n)||n<5||n>30||!Number.isInteger(target)||target<50||target>99){
-    out.className='';
-    out.innerHTML=`<div class="error">${t('invalid')}</div>`; return;
-  }
-  const prices=getPrices();
-  const ratings=Object.keys(prices).map(Number).sort((a,b)=>a-b);
-  if(!ratings.length){
-    out.className='';
-    out.innerHTML=`<div class="error">${t('noPrices')}</div>`; return;
-  }
-  const minSum=thresholdFor(n,target);
-  const maxSum=n*MAX;
+  var minSum = thresholdFor(n, target);
+  var maxSum = n * 99;
 
-  let dp=new Array(maxSum+1).fill(null);
-  dp[0]={cost:0,counts:new Map()};
-  for(let slot=0;slot<n;slot++){
-    const ndp=new Array(maxSum+1).fill(null);
-    for(let s=0;s<=MAX*slot;s++){
-      const state=dp[s]; if(!state) continue;
-      for(const r of ratings){
-        const ns=s+r, nc=state.cost+prices[r], old=ndp[ns];
-        if(!old||nc<old.cost){
-          const counts=new Map(state.counts);
-          counts.set(r,(counts.get(r)||0)+1);
-          ndp[ns]={cost:nc,counts};
+  var dp = new Array(maxSum + 1).fill(null);
+  dp[0] = { cost: 0, counts: new Map() };
+
+  for (var slot = 0; slot < n; slot++) {
+    var ndp = new Array(maxSum + 1).fill(null);
+    for (var s = 0; s <= 99 * slot; s++) {
+      var state = dp[s];
+      if (!state) continue;
+      for (var i = 0; i < ratings.length; i++) {
+        var r = ratings[i];
+        var ns = s + r;
+        var nc = state.cost + prices[r];
+        var old = ndp[ns];
+        if (!old || nc < old.cost) {
+          var counts = new Map(state.counts);
+          counts.set(r, (counts.get(r) || 0) + 1);
+          ndp[ns] = { cost: nc, counts: counts };
         }
       }
     }
-    dp=ndp;
+    dp = ndp;
   }
 
-  let best=null,bestSum=null;
-  for(let s=minSum;s<=maxSum;s++){
-    if(dp[s]&&(!best||dp[s].cost<best.cost||(dp[s].cost===best.cost&&s<bestSum))){
-      best=dp[s]; bestSum=s;
+  var best = null, bestSum = null;
+  for (var s = minSum; s <= maxSum; s++) {
+    if (dp[s] && (!best || dp[s].cost < best.cost || (dp[s].cost === best.cost && s < bestSum))) {
+      best = dp[s];
+      bestSum = s;
     }
   }
-  if(!best){
-    out.className='';
-    out.innerHTML=`<div class="error">${t('noSolution')}</div>`; return;
-  }
 
-  const avg=bestSum/n;
-  const rows=[...best.counts.entries()].sort((a,b)=>b[0]-a[0]);
-  const composition=rows.map(([r,c])=>`<div class="row"><span><span class="tag">${c} × ${r}</span></span><b>${fmt(prices[r]*c)}</b></div>`).join('');
-
-  out.className='';
-  out.innerHTML=`
-    <div class="summary">
-      <div class="stat"><span>${t('totalCost')}</span><b>${fmt(best.cost)}</b></div>
-      <div class="stat"><span>${t('realRating')}</span><b>${fmtDec(avg)}</b></div>
-      <div class="stat"><span>${t('ptcRating')}</span><b>${target}</b></div>
-    </div>
-    <div class="solution">
-      <h3>${t('cheapest')}</h3>
-      ${composition}
-      <div class="row" style="margin-top:6px;padding-top:12px"><span>${t('totalPlayers')}</span><b>${n}</b></div>
-      <div class="row"><span>${t('ratingSum')}</span><b>${bestSum}</b></div>
-    </div>
-  `;
+  if (!best) return null;
+  return { cost: best.cost, bestSum: bestSum, counts: best.counts };
 }
 
-function clearResult(){
-  const out=document.getElementById('result');
-  out.className='empty';
-  out.innerHTML=`<span data-i18n="emptyResult">${t('emptyResult')}</span>`;
+function getCardClass(rating) {
+  var rat = +rating || 0;
+  if (rat <= 64) return 'bronze';
+  if (rat <= 74) return 'silver';
+  if (rat <= 82) return 'gold-light';
+  return 'gold-dark';
 }
 
-function showMessage(message){
-  const el=document.getElementById('saveMsg');
-  el.textContent=message;
-  if(messageTimer) clearTimeout(messageTimer);
-  messageTimer=setTimeout(()=>el.textContent='',5000);
+function setPriceSource(src) {
+  priceSource = src;
+  document.getElementById('btnSrcDb').classList.toggle('active', src === 'db');
+  document.getElementById('btnSrcManual').classList.toggle('active', src === 'manual');
+  renderPtcList();
 }
 
-function confirmClearPrices(){
-  if(confirm(t('clearConfirm'))){
-    for(let r=MIN;r<=MAX;r++) document.getElementById('p'+r).value='';
-    showMessage(t('cleared'));
-  }
-}
+function renderPtcList() {
+  var t = i18n[currentLang] || i18n.es;
+  var db = getDatabasePlayers();
+  var prices = getActivePrices();
 
-function savePrices(){
-  if(localStorage.getItem('ufm_ptc_prices')!==null&&!confirm(t('overwrite'))) return;
-  const data={};
-  for(let r=MIN;r<=MAX;r++) data[r]=document.getElementById('p'+r).value;
-  localStorage.setItem('ufm_ptc_prices',JSON.stringify(data));
-  showMessage(t('saved'));
-}
+  document.getElementById('statDbCount').textContent = db.length;
+  document.getElementById('statPtcCount').textContent = ptcList.length;
 
-function loadPrices(silent=false){
-  const raw=localStorage.getItem('ufm_ptc_prices');
-  if(!raw){ if(!silent) showMessage(t('noSaved')); return; }
-  try{
-    const data=JSON.parse(raw);
-    for(let r=MIN;r<=MAX;r++){
-      const el=document.getElementById('p'+r);
-      el.value=data[r]||'';
-      formatInputValue(el);
+  var filtered = ptcList.filter(function(p) { return p.category === currentCategory; });
+  var grid = document.getElementById('ptcGrid');
+  grid.innerHTML = '';
+
+  filtered.forEach(function(ptc) {
+    var card = document.createElement('div');
+    card.className = 'ptc-card';
+    card.onclick = function() { openPtcModal(ptc); };
+
+    var typeClass = ptc.category === 'limited' ? 'limited' : (ptc.category === 'season' ? 'season' : '');
+    var localizedTitle = getPtcTitle(ptc.id);
+    var localizedBadge = getPtcBadgeLabel(ptc.category);
+
+    var reqHtml = '';
+    var costText = '—';
+
+    // Desafío compuesto (Multi-plantilla)
+    if (ptc.subchallenges && ptc.subchallenges.length) {
+      reqHtml = `
+        <div class="ptc-req-item"><span>${t.reqSquads}</span> <b>${ptc.subchallenges.length}</b></div>
+        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>${ptc.subchallenges.map(s => s.target).join(', ')}</b></div>
+      `;
+      var totalCost = 0;
+      var canSolveAll = true;
+      ptc.subchallenges.forEach(function(sub) {
+        var s = solveSbc(sub.players, sub.target, prices);
+        if (s) totalCost += s.cost;
+        else canSolveAll = false;
+      });
+      if (canSolveAll && totalCost > 0) {
+        costText = Number(totalCost).toLocaleString('es-ES') + ' 🪙';
+      }
+    } else {
+      reqHtml = `
+        <div class="ptc-req-item"><span>${t.reqPlayers}</span> <b>${ptc.players}</b></div>
+        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${ptc.target}</b></div>
+      `;
+      var sol = solveSbc(ptc.players, ptc.target, prices);
+      if (sol) costText = Number(sol.cost).toLocaleString('es-ES') + ' 🪙';
     }
-    if(!silent) showMessage(t('loaded'));
-  }catch{
-    if(!silent) showMessage(t('noSaved'));
+
+    card.innerHTML = `
+      <div>
+        <div class="ptc-header">
+          <h3 class="ptc-title">${localizedTitle}</h3>
+          <span class="ptc-badge-type ${typeClass}">${localizedBadge}</span>
+        </div>
+        <div class="ptc-reqs">${reqHtml}</div>
+      </div>
+      <div class="ptc-footer">
+        <div>
+          <small style="color:var(--muted); font-size:10px; display:block">${t.estCost}</small>
+          <span class="ptc-cost">${costText}</span>
+        </div>
+        <span class="ptc-action">${t.viewSolution}</span>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openPtcModal(ptc) {
+  activeModalPtc = ptc;
+  activeSubIndex = 0;
+
+  var subTabsWrap = document.getElementById('subTabsWrap');
+  if (ptc.subchallenges && ptc.subchallenges.length) {
+    subTabsWrap.style.display = 'flex';
+    subTabsWrap.innerHTML = ptc.subchallenges.map(function(sub, idx) {
+      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${sub.name} (⭐${sub.target})</button>`;
+    }).join('');
+  } else {
+    subTabsWrap.style.display = 'none';
+    subTabsWrap.innerHTML = '';
+  }
+
+  renderModalContent();
+  document.getElementById('modalBg').classList.add('open');
+}
+
+function selectSubChallenge(idx) {
+  activeSubIndex = idx;
+  var btns = document.querySelectorAll('.sub-tab-btn');
+  btns.forEach(function(b, i) { b.classList.toggle('active', i === idx); });
+  renderModalContent();
+}
+
+function renderModalContent() {
+  var t = i18n[currentLang] || i18n.es;
+  var ptc = activeModalPtc;
+  if (!ptc) return;
+
+  var isMulti = ptc.subchallenges && ptc.subchallenges.length;
+  var currentTargetPtc = isMulti ? ptc.subchallenges[activeSubIndex] : ptc;
+  
+  var prices = getActivePrices();
+  var db = priceSource === 'db' ? getDatabasePlayers() : [];
+  var sol = solveSbc(currentTargetPtc.players, currentTargetPtc.target, prices);
+
+  var localizedTitle = getPtcTitle(ptc.id);
+  if (isMulti) {
+    localizedTitle = localizedTitle + ' - ' + currentTargetPtc.name;
+  }
+
+  var subtitleTemplate = t.modalSubtitle || "{players} jugadores · Media {target}";
+  var localizedSubtitle = subtitleTemplate.replace('{players}', currentTargetPtc.players).replace('{target}', currentTargetPtc.target);
+
+  document.getElementById('modalPtcTitle').textContent = localizedTitle;
+  document.getElementById('modalPtcSubtitle').textContent = localizedSubtitle;
+
+  var squadGrid = document.getElementById('squadGrid');
+  squadGrid.innerHTML = '';
+
+  if (!sol) {
+    document.getElementById('solCost').textContent = '—';
+    document.getElementById('solTarget').textContent = currentTargetPtc.target;
+    document.getElementById('solAvg').textContent = '—';
+    squadGrid.innerHTML = `<div style="grid-column:1/-1; text-align:center; padding:30px; color:var(--danger)">${t.noPricesWarning}</div>`;
+    return;
+  }
+
+  document.getElementById('solCost').textContent = Number(sol.cost).toLocaleString('es-ES') + ' 🪙';
+  document.getElementById('solTarget').textContent = currentTargetPtc.target;
+  document.getElementById('solAvg').textContent = (sol.bestSum / currentTargetPtc.players).toFixed(2).replace('.', ',');
+
+  var usedPlayerIds = new Set();
+  var requiredRatings = [];
+  
+  sol.counts.forEach(function(count, rating) {
+    for (var i = 0; i < count; i++) {
+      requiredRatings.push(rating);
+    }
+  });
+
+  requiredRatings.sort(function(a, b) { return b - a; });
+
+  requiredRatings.forEach(function(rat) {
+    var slot = document.createElement('div');
+    slot.className = 'squad-slot';
+
+    var chosen = null;
+    if (priceSource === 'db') {
+      var candidates = db.filter(function(p) {
+        return parseInt(p.rating, 10) === rat && p.price && !usedPlayerIds.has(p.id);
+      }).sort(function(a, b) { return (+a.price) - (+b.price); });
+      chosen = candidates[0];
+    }
+
+    if (chosen) {
+      usedPlayerIds.add(chosen.id);
+      var cClass = getCardClass(chosen.rating);
+      var img = chosen.image ? chosen.image : DEFAULT_AVATAR;
+
+      slot.innerHTML = `
+        <div class="mini-card ${cClass}">
+          <div class="mini-card-top">
+            <span class="mini-card-rat">${chosen.rating}</span>
+            <span class="mini-card-pos">${chosen.position || '—'}</span>
+          </div>
+          <img class="mini-card-img" src="${img}" onerror="this.src='${DEFAULT_AVATAR}'">
+          <div class="mini-card-name">${chosen.name}</div>
+          <div class="mini-card-club">${chosen.club || 'Sin Club'}</div>
+          <div class="mini-card-price">${Number(chosen.price).toLocaleString('es-ES')} 🪙</div>
+        </div>
+      `;
+    } else {
+      // Modo manual o sin jugador específico en base de datos
+      var minP = prices[rat] ? Number(prices[rat]).toLocaleString('es-ES') + ' 🪙' : '—';
+      slot.innerHTML = `
+        <div class="squad-slot-empty">
+          <b>⭐ ${rat}</b>
+          <span>${t.anyPlayer} ⭐ ${rat}</span>
+          <div class="mini-card-price" style="margin-top:8px">${minP}</div>
+        </div>
+      `;
+    }
+    squadGrid.appendChild(slot);
+  });
+}
+
+function switchCategory(cat) {
+  currentCategory = cat;
+  document.getElementById('tabBasic').classList.toggle('active', cat === 'basic');
+  document.getElementById('tabSeason').classList.toggle('active', cat === 'season');
+  document.getElementById('tabLimited').classList.toggle('active', cat === 'limited');
+  renderPtcList();
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modalBg')) {
+    document.getElementById('modalBg').classList.remove('open');
+    activeModalPtc = null;
   }
 }
 
-function applyDensity(){
-  const value=localStorage.getItem('ufm_price_height')||'190';
-  const h=Math.max(125,Math.min(520,parseInt(value,10)||190));
-  document.documentElement.style.setProperty('--price-height',h+'px');
-  document.getElementById('density').value=h;
+function applyTranslations() {
+  var t = i18n[currentLang] || i18n.es;
+  document.documentElement.lang = currentLang;
+  document.getElementById('langSelect').value = currentLang;
+
+  document.getElementById('lblNavHome').textContent = t.navHome;
+  document.getElementById('lblNavDb').textContent = t.navDb;
+  document.getElementById('lblNavCalc').textContent = t.navCalc;
+
+  document.getElementById('lblHeroTitle').textContent = t.heroTitle;
+  document.getElementById('lblHeroSubtitle').textContent = t.heroSubtitle;
+  document.getElementById('lblStatPlayers').textContent = t.statPlayers;
+  document.getElementById('lblStatActive').textContent = t.statActive;
+
+  document.getElementById('tabBasic').textContent = t.tabBasic;
+  document.getElementById('tabSeason').textContent = t.tabSeason;
+  document.getElementById('tabLimited').textContent = t.tabLimited;
+
+  document.getElementById('btnSrcDb').textContent = t.btnSrcDb;
+  document.getElementById('btnSrcManual').textContent = t.btnSrcManual;
+
+  document.getElementById('lblSumCost').textContent = t.sumCost;
+  document.getElementById('lblSumTarget').textContent = t.sumTarget;
+  document.getElementById('lblSumExact').textContent = t.sumExact;
+  document.getElementById('lblSquadTitle').textContent = t.squadTitle;
 }
 
-document.getElementById('density').addEventListener('input',e=>{
-  const h=e.target.value;
-  document.documentElement.style.setProperty('--price-height',h+'px');
-  localStorage.setItem('ufm_price_height',h);
-});
+function changeLanguage(lang) {
+  currentLang = lang;
+  localStorage.setItem('ufm_lang', currentLang);
+  applyTranslations();
+  renderPtcList();
+}
 
-buildPrices();
-attachPriceFormatting();
-applyDensity();
-loadPrices(true);
+// Inicialización
 applyTranslations();
+renderPtcList();
 </script>
 </body>
 </html>
