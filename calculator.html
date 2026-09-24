@@ -4,44 +4,12 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UFM 27 - Calculadora SBC</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  :root {
-    --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
-    --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
-    --danger: #ef4444;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
-    color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  }
+  /* Estilos específicos de calculator.html */
   .wrap { max-width: 1800px; margin: auto; padding: 18px; }
-  .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; box-shadow: 0 12px 35px rgba(0,0,0,.18); }
-  
-  /* Barra de Navegación */
-  .site-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
-    position: sticky; top: 0; z-index: 10;
-  }
-  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
-  .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
-  .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
-  .nav-links { display: flex; gap: 8px; align-items: center; }
-  .nav-item {
-    padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
-    color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
-  }
-  .nav-item:hover { color: var(--text); background: var(--card2); }
-  .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
-  
-  .lang-select {
-    background: #10141b; border: 1px solid var(--line); color: var(--text);
-    border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
-  }
-  .lang-select:focus { border-color: var(--accent); }
+  .card { padding: 18px 20px; box-shadow: 0 12px 35px rgba(0,0,0,.18); }
 
-  /* Bloque de Precios con Logo integrado a la izquierda */
   .prices-box { margin-bottom: 16px; }
   .price-header {
     display: flex; justify-content: space-between; align-items: center;
@@ -57,31 +25,12 @@
   .calc-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
   .price-header h2 { font-size: 16px; margin: 0 0 2px 0; }
   .price-toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  
-  .source-selector {
-    display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #11151d;
-  }
-  .source-btn {
-    border: 0; padding: 7px 12px; font-size: 12px; font-weight: 700; background: transparent; color: var(--muted); cursor: pointer;
-  }
-  .source-btn.active {
-    background: var(--accent); color: #09241d;
-  }
 
   .grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 18px; align-items: start; }
   .inputs { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   label { display: block; color: var(--muted); font-size: 13px; margin-bottom: 6px; font-weight: 600; }
-  input, select, button { font: inherit; }
-  input, select { width: 100%; background: #11151d; color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; outline: none; }
-  input:focus, select:focus { border-color: var(--accent); }
   
   .btnrow { display: flex; gap: 10px; margin-top: 14px; flex-wrap: wrap; }
-  button { border: 0; border-radius: 9px; padding: 9px 14px; cursor: pointer; font-weight: 800; }
-  .primary { background: var(--accent); color: #09241d; }
-  .secondary { background: var(--card2); color: var(--text); border: 1px solid var(--line); }
-  .secondary:hover { border-color: #4b5668; }
-  .danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.3); }
-  .danger:hover { border-color: var(--danger); color: #fff; }
 
   /* Cuadrícula de Precios */
   .pricegrid {
@@ -131,7 +80,6 @@
 </head>
 <body>
 
-<!-- Cabecero con UFM 27 MULTIMEDIA -->
 <header class="site-nav">
   <a class="nav-brand" href="index.html">
     <div style="font-size:24px">⚽</div>
@@ -154,7 +102,6 @@
 </header>
 
 <div class="wrap">
-  <!-- Panel de Configuración de Precios con Logo Integrado a la Izquierda -->
   <div class="card prices-box">
     <div class="price-header">
       <div class="price-header-left">
@@ -189,7 +136,6 @@
   </div>
 
   <div class="grid">
-    <!-- Formulario de requerimientos del SBC -->
     <section>
       <div class="card">
         <h2 id="lblSbcData">Requisitos del Desafío</h2>
@@ -210,7 +156,6 @@
       </div>
     </section>
 
-    <!-- Visualización del Resultado -->
     <section class="card result">
       <h2 id="lblResult">Resultado Óptimo</h2>
       <div id="result" class="empty">

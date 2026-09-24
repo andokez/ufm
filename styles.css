@@ -1,0 +1,815 @@
+:root {
+  --bg: #0d1016;
+  --card: #171c25;
+  --card2: #202733;
+  --line: #303846;
+  --text: #f2f4f8;
+  --muted: #98a2b3;
+  --accent: #63e6be;
+  --gold: #ffd43b;
+  --danger: #ef4444;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: linear-gradient(135deg, #0d1016, #151b24);
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.wrap {
+  max-width: 1400px;
+  margin: auto;
+  padding: 20px 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+/* =========================================
+   BARRA DE NAVEGACIÓN COMÚN
+   ========================================= */
+.site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 24px;
+  background: #11151f;
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.nav-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.nav-logo {
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 0.9;
+}
+
+.nav-logo small {
+  font-size: 9px;
+  color: var(--accent);
+  letter-spacing: 1.5px;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.nav-item {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-weight: 700;
+  font-size: 13px;
+  color: var(--muted);
+  text-decoration: none;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.nav-item:hover {
+  color: var(--text);
+  background: var(--card2);
+}
+
+.nav-item.active {
+  color: var(--accent);
+  background: var(--card2);
+  border: 1px solid var(--line);
+}
+
+.lang-select {
+  background: #10141b;
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  width: auto;
+}
+
+.lang-select:focus {
+  border-color: var(--accent);
+}
+
+/* =========================================
+   BOTONES Y CONTROLES GENERALES
+   ========================================= */
+button {
+  font: inherit;
+  border-radius: 9px;
+  padding: 9px 14px;
+  cursor: pointer;
+  font-weight: 800;
+  border: 1px solid var(--line);
+  background: var(--card2);
+  color: var(--text);
+  transition: 0.15s ease;
+}
+
+button:hover {
+  border-color: #4b5668;
+}
+
+button.primary {
+  background: var(--accent);
+  color: #09241d;
+  border-color: transparent;
+}
+
+button.danger {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+
+button.danger:hover {
+  border-color: var(--danger);
+  color: #fff;
+}
+
+input, select {
+  width: 100%;
+  background: #10141b;
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  padding: 9px 10px;
+  outline: none;
+  font-size: 13px;
+}
+
+input:focus, select:focus {
+  border-color: var(--accent);
+}
+
+/* Selector de Origen (BD / Manual) */
+.source-selector {
+  display: flex;
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  background: #11151d;
+}
+
+.source-btn {
+  border: 0;
+  padding: 8px 13px;
+  font-size: 12px;
+  font-weight: 700;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  border-radius: 0;
+}
+
+.source-btn.active {
+  background: var(--accent);
+  color: #09241d;
+}
+
+/* =========================================
+   FECHAS / BADGES DE ACTUALIZACIÓN
+   ========================================= */
+.date-badge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  border: 1px solid transparent;
+}
+
+.date-badge.green {
+  background: rgba(34, 197, 94, 0.15);
+  color: #86efac;
+  border-color: rgba(34, 197, 94, 0.35);
+}
+
+.date-badge.yellow {
+  background: rgba(234, 179, 8, 0.15);
+  color: #fde047;
+  border-color: rgba(234, 179, 8, 0.35);
+}
+
+.date-badge.red {
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-color: rgba(239, 68, 68, 0.35);
+}
+
+.date-badge.empty {
+  color: var(--muted);
+  font-weight: normal;
+}
+
+/* =========================================
+   MODALES (ESTRUCTURA BASE)
+   ========================================= */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: #000b;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  z-index: 50;
+}
+
+.modal-bg.open {
+  display: flex;
+}
+
+.modal {
+  width: min(1000px, 98%);
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px;
+  max-height: 92vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+.modal-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.close-btn {
+  background: var(--card2);
+  border: 1px solid var(--line);
+  color: var(--text);
+  border-radius: 8px;
+  font-size: 16px;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+
+/* Modal Detalle Jugador */
+.detail-modal {
+  width: min(650px, 98%);
+  z-index: 70;
+}
+
+.detail-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.detail-left {
+  width: 220px;
+  flex-shrink: 0;
+}
+
+.detail-right {
+  flex: 1;
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.detail-item {
+  background: #10141b;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
+
+.detail-item small {
+  display: block;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.detail-item span {
+  font-size: 14px;
+  font-weight: 800;
+}
+
+/* =========================================
+   TARJETAS FUT COMPLETAS Y MINIATURAS
+   ========================================= */
+.fut-card {
+  width: 100%;
+  border-radius: 14px;
+  padding: 8px 10px 12px;
+  position: relative;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
+  user-select: none;
+  border: 2px solid transparent;
+  overflow: hidden;
+}
+
+.card-rarity-tag {
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  text-align: center;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  margin-bottom: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: relative;
+  z-index: 3;
+}
+
+/* Colores de cartas completas */
+.fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
+.fut-card.card-bronze .card-rat { color: #f59e0b; }
+.fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
+.fut-card.card-silver .card-rat { color: #e2e8f0; }
+.fut-card.card-gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; color: #fffbeb; }
+.fut-card.card-gold-light .card-rat { color: #fef08a; }
+.fut-card.card-gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; color: #fef9c3; box-shadow: 0 0 12px rgba(234, 179, 8, 0.25); }
+.fut-card.card-gold-dark .card-rat { color: #ffd700; }
+.fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
+.fut-card.card-euro-evo .card-rat { color: #38bdf8; }
+.fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
+.fut-card.card-new-season .card-rat { color: #facc15; }
+.fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
+.fut-card.card-totw .card-rat { color: #fef08a; }
+.fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
+.fut-card.card-transfer-stars .card-rat { color: #5eead4; }
+.fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
+.fut-card.card-weekend-league .card-rat { color: #4ade80; }
+.fut-card.card-matchday { background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%); border-color: #f97316; }
+.fut-card.card-matchday .card-rat { color: #fdba74; }
+.fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
+.fut-card.card-potm .card-rat { color: #e9d5ff; }
+.fut-card.card-ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
+.fut-card.card-ptc .card-rat { color: #fde68a; }
+
+.card-top {
+  position: relative;
+  height: 125px;
+  width: 100%;
+}
+
+.card-meta {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 44px;
+  gap: 4px;
+  z-index: 2;
+}
+
+.card-rat {
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+}
+
+.card-pos {
+  font-size: 13px;
+  font-weight: 800;
+  color: #e2e8f0;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+}
+
+.flag-rect {
+  width: 24px;
+  height: 16px;
+  object-fit: cover;
+  border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.6);
+  background: #202733;
+}
+
+.shield-flag-wrap {
+  width: 24px;
+  height: 26px;
+  clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.7);
+  margin-top: 2px;
+}
+
+.shield-flag-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.card-img-wrap {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.card-img {
+  width: 124px;
+  height: 124px;
+  object-fit: cover;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.06) 0%, rgba(0, 0, 0, 0.3) 100%);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.5);
+}
+
+.card-info {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  margin: 8px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  padding-bottom: 6px;
+}
+
+.card-name {
+  font-weight: 900;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.card-club {
+  font-size: 11px;
+  opacity: 0.8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.card-stats {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3px 10px;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 700;
+}
+
+.stat-num {
+  color: #fff;
+}
+
+.stat-lbl {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+/* =========================================
+   TARJETAS PTC ESTILO IN-GAME / APP
+   ========================================= */
+.ptc-card-game {
+  position: relative;
+  background: #000;
+  border: 1.5px solid #232a35;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 230px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+.ptc-card-game:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Fondos laterales específicos detrás de cada carta */
+.ptc-bg-side {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+.theme-bronze-60 .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #15100c 0%, #080604 100%);
+  border-left: 18px solid #5a4233;
+  border-right: 18px solid #5a4233;
+}
+.theme-silver-70 .ptc-bg-side,
+.theme-silver-74 .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #11151a 0%, #06090c 100%);
+  border-left: 18px solid #6c7d8a;
+  border-right: 18px solid #6c7d8a;
+}
+.theme-gold-78 .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #0b1a16 0%, #050d0b 100%);
+  border-left: 18px solid #1a4d3e;
+  border-right: 18px solid #1a4d3e;
+}
+.theme-purple-tier .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #150f1d 0%, #09060c 100%);
+  border-left: 18px solid #4a2868;
+  border-right: 18px solid #4a2868;
+}
+
+/* Icono circular de recarga/flechas esquina superior derecha */
+.ptc-badge-icon {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  z-index: 5;
+  width: 20px;
+  height: 20px;
+  opacity: 0.9;
+}
+
+/* Placa / Silueta de la Carta */
+.ptc-shield-plate {
+  position: relative;
+  z-index: 2;
+  width: 145px;
+  height: 165px;
+  margin: 12px auto 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  clip-path: polygon(0 8%, 20% 0, 80% 0, 100% 8%, 100% 90%, 50% 100%, 0 90%);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.8);
+}
+.ptc-shield-plate::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  clip-path: polygon(0 8%, 20% 0, 80% 0, 100% 8%, 100% 90%, 50% 100%, 0 90%);
+  z-index: 1;
+}
+
+/* Paletas metálicas de la placa */
+.theme-bronze-60 .ptc-shield-plate { background: #d79a78; }
+.theme-bronze-60 .ptc-shield-plate::before {
+  background: radial-gradient(circle at 50% 30%, #d89e7c, #9d6445);
+}
+
+.theme-silver-70 .ptc-shield-plate,
+.theme-silver-74 .ptc-shield-plate { background: #e3ebf2; }
+.theme-silver-70 .ptc-shield-plate::before,
+.theme-silver-74 .ptc-shield-plate::before {
+  background: radial-gradient(circle at 50% 30%, #cedce6, #889ba8);
+}
+
+.theme-gold-78 .ptc-shield-plate,
+.theme-purple-tier .ptc-shield-plate { background: #ffe494; }
+.theme-gold-78 .ptc-shield-plate::before,
+.theme-purple-tier .ptc-shield-plate::before {
+  background: radial-gradient(circle at 50% 30%, #fae298, #af8a36);
+}
+
+/* Número central grande (60+, 85+...) */
+.ptc-rating-val {
+  position: relative;
+  z-index: 3;
+  font-size: 58px;
+  font-weight: 900;
+  letter-spacing: -2px;
+  color: #0d0f12;
+  font-family: Impact, "Arial Black", Inter, sans-serif;
+  transform: scaleY(1.05);
+}
+
+/* Pincelada dorada/negra en la base de la carta */
+.ptc-brush-effect {
+  position: absolute;
+  bottom: 35px;
+  left: -10%;
+  width: 120%;
+  height: 48px;
+  z-index: 4;
+  background: radial-gradient(ellipse at center, rgba(205, 161, 62, 0.45) 0%, rgba(0,0,0,0.85) 60%, transparent 85%);
+  clip-path: polygon(0 45%, 15% 25%, 35% 35%, 60% 15%, 85% 35%, 100% 20%, 95% 75%, 65% 85%, 25% 75%, 0 85%);
+  pointer-events: none;
+}
+
+/* Barra inferior estilo App/Juego siempre fijada abajo */
+.ptc-game-footer {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+  background: #000;
+  border-top: 1px solid #1a1e24;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 6px 6px 12px;
+  height: 40px;
+  box-sizing: border-box;
+}
+
+.ptc-game-title {
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  color: #fff;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ptc-game-arrow-btn {
+  background: linear-gradient(135deg, #ffd768, #d49f2b);
+  color: #0b0d11;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+/* Badge flotante en capa superior independiente (no desplaza nada) */
+.ptc-card-cost-badge {
+  position: absolute !important;
+  top: 8px;
+  left: 8px;
+  z-index: 10; /* Por encima de la placa, el fondo y la pincelada */
+  background: rgba(10, 14, 20, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(4px);
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--accent);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.8);
+  pointer-events: none; /* No interfiere al hacer clic */
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* =========================================
+   TARJETAS PTC GRUPALES / JUGADOR (MISMO TAMAÑO 230px)
+   ========================================= */
+.ptc-card-player-group {
+  position: relative;
+  background: #000;
+  border: 1.5px solid #232a35;
+  border-radius: 6px;
+  overflow: hidden;
+  height: 230px; /* Exactamente la misma altura que los repetibles */
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+.ptc-card-player-group:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7);
+}
+
+/* Indicadores hexagonales compactos en la esquina superior */
+.ptc-group-hex-row {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 6px;
+  z-index: 10;
+  pointer-events: none;
+}
+.ptc-hex-badge {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 1px 4px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+.ptc-hex-icon {
+  width: 9px;
+  height: 11px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+}
+.ptc-hex-green { background: #22c55e; }
+.ptc-hex-yellow { background: #eab308; }
+.ptc-hex-red { background: #ef4444; }
+
+/* Posición y centrado de la carta FUT: más arriba para no tocar la barra inferior */
+.ptc-player-card-center {
+  position: absolute;
+  top: 6px; /* Subida casi al borde superior para dar margen abajo */
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  z-index: 2;
+  pointer-events: none;
+}
+.ptc-player-card-center .fut-card {
+  width: 170px !important;
+  transform: scale(0.70);
+  transform-origin: top center;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.85);
+}
+
+/* Contador de plantillas (0/3) centrado sobre la pincelada inferior */
+.ptc-squad-counter {
+  position: absolute;
+  bottom: 38px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #fff;
+  z-index: 6;
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}
+/* Fondos laterales completos para Bronce, Plata y Oro (sin huecos negros) */
+.theme-group-bronze .ptc-bg-side {
+  background: #3e271a;
+  border-left: 55px solid #5a3c2a;
+  border-right: 55px solid #5a3c2a;
+}
+
+.theme-group-silver .ptc-bg-side {
+  background: #485461;
+  border-left: 55px solid #6c7d8a;
+  border-right: 55px solid #6c7d8a;
+}
+
+.theme-group-gold .ptc-bg-side {
+  background: #4a3810;
+  border-left: 55px solid #6c541c;
+  border-right: 55px solid #6c541c;
+}
+
+/* Contador de plantillas (0/3) limpio en la parte inferior */
+.ptc-squad-counter {
+  position: absolute;
+  bottom: 44px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 900;
+  color: #ffffff;
+  z-index: 6;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  pointer-events: none;
+}

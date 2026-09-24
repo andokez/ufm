@@ -4,43 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>UFM 27 - Hub de Desafíos PTC</title>
+<link rel="stylesheet" href="styles.css">
 <style>
-  :root {
-    --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
-    --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
-    --danger: #ef4444;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
-    color: var(--text); font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  }
-  .wrap { max-width: 1400px; margin: auto; padding: 20px 18px; }
-  .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; }
-
-  /* Barra de Navegación */
-  .site-nav {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
-    position: sticky; top: 0; z-index: 10;
-  }
-  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
-  .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
-  .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
-  .nav-links { display: flex; gap: 8px; align-items: center; }
-  .nav-item {
-    padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
-    color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
-  }
-  .nav-item:hover { color: var(--text); background: var(--card2); }
-  .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
-
-  .lang-select {
-    background: #10141b; border: 1px solid var(--line); color: var(--text);
-    border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
-  }
-  .lang-select:focus { border-color: var(--accent); }
-
   /* Hero Banner */
   .hero {
     padding: 24px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;
@@ -71,16 +36,8 @@
   .tab-button:hover { color: var(--text); background: var(--card2); }
   .tab-button.active { background: var(--accent); color: #09241d; border-color: transparent; }
 
-  .source-selector {
-    display: flex; border: 1px solid var(--line); border-radius: 9px; overflow: hidden; background: #11151d;
-  }
-  .source-btn {
-    border: 0; padding: 8px 13px; font-size: 12px; font-weight: 700; background: transparent; color: var(--muted); cursor: pointer;
-  }
-  .source-btn.active { background: var(--accent); color: #09241d; }
-
   /* Cuadrícula de Desafíos */
-  .ptc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; }
+  .ptc-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
   .ptc-card {
     background: var(--card); border: 1px solid var(--line); border-radius: 14px;
     padding: 16px; cursor: pointer; transition: 0.2s ease; position: relative;
@@ -112,7 +69,7 @@
   .ptc-cost { font-weight: 900; color: var(--accent); font-size: 14px; }
   .ptc-action { font-size: 12px; font-weight: 800; color: var(--muted); }
 
-  /* Sub-plantillas con el mismo ancho simétrico */
+  /* Sub-plantillas */
   .sub-tabs-wrap {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
@@ -153,15 +110,13 @@
   .squad-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; justify-content: center; margin-top: 10px; }
   .squad-slot { display: flex; flex-direction: column; align-items: center; }
 
-  /* Tarjeta FUT Mini */
+  /* Minifichas alineación */
   .mini-card {
     width: 100%; border-radius: 12px; padding: 8px; position: relative;
     box-shadow: 0 6px 14px rgba(0,0,0,0.5); user-select: none; border: 1px solid transparent; text-align: center;
     cursor: pointer; transition: transform 0.15s ease;
   }
   .mini-card:hover { transform: translateY(-3px); }
-
-  /* Colores de las minifichas */
   .mini-card.bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; }
   .mini-card.silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; }
   .mini-card.gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; }
@@ -193,95 +148,12 @@
   }
   .squad-slot-empty b { color: var(--gold); font-size: 16px; margin-bottom: 4px; }
 
-  /* Modales */
-  .modal-bg {
-    position: fixed; inset: 0; background: #000b; display: none;
-    align-items: center; justify-content: center; padding: 18px; z-index: 50;
-  }
-  .modal-bg.open { display: flex; }
-  .modal {
-    width: min(1000px, 98%); background: var(--card); border: 1px solid var(--line);
-    border-radius: 16px; padding: 22px; max-height: 92vh; overflow-y: auto; position: relative;
-  }
-  .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .modal-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
-  .close-btn { background: var(--card2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 16px; padding: 6px 12px; cursor: pointer; }
-
-  /* Modal Ficha Detallada */
-  .detail-modal { width: min(650px, 98%); z-index: 70; }
-  .detail-container { display: flex; gap: 20px; align-items: flex-start; }
-  .detail-left { width: 220px; flex-shrink: 0; }
-  .detail-right { flex: 1; }
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-  .detail-item { background: #10141b; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); }
-  .detail-item small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
-  .detail-item span { font-size: 14px; font-weight: 800; }
-
-  .fut-card {
-    width: 100%; border-radius: 14px; padding: 8px 10px 12px; position: relative;
-    box-shadow: 0 8px 18px rgba(0,0,0,0.5); user-select: none; border: 2px solid transparent; overflow: hidden;
-  }
-  .card-rarity-tag {
-    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; text-align: center;
-    padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12);
-    margin-bottom: 6px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 3;
-  }
-  .fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
-  .fut-card.card-bronze .card-rat { color: #f59e0b; }
-  .fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
-  .fut-card.card-silver .card-rat { color: #e2e8f0; }
-  .fut-card.card-gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; color: #fffbeb; }
-  .fut-card.card-gold-light .card-rat { color: #fef08a; }
-  .fut-card.card-gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; color: #fef9c3; box-shadow: 0 0 12px rgba(234, 179, 8, 0.25); }
-  .fut-card.card-gold-dark .card-rat { color: #ffd700; }
-  .fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
-  .fut-card.card-euro-evo .card-rat { color: #38bdf8; }
-  .fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
-  .fut-card.card-new-season .card-rat { color: #facc15; }
-  .fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
-  .fut-card.card-totw .card-rat { color: #fef08a; }
-  .fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
-  .fut-card.card-transfer-stars .card-rat { color: #5eead4; }
-  .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
-  .fut-card.card-weekend-league .card-rat { color: #4ade80; }
-  .fut-card.card-matchday { background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%); border-color: #f97316; }
-  .fut-card.card-matchday .card-rat { color: #fdba74; }
-  .fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
-  .fut-card.card-potm .card-rat { color: #e9d5ff; }
-  .fut-card.card-ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
-  .fut-card.card-ptc .card-rat { color: #fde68a; }
-
-  .card-top { position: relative; height: 125px; width: 100%; }
-  .card-meta { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; width: 44px; gap: 4px; z-index: 2; }
-  .card-rat { font-size: 26px; font-weight: 900; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-  .card-pos { font-size: 13px; font-weight: 800; color: #e2e8f0; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
-  .flag-rect { width: 24px; height: 16px; object-fit: cover; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); background: #202733; }
-  .shield-flag-wrap { width: 24px; height: 26px; clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%); background: #000; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.7); margin-top: 2px; }
-  .shield-flag-wrap img { width: 100%; height: 100%; object-fit: cover; }
-  .card-img-wrap { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 1; }
-  .card-img { width: 124px; height: 124px; object-fit: cover; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.3) 100%); box-shadow: 0 6px 14px rgba(0,0,0,0.5); }
-  .card-info { position: relative; z-index: 2; text-align: center; margin: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px; }
-  .card-name { font-weight: 900; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
-  .card-club { font-size: 11px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-  .card-stats { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: 12px; margin-top: 4px; }
-  .stat-row { display: flex; justify-content: space-between; font-weight: 700; }
-  .stat-num { color: #fff; }
-  .stat-lbl { color: var(--muted); font-size: 11px; }
-
-  .date-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid transparent; }
-  .date-badge.green { background: rgba(34, 197, 94, 0.15); color: #86efac; border-color: rgba(34, 197, 94, 0.35); }
-  .date-badge.yellow { background: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.35); }
-  .date-badge.red { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.35); }
-  .date-badge.empty { color: var(--muted); font-weight: normal; }
-
   @media(max-width: 900px) {
     .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
     .ptc-toolbar { flex-direction: column; align-items: stretch; }
     .source-selector { width: 100%; justify-content: center; }
     .summary-banner { grid-template-columns: 1fr; }
     .squad-grid { grid-template-columns: repeat(2, 1fr); }
-    .detail-container { flex-direction: column; align-items: center; }
-    .detail-left { width: 100%; max-width: 220px; }
   }
 </style>
 </head>
@@ -449,7 +321,7 @@ function displayPosition(p, lang) {
   return dict[standard] || standard;
 }
 
-/* LISTAS MAESTRAS COMPLETAS DE DATABASE.HTML */
+/* LISTAS MAESTRAS DE LIGAS Y PAÍSES */
 var masterLeaguesData = [
   { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
   { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
@@ -525,6 +397,34 @@ function normalizeSimple(str) {
   return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
+function getLocalizedCountryName(nameOrCode, lang) {
+  if (!nameOrCode) return '';
+  var l = lang || currentLang || 'es';
+  var clean = nameOrCode.trim().toLowerCase();
+  var norm = normalizeSimple(nameOrCode);
+  var found = masterCountriesData.find(function(c) {
+    if (clean === c.code.toLowerCase() || norm === c.code.toLowerCase()) return true;
+    return Object.values(c.names).some(function(n) {
+      return clean === n.toLowerCase() || norm === normalizeSimple(n);
+    });
+  });
+  return found ? (found.names[l] || found.names.es || nameOrCode) : nameOrCode;
+}
+
+function getLocalizedLeagueName(nameOrCode, lang) {
+  if (!nameOrCode) return '';
+  var l = lang || currentLang || 'es';
+  var clean = nameOrCode.trim().toLowerCase();
+  var norm = normalizeSimple(nameOrCode);
+  var found = masterLeaguesData.find(function(item) {
+    if (clean === item.code.toLowerCase() || norm === item.code.toLowerCase()) return true;
+    return Object.values(item.names).some(function(n) {
+      return clean.includes(n.toLowerCase()) || norm.includes(normalizeSimple(n));
+    });
+  });
+  return found ? (found.names[l] || found.names.es || nameOrCode) : nameOrCode;
+}
+
 function getFlagUrl(str) {
   if (!str) return 'https://flagcdn.com/w40/un.png';
   var raw = str.trim();
@@ -558,7 +458,6 @@ function getFlagUrl(str) {
   return 'https://flagcdn.com/w40/' + code + '.png';
 }
 
-/* CLASES VISUALES PARA LAS TARJETAS */
 function getCardClass(rating, rarity) {
   var r = (rarity || 'normal').toLowerCase();
   if (r === 'weekend_league') return 'weekend_league';
@@ -580,10 +479,10 @@ function getCardClass(rating, rarity) {
 function getRarityClass(rarity, rating) {
   var r = (rarity || 'normal').toLowerCase();
   var rat = +rating || 0;
-  if (r === 'normal') {
-    if (rat <= 64) return 'card-bronze';
-    if (rat <= 74) return 'card-silver';
-    if (rat <= 82) return 'card-gold-light';
+  if (r === 'normal' || r === 'bronze' || r === 'silver' || r === 'gold-dark' || r === 'gold-light') {
+    if (r === 'bronze' || rat <= 64) return 'card-bronze';
+    if (r === 'silver' || rat <= 74) return 'card-silver';
+    if (r === 'gold-light' || rat <= 82) return 'card-gold-light';
     return 'card-gold-dark';
   }
   if (r === 'matchday') return 'card-matchday';
@@ -599,7 +498,7 @@ function getRarityClass(rarity, rating) {
 
 function getRarityLabel(r) {
   var norm = (r || 'normal').toLowerCase();
-  if (norm === 'normal') return 'Normal';
+  if (norm === 'normal' || norm === 'bronze' || norm === 'silver' || norm === 'gold-dark') return 'Normal';
   var labels = {
     matchday: 'Matchday', new_season: 'NewSeason', potm: 'Player of the Month',
     ptc: 'PTC', euro_evo: 'European Evolutions', totw: 'Team of the Week',
@@ -643,7 +542,11 @@ var i18n = {
     pendingDetails: "Requisitos de esta plantilla pendientes de definir.",
     squadWord: "Plantilla", challengeWord: "Desafío",
     specialReqTitle: "Requisitos Especiales de Plantilla",
-    minPlayers: "Mín. {n} de {item}"
+    minPrefix: "Mín.",
+    roleDef: "Defensas", roleMid: "Centrocampistas", roleAtt: "Delanteros",
+    statPac: "RIT", statSho: "TIR", statPas: "PAS", statDri: "REG", statDef: "DEF", statPhy: "FIS",
+    reqAgeMin: "Edad ≥ {val}", reqAgeMax: "Edad ≤ {val}",
+    reqWeightMax: "Peso ≤ {val}kg"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
@@ -666,7 +569,11 @@ var i18n = {
     pendingDetails: "Squad requirements pending to be defined.",
     squadWord: "Squad", challengeWord: "Challenge",
     specialReqTitle: "Special Squad Requirements",
-    minPlayers: "Min. {n} of {item}"
+    minPrefix: "Min.",
+    roleDef: "Defenders", roleMid: "Midfielders", roleAtt: "Attackers",
+    statPac: "PAC", statSho: "SHO", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
+    reqAgeMin: "Age ≥ {val}", reqAgeMax: "Age ≤ {val}",
+    reqWeightMax: "Weight ≤ {val}kg"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
@@ -689,7 +596,11 @@ var i18n = {
     pendingDetails: "Critères de cette équipe en attente de définition.",
     squadWord: "Équipe", challengeWord: "Défi",
     specialReqTitle: "Critères Spéciaux de l'Équipe",
-    minPlayers: "Min. {n} de {item}"
+    minPrefix: "Min.",
+    roleDef: "Défenseurs", roleMid: "Milieux", roleAtt: "Attaquants",
+    statPac: "VIT", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DÉF", statPhy: "PHY",
+    reqAgeMin: "Âge ≥ {val}", reqAgeMax: "Âge ≤ {val}",
+    reqWeightMax: "Poids ≤ {val}kg"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
@@ -712,7 +623,11 @@ var i18n = {
     pendingDetails: "Anforderungen für dieses Team noch nicht festgelegt.",
     squadWord: "Team", challengeWord: "Challenge",
     specialReqTitle: "Spezielle Team-Anforderungen",
-    minPlayers: "Mind. {n} von {item}"
+    minPrefix: "Mind.",
+    roleDef: "Verteidiger", roleMid: "Mittelfeldspieler", roleAtt: "Stürmer",
+    statPac: "TEM", statSho: "SCH", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
+    reqAgeMin: "Alter ≥ {val}", reqAgeMax: "Alter ≤ {val}",
+    reqWeightMax: "Gewicht ≤ {val}kg"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
@@ -735,7 +650,11 @@ var i18n = {
     pendingDetails: "Requisiti di questa rosa in attesa di definizione.",
     squadWord: "Rosa", challengeWord: "Sfida",
     specialReqTitle: "Requisiti Speciali della Rosa",
-    minPlayers: "Min. {n} di {item}"
+    minPrefix: "Min.",
+    roleDef: "Difensori", roleMid: "Centrocampisti", roleAtt: "Attaccanti",
+    statPac: "VEL", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DIF", statPhy: "FIS",
+    reqAgeMin: "Età ≥ {val}", reqAgeMax: "Età ≤ {val}",
+    reqWeightMax: "Peso ≤ {val}kg"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
@@ -758,7 +677,11 @@ var i18n = {
     pendingDetails: "Requisitos deste elenco pendentes de definição.",
     squadWord: "Elenco", challengeWord: "Desafio",
     specialReqTitle: "Requisitos Especiais do Elenco",
-    minPlayers: "Mín. {n} de {item}"
+    minPrefix: "Mín.",
+    roleDef: "Defensores", roleMid: "Meio-campistas", roleAtt: "Atacantes",
+    statPac: "RIT", statSho: "FIN", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "FÍS",
+    reqAgeMin: "Idade ≥ {val}", reqAgeMax: "Idade ≤ {val}",
+    reqWeightMax: "Peso ≤ {val}kg"
   }
 };
 
@@ -772,8 +695,6 @@ var ptcTitles = {
   b_83: { es: "Mejora 83+", en: "83+ Upgrade", fr: "Renfort 83+", de: "83+-Upgrade", it: "Miglioramento 83+", pt: "Melhoria 83+" },
   b_85: { es: "Mejora 85+", en: "85+ Upgrade", fr: "Renfort 85+", de: "85+-Upgrade", it: "Miglioramento 85+", pt: "Melhoria 85+" },
   b_87: { es: "Mejora 87+", en: "87+ Upgrade", fr: "Renfort 87+", de: "87+-Upgrade", it: "Miglioramento 87+", pt: "Melhoria 87+" },
-  b_daily_11: { es: "Diario 11", en: "Daily 11", fr: "Quotidien 11", de: "Täglich 11", it: "Giornaliero 11", pt: "Diário 11" },
-  b_weekly_17: { es: "Semanal 17", en: "Weekly 17", fr: "Hebdomadaire 17", de: "Wöchentlich 17", it: "Settimanale 17", pt: "Semanal 17" },
   b_bronze_group: { es: "Desafío Bronce", en: "Bronze Challenge", fr: "Défi Bronze", de: "Bronze-Challenge", it: "Sfida Bronzo", pt: "Desafio Bronze" },
   b_silver_group: { es: "Desafío Plata", en: "Silver Challenge", fr: "Défi Argent", de: "Silber-Challenge", it: "Sfida Argento", pt: "Desafio Prata" },
   b_gold_group: { es: "Desafío Oro", en: "Gold Challenge", fr: "Défi Oro", de: "Gold-Challenge", it: "Sfida Oro", pt: "Desafio Ouro" },
@@ -794,7 +715,14 @@ var ptcTitles = {
   l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)", fr: "Martin Ødegaard (91 POTM)", de: "Martin Ødegaard (91 POTM)", it: "Martin Ødegaard (91 POTM)", pt: "Martin Ødegaard (91 POTM)" }
 };
 
-/* DICCIONARIO MULTILINGÜE DE SOBRES Y RECOMPENSAS */
+/* TÍTULOS CORTOS PARA LAS BARRAS INFERIORES DE LOS GRUPOS */
+var groupShortTitles = {
+  b_bronze_group: { es: "BRONCE", en: "BRONZE", fr: "BRONZE", de: "BRONZE", it: "BRONZO", pt: "BRONZE" },
+  b_silver_group: { es: "PLATA", en: "SILVER", fr: "ARGENT", de: "SILBER", it: "ARGENTO", pt: "PRATA" },
+  b_gold_group: { es: "ORO", en: "GOLD", fr: "OR", de: "GOLD", it: "ORO", pt: "OURO" }
+};
+
+/* SOBRES Y RECOMPENSAS */
 var packWords = {
   es: { pack: "Sobre", singleElite: "Sobre Individual Élite Oro {r}+ (1)", challengeReward: "Premio del desafío" },
   en: { pack: "Pack", singleElite: "1x 81+ Single Gold Elite Pack ({r}+)", challengeReward: "Challenge reward" },
@@ -805,9 +733,24 @@ var packWords = {
 };
 
 var ptcRewards = {
-  b_bronze_group: { type: 'player', name: 'Moore', pos: 'ST', rating: 75 },
-  b_silver_group: { type: 'player', name: 'Bueno', pos: 'CB', rating: 78 },
-  b_gold_group: { type: 'player', name: 'Merino', pos: 'CM', rating: 83 },
+  b_bronze_group: {
+    type: 'player', name: 'Moore', pos: 'ST', rating: 75,
+    country: 'Gales', league: 'Inglaterra (1ª Div - Premier)', club: 'Wrexham',
+    stats: { pac: 71, dri: 66, sho: 76, def: 38, pas: 59, phy: 76 },
+    image: 'https://b.fssta.com/uploads/application/soccer/headshots/5649.vresize.350.350.medium.1.png'
+  },
+  b_silver_group: {
+    type: 'player', name: 'Bueno', pos: 'CB', rating: 78,
+    country: 'Uruguay', league: 'Inglaterra (1ª Div - Premier)', club: 'Wolves',
+    stats: { pac: 74, dri: 63, sho: 37, def: 79, pas: 66, phy: 81 },
+    image: 'https://www.ceroacero.es/img/jogadores/new/97/82/749782_hugo_bueno_20260218234652.png'
+  },
+  b_gold_group: {
+    type: 'player', name: 'Merino', pos: 'CM', rating: 83,
+    country: 'España', league: 'Inglaterra (1ª Div - Premier)', club: 'Arsenal',
+    stats: { pac: 79, dri: 80, sho: 63, def: 68, pas: 77, phy: 74 },
+    image: 'https://cdn-img.staticzz.com/img/jogadores/new/01/75/420175_mikel_merino_20250928235143.png'
+  },
   s_semipro_2: { type: 'player', name: 'Szoboszlai', pos: 'CAM', rating: 87, rarity: 'ptc' },
   s_wl_1: { type: 'pack', minRating: 81, event: 'Weekend League', draft: '1/3' },
   s_wl_2: { type: 'pack', minRating: 84, event: 'Weekend League', draft: '1/3' }
@@ -855,20 +798,18 @@ function formatSubChallengeName(sub) {
   return sub.name || '';
 }
 
-/* LISTADO DE PTCS */
+/* LISTADO ACTUALIZADO DE PTCS (Sin diario ni semanal) */
 var ptcList = [
-  { id: "b_60", category: "basic", isRepeatable: true, players: 5, target: 50 },
-  { id: "b_70", category: "basic", isRepeatable: true, players: 5, target: 60 },
-  { id: "b_74", category: "basic", isRepeatable: true, players: 5, target: 70 },
-  { id: "b_78", category: "basic", isRepeatable: true, players: 5, target: 74 },
-  { id: "b_81", category: "basic", isRepeatable: true, players: 5, target: 78 },
-  { id: "b_83", category: "basic", isRepeatable: true, players: 5, target: 81 },
-  { id: "b_85", category: "basic", isRepeatable: true, players: 5, target: 83 },
-  { id: "b_87", category: "basic", isRepeatable: true, players: 5, target: 85 },
-  { id: "b_daily_11", category: "basic", isRepeatable: false, players: 3, target: 70 },
-  { id: "b_weekly_17", category: "basic", isRepeatable: false, players: 5, target: 78 },
+  { id: "b_60", category: "basic", isRepeatable: true, players: 5, target: 50, repeatNum: 1, bigRating: "60+", theme: "theme-bronze-60" },
+  { id: "b_70", category: "basic", isRepeatable: true, players: 5, target: 60, repeatNum: 2, bigRating: "70+", theme: "theme-silver-70" },
+  { id: "b_74", category: "basic", isRepeatable: true, players: 5, target: 70, repeatNum: 3, bigRating: "74+", theme: "theme-silver-74" },
+  { id: "b_78", category: "basic", isRepeatable: true, players: 5, target: 74, repeatNum: 4, bigRating: "78+", theme: "theme-gold-78" },
+  { id: "b_81", category: "basic", isRepeatable: true, players: 5, target: 78, repeatNum: 5, bigRating: "81+", theme: "theme-purple-tier" },
+  { id: "b_83", category: "basic", isRepeatable: true, players: 5, target: 81, repeatNum: 6, bigRating: "83+", theme: "theme-purple-tier" },
+  { id: "b_85", category: "basic", isRepeatable: true, players: 5, target: 83, repeatNum: 7, bigRating: "85+", theme: "theme-purple-tier" },
+  { id: "b_87", category: "basic", isRepeatable: true, players: 5, target: 85, repeatNum: 8, bigRating: "87+", theme: "theme-purple-tier" },
   {
-    id: "b_bronze_group", category: "basic", isRepeatable: false,
+    id: "b_bronze_group", category: "basic", isRepeatable: false, shortTitle: "BRONCE",
     subchallenges: [
       { name: "Bronce 1", players: 0, target: 0, isPending: true },
       { name: "Bronce 2", players: 0, target: 0, isPending: true },
@@ -876,7 +817,7 @@ var ptcList = [
     ]
   },
   {
-    id: "b_silver_group", category: "basic", isRepeatable: false,
+    id: "b_silver_group", category: "basic", isRepeatable: false, shortTitle: "PLATA",
     subchallenges: [
       { name: "Plata 1", players: 0, target: 0, isPending: true },
       { name: "Plata 2", players: 0, target: 0, isPending: true },
@@ -884,7 +825,7 @@ var ptcList = [
     ]
   },
   {
-    id: "b_gold_group", category: "basic", isRepeatable: false,
+    id: "b_gold_group", category: "basic", isRepeatable: false, shortTitle: "ORO",
     subchallenges: [
       { name: "Oro 1", players: 0, target: 0, isPending: true },
       { name: "Oro 2", players: 0, target: 0, isPending: true },
@@ -1094,6 +1035,44 @@ function setPriceSource(src) {
   renderPtcList();
 }
 
+function generatePlayerFutCardHtml(p) {
+  var imgUrl = p.image ? p.image : DEFAULT_AVATAR;
+  var natFlag = getFlagUrl(p.country);
+  var leagueFlag = getFlagUrl(p.league || p.country);
+  var rClass = getRarityClass(p.rarity, p.rating);
+  var t = i18n[currentLang] || i18n.es;
+
+  return `
+    <div class="fut-card ${rClass}">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="card-rat">${p.rating}</span>
+          <span class="card-pos">${displayPosition(p.position, currentLang)}</span>
+          <img class="flag-rect" title="${p.country || 'Nacionalidad'}" src="${natFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          <div class="shield-flag-wrap" title="${p.league || 'Liga'}">
+            <img src="${leagueFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          </div>
+        </div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="${imgUrl}" onerror="this.src='${DEFAULT_AVATAR}'">
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${p.name}</div>
+        <div class="card-club">${p.club || 'Sin Club'}</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${t.statPac}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">${t.statDri}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">${t.statSho}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">${t.statDef}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">${t.statPas}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">${t.statPhy}</span></div>
+      </div>
+    </div>
+  `;
+}
+
 function renderPtcList() {
   var t = i18n[currentLang] || i18n.es;
   var db = getDatabasePlayers();
@@ -1108,9 +1087,104 @@ function renderPtcList() {
 
   filtered.forEach(function(ptc) {
     var card = document.createElement('div');
-    card.className = 'ptc-card';
     card.onclick = function() { openPtcModal(ptc); };
 
+    // 1. Desafíos Repetibles estilo In-Game[cite: 4]
+    if (ptc.isRepeatable && ptc.bigRating) {
+      card.className = 'ptc-card-game ' + (ptc.theme || '');
+      var repeatTitle = (currentLang === 'es' ? 'REPETIBLE #' : 'REPEATABLE #') + ptc.repeatNum;
+      var pPrices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
+      var sSol = solveSbc(ptc.players, ptc.target, pPrices);
+      var costBadgeText = sSol && sSol.cost ? (Number(sSol.cost).toLocaleString('es-ES') + ' 🪙') : '—';
+
+      card.innerHTML = `
+        <div class="ptc-bg-side"></div>
+        <div class="ptc-card-cost-badge">${costBadgeText}</div>
+        <svg class="ptc-badge-icon" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+        </svg>
+        <div class="ptc-shield-plate">
+          <span class="ptc-rating-val">${ptc.bigRating}</span>
+        </div>
+        <div class="ptc-brush-effect"></div>
+        <div class="ptc-game-footer">
+          <span class="ptc-game-title">${repeatTitle}</span>
+          <div class="ptc-game-arrow-btn">❯</div>
+        </div>
+      `;
+      grid.appendChild(card);
+      return;
+    }
+
+    // 2. Desafíos de Jugador / Grupo (Bronce, Plata, Oro) estilo captura
+    var rewardData = ptcRewards[ptc.id];
+    if (rewardData && rewardData.type === 'player' && ptc.subchallenges) {
+      var groupTheme = 'theme-group-bronze';
+      if (ptc.id === 'b_silver_group') groupTheme = 'theme-group-silver';
+      if (ptc.id === 'b_gold_group') groupTheme = 'theme-group-gold';
+
+      card.className = 'ptc-card-player-group ' + groupTheme;
+      var totalSquads = ptc.subchallenges.length;
+      var totalCost = 0;
+      var hasValidSol = false;
+      var allSolved = true;
+
+      ptc.subchallenges.forEach(function(sub) {
+        if (!sub.isPending) {
+          var s = solveSbc(sub.players, sub.target, defaultPrices);
+          if (s) { totalCost += s.cost; hasValidSol = true; }
+          else { allSolved = false; }
+        } else {
+          allSolved = false;
+        }
+      });
+      var costBadgeText = (hasValidSol && allSolved) ? (Number(totalCost).toLocaleString('es-ES') + ' 🪙') : '—';
+
+      // Todas las cartas de recompensa de estos grupos son de rareza 'ptc'
+      var mockPlayer = {
+        name: rewardData.name,
+        rating: rewardData.rating,
+        position: rewardData.pos,
+        rarity: 'ptc',
+        country: rewardData.country,
+        league: rewardData.league,
+        club: rewardData.club,
+        image: rewardData.image,
+        pac: rewardData.stats ? rewardData.stats.pac : 70,
+        sho: rewardData.stats ? rewardData.stats.sho : 70,
+        pas: rewardData.stats ? rewardData.stats.pas : 70,
+        dri: rewardData.stats ? rewardData.stats.dri : 70,
+        def: rewardData.stats ? rewardData.stats.def : 70,
+        phy: rewardData.stats ? rewardData.stats.phy : 70
+      };
+
+      var shortEntry = groupShortTitles[ptc.id];
+      var footerTitle = shortEntry ? (shortEntry[currentLang] || shortEntry.es || shortEntry.en) : getPtcTitle(ptc.id);
+
+      // Eliminado .ptc-brush-effect para que no tape las estadísticas inferiores
+      card.innerHTML = `
+        <div class="ptc-bg-side"></div>
+        <div class="ptc-card-cost-badge">${costBadgeText}</div>
+        <div class="ptc-group-hex-row">
+          <div class="ptc-hex-badge"><div class="ptc-hex-icon ptc-hex-green"></div>0</div>
+          <div class="ptc-hex-badge"><div class="ptc-hex-icon ptc-hex-yellow"></div>0</div>
+          <div class="ptc-hex-badge"><div class="ptc-hex-icon ptc-hex-red"></div>${totalSquads}</div>
+        </div>
+        <div class="ptc-player-card-center">
+          ${generatePlayerFutCardHtml(mockPlayer)}
+        </div>
+        <div class="ptc-squad-counter">0/${totalSquads}</div>
+        <div class="ptc-game-footer">
+          <span class="ptc-game-title">${footerTitle}</span>
+          <div class="ptc-game-arrow-btn">❯</div>
+        </div>
+      `;
+      grid.appendChild(card);
+      return;
+    }
+
+    // 3. Tarjeta estándar para el resto de PTCs[cite: 1]
+    card.className = 'ptc-card';
     var badgeInfo = getPtcBadgeInfo(ptc);
     var localizedTitle = getPtcTitle(ptc.id);
     var rewardFormatted = formatPtcReward(ptc.id);
@@ -1469,23 +1543,44 @@ function renderModalContent() {
     reqTags.innerHTML = '';
     var r = currentTargetPtc.reqs;
 
+    var rolesMap = {
+      'DEF': t.roleDef,
+      'MID': t.roleMid,
+      'ATT': t.roleAtt
+    };
+
     if (r.exactPositions) {
       r.exactPositions.forEach(function(ep) {
-        reqTags.innerHTML += `<span class="req-tag" style="background:#28352d; border-color:#38a169; color:#68d391">⚽ ${displayPosition(ep.pos)} (${ep.count})</span>`;
+        reqTags.innerHTML += `<span class="req-tag" style="background:#28352d; border-color:#38a169; color:#68d391">⚽ ${displayPosition(ep.pos, currentLang)} (${ep.count})</span>`;
       });
     }
-    if (r.minLeague) reqTags.innerHTML += `<span class="req-tag">🌍 ${r.minLeague.name} (Mín. ${r.minLeague.count})</span>`;
-    if (r.minCountry) reqTags.innerHTML += `<span class="req-tag">🏳️ ${r.minCountry.name} (Mín. ${r.minCountry.count})</span>`;
-    if (r.minRole) {
-      var roleName = { 'DEF':'Defensas', 'MID':'Centrocampistas', 'ATT':'Delanteros' }[r.minRole.role] || r.minRole.role;
-      reqTags.innerHTML += `<span class="req-tag">🛡️ ${roleName} (Mín. ${r.minRole.count})</span>`;
+    if (r.minLeague) {
+      var locLeague = getLocalizedLeagueName(r.minLeague.name, currentLang);
+      reqTags.innerHTML += `<span class="req-tag">🌍 ${locLeague} (${t.minPrefix} ${r.minLeague.count})</span>`;
     }
-    if (r.minAge) reqTags.innerHTML += `<span class="req-tag">🎂 Edad ≥ ${r.minAge} (Mín. ${r.minAgeCount})</span>`;
-    if (r.maxAge) reqTags.innerHTML += `<span class="req-tag">👶 Edad ≤ ${r.maxAge} (Mín. ${r.maxAgeCount})</span>`;
-    if (r.maxWeight) reqTags.innerHTML += `<span class="req-tag">⚖️ Peso ≤ ${r.maxWeight}kg (Mín. ${r.maxWeightCount})</span>`;
-    if (r.minDri) reqTags.innerHTML += `<span class="req-tag">⚡ REG ≥ ${r.minDri} (Mín. ${r.minDriCount})</span>`;
-    if (r.minSho) reqTags.innerHTML += `<span class="req-tag">🎯 TIR ≥ ${r.minSho} (Mín. ${r.minShoCount})</span>`;
-    if (r.minPhy) reqTags.innerHTML += `<span class="req-tag">💪 FIS ≥ ${r.minPhy} (Mín. ${r.minPhyCount})</span>`;
+    if (r.minCountry) {
+      var locCountry = getLocalizedCountryName(r.minCountry.name, currentLang);
+      reqTags.innerHTML += `<span class="req-tag">🏳️ ${locCountry} (${t.minPrefix} ${r.minCountry.count})</span>`;
+    }
+    if (r.minRole) {
+      var roleName = rolesMap[r.minRole.role] || r.minRole.role;
+      reqTags.innerHTML += `<span class="req-tag">🛡️ ${roleName} (${t.minPrefix} ${r.minRole.count})</span>`;
+    }
+    if (r.minAge) {
+      var ageText = t.reqAgeMin.replace('{val}', r.minAge);
+      reqTags.innerHTML += `<span class="req-tag">🎂 ${ageText} (${t.minPrefix} ${r.minAgeCount})</span>`;
+    }
+    if (r.maxAge) {
+      var ageText = t.reqAgeMax.replace('{val}', r.maxAge);
+      reqTags.innerHTML += `<span class="req-tag">👶 ${ageText} (${t.minPrefix} ${r.maxAgeCount})</span>`;
+    }
+    if (r.maxWeight) {
+      var weightText = t.reqWeightMax.replace('{val}', r.maxWeight);
+      reqTags.innerHTML += `<span class="req-tag">⚖️ ${weightText} (${t.minPrefix} ${r.maxWeightCount})</span>`;
+    }
+    if (r.minDri) reqTags.innerHTML += `<span class="req-tag">⚡ ${t.statDri} ≥ ${r.minDri} (${t.minPrefix} ${r.minDriCount})</span>`;
+    if (r.minSho) reqTags.innerHTML += `<span class="req-tag">🎯 ${t.statSho} ≥ ${r.minSho} (${t.minPrefix} ${r.minShoCount})</span>`;
+    if (r.minPhy) reqTags.innerHTML += `<span class="req-tag">💪 ${t.statPhy} ≥ ${r.minPhy} (${t.minPrefix} ${r.minPhyCount})</span>`;
   } else {
     reqPanel.style.display = 'none';
   }
@@ -1541,7 +1636,7 @@ function renderModalContent() {
         <div class="mini-card ${cClass}" onclick="openPlayerCardDetail(${pIndex})">
           <div class="mini-card-top">
             <span class="mini-card-rat">${chosen.rating}</span>
-            <span class="mini-card-pos">${displayPosition(chosen.position)}</span>
+            <span class="mini-card-pos">${displayPosition(chosen.position, currentLang)}</span>
           </div>
           <img class="mini-card-img" src="${img}" onerror="this.src='${DEFAULT_AVATAR}'">
           <div class="mini-card-name">${chosen.name}</div>
@@ -1575,6 +1670,7 @@ function openPlayerCardDetail(index) {
   var rarityText = getRarityLabel(p.rarity);
   var cleanName = p.name ? p.name.replace(/\s*\([^)]*\)/g, '').trim() : '';
   var status = getDateStatus(p.price_date);
+  var t = i18n[currentLang] || i18n.es;
 
   var cardHtml = `
     <div class="fut-card ${rClass}">
@@ -1582,7 +1678,7 @@ function openPlayerCardDetail(index) {
       <div class="card-top">
         <div class="card-meta">
           <span class="card-rat">${p.rating}</span>
-          <span class="card-pos">${displayPosition(p.position)}</span>
+          <span class="card-pos">${displayPosition(p.position, currentLang)}</span>
           <img class="flag-rect" title="${p.country || 'Nacionalidad'}" src="${natFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
           <div class="shield-flag-wrap" title="${p.league || 'Liga'}">
             <img src="${leagueFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
@@ -1597,22 +1693,22 @@ function openPlayerCardDetail(index) {
         <div class="card-club">${p.club || 'Sin Club'}</div>
       </div>
       <div class="card-stats">
-        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">RIT</span></div>
-        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">REG</span></div>
-        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">TIR</span></div>
-        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">DEF</span></div>
-        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">PAS</span></div>
-        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">FIS</span></div>
+        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${t.statPac}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">${t.statDri}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">${t.statSho}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">${t.statDef}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">${t.statPas}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">${t.statPhy}</span></div>
       </div>
     </div>
   `;
 
   document.getElementById('detailCardTarget').innerHTML = cardHtml;
   document.getElementById('detName').textContent = cleanName + ' (' + p.rating + ')';
-  document.getElementById('detSub').textContent = displayPosition(p.position) + ' · ' + rarityText;
+  document.getElementById('detSub').textContent = displayPosition(p.position, currentLang) + ' · ' + rarityText;
   document.getElementById('detClub').textContent = p.club || '—';
-  document.getElementById('detLeague').textContent = p.league || '—';
-  document.getElementById('detCountry').textContent = p.country || '—';
+  document.getElementById('detLeague').textContent = getLocalizedLeagueName(p.league, currentLang) || '—';
+  document.getElementById('detCountry').textContent = getLocalizedCountryName(p.country, currentLang) || '—';
   document.getElementById('detAge').textContent = p.age ? (p.age + ' años') : '—';
   document.getElementById('detPhysique').textContent = (p.height ? p.height + ' cm' : '—') + ' / ' + (p.weight ? p.weight + ' kg' : '—');
   document.getElementById('detPrice').textContent = p.price ? (Number(p.price).toLocaleString('es-ES') + ' 🪙') : 'Sin precio';

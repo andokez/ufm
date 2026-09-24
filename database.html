@@ -4,42 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>UFM 27 - Database Hub</title>
+  <link rel="stylesheet" href="styles.css">
   <style>
-    :root {
-      --bg: #0d1016; --card: #171c25; --card2: #202733; --line: #303846;
-      --text: #f2f4f8; --muted: #98a2b3; --accent: #63e6be; --gold: #ffd43b;
-      --danger: #ef4444;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; background: linear-gradient(135deg, #0d1016, #151b24);
-      color: var(--text); font-family: Inter, system-ui, sans-serif;
-    }
+    /* Estilos específicos de database.html */
     .wrap { max-width: 1800px; margin: auto; padding: 18px; }
-    .card { background: #171c25; border: 1px solid var(--line); border-radius: 16px; }
-    
-    /* Barra de Navegación */
-    .site-nav {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 24px; background: #11151f; border-bottom: 1px solid var(--line);
-      position: sticky; top: 0; z-index: 10;
-    }
-    .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; cursor: pointer; }
-    .nav-logo { font-size: 20px; font-weight: 900; line-height: 0.9; }
-    .nav-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
-    .nav-links { display: flex; gap: 8px; align-items: center; }
-    .nav-item {
-      padding: 8px 14px; border-radius: 8px; font-weight: 700; font-size: 13px;
-      color: var(--muted); text-decoration: none; cursor: pointer; transition: 0.15s;
-    }
-    .nav-item:hover { color: var(--text); background: var(--card2); }
-    .nav-item.active { color: var(--accent); background: var(--card2); border: 1px solid var(--line); }
-    
-    .lang-select {
-      background: #10141b; border: 1px solid var(--line); color: var(--text);
-      border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 800; cursor: pointer; width: auto;
-    }
-    .lang-select:focus { border-color: var(--accent); }
 
     .header {
       display: grid; grid-template-columns: auto 1fr auto; align-items: center;
@@ -51,14 +19,7 @@
     .db-badge-logo small { font-size: 9px; color: var(--accent); letter-spacing: 1.5px; }
     h1 { font-size: 20px; text-align: center; margin: 0; }
     .toolbar { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
-    button {
-      font: inherit; border-radius: 9px; padding: 9px 12px; cursor: pointer;
-      font-weight: 800; border: 1px solid var(--line); background: var(--card2); color: var(--text);
-    }
-    button:hover { border-color: #4b5668; }
-    .primary { background: var(--accent); color: #09241d; border-color: transparent; }
-    .danger { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.3); }
-    .danger:hover { border-color: var(--danger); color: #fff; }
+    
     .sync-btn { background: rgba(99, 230, 190, 0.15); color: var(--accent); border-color: rgba(99, 230, 190, 0.3); }
     .sync-btn:hover { border-color: var(--accent); }
     
@@ -66,18 +27,12 @@
     .view-toggle button { border-radius: 0; border: none; font-size: 12px; padding: 8px 11px; }
     .view-toggle button.active { background: var(--accent); color: #09241d; }
 
-    /* Controles */
+    /* Controles y Panel Avanzado */
     .controls-wrapper { margin-bottom: 14px; }
     .controls {
       padding: 13px 15px; display: grid;
       grid-template-columns: 2fr repeat(3, 1fr) 1.2fr auto auto auto; gap: 8px;
     }
-    input, select {
-      width: 100%; background: #10141b; color: var(--text); border: 1px solid var(--line);
-      border-radius: 9px; padding: 9px 10px; outline: none; font-size: 13px;
-    }
-    input:focus, select:focus { border-color: var(--accent); }
-
     .advanced-panel {
       display: none; padding: 14px 16px; border-top: 1px solid var(--line);
       background: #131720; border-radius: 0 0 16px 16px;
@@ -100,30 +55,12 @@
       max-width: 135px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
     }
 
-    .date-badge {
-      display: inline-block; padding: 3px 8px; border-radius: 6px;
-      font-size: 11px; font-weight: 700; border: 1px solid transparent;
-    }
-    .date-badge.green {
-      background: rgba(34, 197, 94, 0.15); color: #86efac; border-color: rgba(34, 197, 94, 0.35);
-    }
-    .date-badge.yellow {
-      background: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.35);
-    }
-    .date-badge.red {
-      background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.35);
-    }
-    .date-badge.empty {
-      color: var(--muted); font-weight: normal;
-    }
-
     .status { font-size: 12px; color: var(--muted); padding: 9px 14px; border-top: 1px solid var(--line); }
     .badge { display: inline-block; padding: 3px 7px; border-radius: 999px; background: rgba(0,0,0,0.5); color: #dfe4eb; font-size: 11px; font-weight: 800; }
 
-    /* Degradados en la tabla */
+    /* Degradados en filas de la tabla */
     tbody tr { transition: 0.15s ease; border-left: 4px solid transparent; cursor: pointer; }
     tbody tr:hover { filter: brightness(1.2); }
-    
     tbody tr.card-bronze { background: linear-gradient(90deg, rgba(68, 42, 29, 0.45), transparent 80%); border-left-color: #8d5b3e; }
     tbody tr.card-silver { background: linear-gradient(90deg, rgba(65, 73, 82, 0.45), transparent 80%); border-left-color: #94a3b8; }
     tbody tr.card-gold-light { background: linear-gradient(90deg, rgba(191, 157, 61, 0.35), transparent 80%); border-left-color: #fde047; }
@@ -137,7 +74,7 @@
     tbody tr.card-potm { background: linear-gradient(90deg, rgba(88, 28, 135, 0.55), rgba(15, 23, 42, 0.8) 60%, transparent 90%); border-left-color: #a855f7; }
     tbody tr.card-ptc { background: linear-gradient(90deg, rgba(92, 51, 23, 0.55), rgba(31, 23, 18, 0.85) 60%, transparent 90%); border-left-color: #d97706; }
 
-    /* Fichas */
+    /* Cuadrícula de Fichas */
     .cards-grid {
       display: none;
       grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
@@ -148,165 +85,7 @@
     }
     .cards-grid.active-view { display: grid !important; }
     .card-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; }
-    
-    .fut-card {
-      width: 100%;
-      border-radius: 14px;
-      padding: 8px 10px 12px;
-      position: relative;
-      box-shadow: 0 8px 18px rgba(0,0,0,0.5);
-      user-select: none;
-      transition: transform 0.15s ease;
-      border: 2px solid transparent;
-      overflow: hidden;
-    }
     .card-item:hover .fut-card { transform: translateY(-4px); }
-
-    .card-rarity-tag {
-      font-size: 9px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.8px;
-      text-align: center;
-      padding: 2px 6px;
-      border-radius: 4px;
-      background: rgba(0,0,0,0.45);
-      border: 1px solid rgba(255,255,255,0.12);
-      margin-bottom: 6px;
-      color: rgba(255,255,255,0.85);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      position: relative;
-      z-index: 3;
-    }
-
-    .fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
-    .fut-card.card-bronze .card-rat { color: #f59e0b; }
-    .fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
-    .fut-card.card-silver .card-rat { color: #e2e8f0; }
-
-    .fut-card.card-gold-light {
-      background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012);
-      border-color: #fde047;
-      color: #fffbeb;
-    }
-    .fut-card.card-gold-light .card-rat { color: #fef08a; }
-
-    .fut-card.card-gold-dark {
-      background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902);
-      border-color: #eab308;
-      color: #fef9c3;
-      box-shadow: 0 0 12px rgba(234, 179, 8, 0.25);
-    }
-    .fut-card.card-gold-dark .card-rat { color: #ffd700; }
-
-    .fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
-    .fut-card.card-euro-evo .card-rat { color: #38bdf8; }
-    .fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
-    .fut-card.card-new-season .card-rat { color: #facc15; }
-    .fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
-    .fut-card.card-totw .card-rat { color: #fef08a; }
-    .fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
-    .fut-card.card-transfer-stars .card-rat { color: #5eead4; }
-    .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
-    .fut-card.card-weekend-league .card-rat { color: #4ade80; }
-
-    .fut-card.card-matchday {
-      background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%);
-      border-color: #f97316;
-      box-shadow: 0 0 14px rgba(249, 115, 22, 0.35);
-    }
-    .fut-card.card-matchday .card-rat { color: #fdba74; }
-
-    .fut-card.card-potm {
-      background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%);
-      border-color: #c084fc;
-      box-shadow: 0 0 16px rgba(168, 85, 247, 0.4);
-    }
-    .fut-card.card-potm .card-rat { color: #e9d5ff; }
-
-    .fut-card.card-ptc {
-      background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%);
-      border-color: #f59e0b;
-      box-shadow: 0 0 14px rgba(217, 119, 6, 0.35);
-    }
-    .fut-card.card-ptc .card-rat { color: #fde68a; }
-
-    /* Contenedor Superior con Capas */
-    .card-top {
-      position: relative;
-      height: 125px;
-      width: 100%;
-    }
-
-    /* Capa de Información */
-    .card-meta {
-      position: absolute;
-      left: 0;
-      top: 0;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      width: 44px;
-      gap: 4px;
-      z-index: 2;
-    }
-    .card-rat { font-size: 26px; font-weight: 900; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
-    .card-pos { font-size: 13px; font-weight: 800; color: #e2e8f0; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
-
-    .flag-rect {
-      width: 24px; height: 16px; object-fit: cover; border-radius: 2px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.6); background: #202733;
-    }
-    .shield-flag-wrap {
-      width: 24px; height: 26px; clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%);
-      background: #000; display: flex; align-items: center; justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.7); margin-top: 2px;
-    }
-    .shield-flag-wrap img { width: 100%; height: 100%; object-fit: cover; }
-
-    /* Capa de Imagen */
-    .card-img-wrap {
-      position: absolute;
-      inset: 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 1;
-    }
-    .card-img {
-      width: 124px;
-      height: 124px;
-      object-fit: cover;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.3) 100%);
-      box-shadow: 0 6px 14px rgba(0,0,0,0.5);
-    }
-
-    .card-info {
-      position: relative;
-      z-index: 2;
-      text-align: center;
-      margin: 8px 0;
-      border-bottom: 1px solid rgba(255,255,255,0.15);
-      padding-bottom: 6px;
-    }
-    .card-name { font-weight: 900; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
-    .card-club { font-size: 11px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    
-    .card-stats {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 3px 10px;
-      font-size: 12px;
-      margin-top: 4px;
-    }
-    .stat-row { display: flex; justify-content: space-between; font-weight: 700; }
-    .stat-num { color: #fff; }
-    .stat-lbl { color: var(--muted); font-size: 11px; }
 
     .card-price-badge {
       margin-top: 6px; width: 90%; background: #11151c; border: 1px solid #2e3746;
@@ -315,15 +94,7 @@
       display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
     }
 
-    /* Modales */
-    .modal-bg {
-      position: fixed; inset: 0; background: #0009; display: none;
-      align-items: center; justify-content: center; padding: 18px; z-index: 20;
-    }
-    .modal-bg.open { display: flex; }
-    .modal { width: min(680px, 100%); background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 18px; max-height: 90vh; overflow-y: auto; }
-    .modal h2 { margin: 0 0 8px; }
-    .modal p { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+    /* Formularios y Modales específicos */
     .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin: 12px 0; }
     .form-grid.stats-row { grid-template-columns: repeat(6, 1fr); gap: 6px; }
     .form-grid label { font-size: 11px; color: var(--muted); font-weight: 700; }
@@ -333,14 +104,6 @@
       border: 1px solid var(--line); border-radius: 10px; padding: 10px; font: 12px monospace;
     }
     .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 14px; }
-
-    .detail-container { display: flex; gap: 20px; align-items: flex-start; }
-    .detail-left { width: 220px; flex-shrink: 0; }
-    .detail-right { flex: 1; }
-    .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
-    .detail-item { background: #10141b; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); }
-    .detail-item small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
-    .detail-item span { font-size: 14px; font-weight: 800; }
 
     .dropzone {
       border: 2px dashed var(--line); border-radius: 10px; padding: 22px;
@@ -377,14 +140,11 @@
       .controls input:first-child { grid-column: 1/-1; }
       .adv-grid-4 { grid-template-columns: 1fr 1fr; }
       .adv-grid-6 { grid-template-columns: repeat(3, 1fr); }
-      .detail-container { flex-direction: column; align-items: center; }
-      .detail-left { width: 100%; max-width: 220px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Cabecero con UFM 27 MULTIMEDIA -->
 <header class="site-nav">
   <a class="nav-brand" href="index.html">
     <div style="font-size:24px">⚽</div>
@@ -407,7 +167,6 @@
 </header>
 
 <div class="wrap">
-  <!-- Tarjeta Principal con Logo UFM DATABASE -->
   <div class="card header">
     <div class="db-badge-logo">
       <span style="font-size:22px">⚽</span>
@@ -453,7 +212,6 @@
       <button type="button" onclick="resetFilters()" id="btnReset">Limpiar</button>
     </div>
 
-    <!-- Panel Avanzado -->
     <div class="advanced-panel" id="advPanel">
       <div class="adv-title" id="lblAdvTitle1">Filtros de Club, Nacionalidad y Rareza</div>
       <div class="adv-grid-4">
@@ -522,7 +280,6 @@
       </table>
     </div>
 
-    <!-- Contenedor Fichas -->
     <div class="cards-grid" id="cardsView"></div>
     <div id="status" class="status"></div>
   </div>
@@ -632,7 +389,7 @@
       </form>
     </div>
 
-    <!-- Modal Importación con 3 Pestañas (Archivo, Texto y URL) -->
+    <!-- Modal Importación -->
     <div id="importContainer" style="display:none">
       <div class="import-tabs">
         <button type="button" class="tab-btn active" id="tabFileBtn" onclick="switchImportTab('file')">Cargar Archivo</button>
@@ -648,7 +405,6 @@
         </select>
       </div>
 
-      <!-- 1. Cargar Archivo -->
       <div id="importFileSection">
         <input type="file" id="fileInput" accept=".json,.csv" style="display:none" onchange="handleFileSelect(event)">
         <div class="dropzone" onclick="document.getElementById('fileInput').click()">
@@ -657,14 +413,12 @@
         </div>
       </div>
 
-      <!-- 2. Cargar desde Dirección Web (URL) -->
       <div id="importUrlSection" style="display:none">
         <p style="font-size:13px; color:var(--muted); margin-top:0" id="urlHelpText">Pega el enlace directo a tu archivo JSON en internet:</p>
         <input type="url" id="importUrlInput" placeholder="https://raw.githubusercontent.com/usuario/repo/main/players.json">
         <small style="display:block; margin-top:6px; color:var(--accent)" id="urlSavedNote">Esta URL se guardará para que puedas actualizar con el botón "Sincronizar Web".</small>
       </div>
 
-      <!-- 3. Pegar Texto -->
       <div id="importTextSection" style="display:none">
         <textarea id="importTextInput" placeholder='[{"name": "Haaland", "rating": 91, ...}]'></textarea>
       </div>
@@ -844,7 +598,6 @@ var masterCountriesData = [
   { code: "uy", names: { es: "Uruguay", en: "Uruguay", fr: "Uruguay", de: "Uruguay", it: "Uruguay", pt: "Uruguai" } }
 ];
 
-/* Posiciones estándar */
 var standardPositions = ["ST", "RW", "LW", "CAM", "CM", "CDM", "RM", "LM", "CB", "RB", "LB", "GK"];
 
 var posTranslations = {
@@ -1141,7 +894,7 @@ var i18n = {
     ctxEditPrice: "💰 Alterar Preço", ctxEdit: "✏️ Modificar Tudo", ctxDelete: "🗑️ Eliminar",
     confirmDelete: "Tem certeza de que deseja excluir {name} da base de dados?",
     quickPriceTitle: "Alterar Preço", quickPriceHelp: "Digite o novo preço para este jogador.",
-    updatedOn: "Atualizado:", lastUpdate: "Última Atualização",
+    updatedOn: "Atualizado:", lastUpdate: "Última Actualização",
     statusToday: "Hoje", statusDaysAgo: "Há {n}d"
   }
 };
@@ -1916,7 +1669,13 @@ function fetchFromUrl(url) {
     return;
   }
   
-  fetch(url)
+  // Si la URL es de Pastebin, pasamos por un proxy CORS para evitar el bloqueo del navegador
+  var targetUrl = url;
+  if (url.includes('pastebin.com')) {
+    targetUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+  }
+  
+  fetch(targetUrl)
     .then(function(res) {
       if (!res.ok) throw new Error("Error en la conexión con el servidor (HTTP " + res.status + ")");
       return res.text();
@@ -1927,7 +1686,7 @@ function fetchFromUrl(url) {
 
       try {
         var data = JSON.parse(rawText);
-        localStorage.setItem(URL_KEY, url);
+        localStorage.setItem(URL_KEY, url); // Guardamos la URL original
         mergePlayerData(data);
       } catch(jsonErr) {
         try {
