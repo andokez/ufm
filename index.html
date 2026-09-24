@@ -126,38 +126,89 @@
   .ptc-cost { font-weight: 900; color: var(--accent); font-size: 14px; }
   .ptc-action { font-size: 12px; font-weight: 800; color: var(--muted); }
 
-  /* Modal de Solución */
-  .modal-bg {
-    position: fixed; inset: 0; background: #000b; display: none;
-    align-items: center; justify-content: center; padding: 18px; z-index: 50;
-  }
-  .modal-bg.open { display: flex; }
-  .modal {
-    width: min(1000px, 98%); background: var(--card); border: 1px solid var(--line);
-    border-radius: 16px; padding: 22px; max-height: 92vh; overflow-y: auto;
-  }
-  .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
-  .modal-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
-  .close-btn { background: var(--card2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 16px; padding: 6px 12px; cursor: pointer; }
-
-  /* Pestañas de sub-plantillas dentro del modal */
+  /* Cuadrícula de sub-plantillas simétrica y adaptable */
   .sub-tabs-wrap {
-    display: flex; gap: 8px; overflow-x: auto; margin-bottom: 16px; padding-bottom: 4px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(215px, 1fr));
+    gap: 12px;
+    margin-bottom: 18px;
+    padding-bottom: 4px;
   }
   .sub-tab-btn {
-    background: #11151e; border: 1px solid var(--line); color: var(--muted);
-    border-radius: 8px; padding: 7px 12px; font-size: 12px; font-weight: 800; cursor: pointer; white-space: nowrap;
+    background: #11151e;
+    border: 1px solid var(--line);
+    color: var(--muted);
+    border-radius: 12px;
+    padding: 12px 14px;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+    text-align: left;
+    min-height: 72px;
+    box-sizing: border-box;
+  }
+  .sub-tab-btn:hover {
+    border-color: #4b5668;
+    background: #151b27;
+    color: var(--text);
   }
   .sub-tab-btn.active {
-    background: var(--card2); color: var(--accent); border-color: var(--accent);
+    background: var(--card2);
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.35);
+  }
+  .sub-tab-top {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    align-items: center;
+    gap: 8px;
+  }
+  .sub-tab-name {
+    font-size: 13px;
+    font-weight: 900;
+    color: #fff;
+  }
+  .sub-tab-target {
+    font-size: 12px;
+    font-weight: 900;
+    color: var(--gold);
+    white-space: nowrap;
+  }
+  .sub-tab-reward {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted);
+    line-height: 1.3;
+    word-break: break-word;
+  }
+  .sub-tab-btn.active .sub-tab-reward {
+    color: #ffd43b;
   }
 
   .summary-banner {
-    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 20px;
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 14px;
   }
   .summary-box { background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px; text-align: center; }
   .summary-box small { display: block; font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; }
   .summary-box span { display: block; font-size: 20px; font-weight: 900; color: var(--accent); margin-top: 2px; }
+
+  /* Bloque de Requisitos Específicos */
+  .req-detail-panel {
+    background: #11151e; border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px; margin-bottom: 16px;
+  }
+  .req-detail-panel h4 { margin: 0 0 8px 0; font-size: 13px; color: var(--gold); text-transform: uppercase; letter-spacing: 0.5px; }
+  .req-tags-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+  .req-tag {
+    background: #19202c; border: 1px solid #2e394b; border-radius: 6px; padding: 4px 9px;
+    font-size: 11px; font-weight: 700; color: #dfe4eb; display: inline-flex; align-items: center; gap: 4px;
+  }
 
   /* Grid de Jugadores en Alineación */
   .squad-grid {
@@ -169,12 +220,16 @@
   .mini-card {
     width: 100%; border-radius: 12px; padding: 8px; position: relative;
     box-shadow: 0 6px 14px rgba(0,0,0,0.5); user-select: none; border: 1px solid transparent; text-align: center;
+    cursor: pointer; transition: transform 0.15s ease;
   }
+  .mini-card:hover { transform: translateY(-3px); }
   .mini-card.bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; }
   .mini-card.silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; }
   .mini-card.gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; }
   .mini-card.gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; }
   .mini-card.weekend_league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
+  .mini-card.ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
+  
   .mini-card-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px; }
   .mini-card-rat { font-size: 18px; font-weight: 900; color: var(--gold); }
   .mini-card-pos { font-size: 11px; font-weight: 800; color: #fff; }
@@ -193,12 +248,95 @@
   }
   .squad-slot-empty b { color: var(--gold); font-size: 16px; margin-bottom: 4px; }
 
+  /* Modales Globales */
+  .modal-bg {
+    position: fixed; inset: 0; background: #000b; display: none;
+    align-items: center; justify-content: center; padding: 18px; z-index: 50;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    width: min(1000px, 98%); background: var(--card); border: 1px solid var(--line);
+    border-radius: 16px; padding: 22px; max-height: 92vh; overflow-y: auto; position: relative;
+  }
+  .modal-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; }
+  .modal-top h2 { margin: 0; font-size: 20px; font-weight: 900; }
+  .close-btn { background: var(--card2); border: 1px solid var(--line); color: var(--text); border-radius: 8px; font-size: 16px; padding: 6px 12px; cursor: pointer; }
+
+  /* ESTILOS DE FICHA DETALLADA (HEREDADOS DE LA BASE DE DATOS) */
+  .detail-modal { width: min(650px, 98%); z-index: 70; }
+  .detail-container { display: flex; gap: 20px; align-items: flex-start; }
+  .detail-left { width: 220px; flex-shrink: 0; }
+  .detail-right { flex: 1; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
+  .detail-item { background: #10141b; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--line); }
+  .detail-item small { display: block; color: var(--muted); font-size: 10px; font-weight: 700; text-transform: uppercase; }
+  .detail-item span { font-size: 14px; font-weight: 800; }
+
+  .fut-card {
+    width: 100%; border-radius: 14px; padding: 8px 10px 12px; position: relative;
+    box-shadow: 0 8px 18px rgba(0,0,0,0.5); user-select: none; border: 2px solid transparent; overflow: hidden;
+  }
+  .card-rarity-tag {
+    font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; text-align: center;
+    padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.45); border: 1px solid rgba(255,255,255,0.12);
+    margin-bottom: 6px; color: rgba(255,255,255,0.85); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; position: relative; z-index: 3;
+  }
+  .fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
+  .fut-card.card-bronze .card-rat { color: #f59e0b; }
+  .fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
+  .fut-card.card-silver .card-rat { color: #e2e8f0; }
+  .fut-card.card-gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; color: #fffbeb; }
+  .fut-card.card-gold-light .card-rat { color: #fef08a; }
+  .fut-card.card-gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; color: #fef9c3; box-shadow: 0 0 12px rgba(234, 179, 8, 0.25); }
+  .fut-card.card-gold-dark .card-rat { color: #ffd700; }
+  .fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
+  .fut-card.card-euro-evo .card-rat { color: #38bdf8; }
+  .fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
+  .fut-card.card-new-season .card-rat { color: #facc15; }
+  .fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
+  .fut-card.card-totw .card-rat { color: #fef08a; }
+  .fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
+  .fut-card.card-transfer-stars .card-rat { color: #5eead4; }
+  .fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
+  .fut-card.card-weekend-league .card-rat { color: #4ade80; }
+  .fut-card.card-matchday { background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%); border-color: #f97316; }
+  .fut-card.card-matchday .card-rat { color: #fdba74; }
+  .fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
+  .fut-card.card-potm .card-rat { color: #e9d5ff; }
+  .fut-card.card-ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
+  .fut-card.card-ptc .card-rat { color: #fde68a; }
+
+  .card-top { position: relative; height: 125px; width: 100%; }
+  .card-meta { position: absolute; left: 0; top: 0; display: flex; flex-direction: column; align-items: center; width: 44px; gap: 4px; z-index: 2; }
+  .card-rat { font-size: 26px; font-weight: 900; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.8); }
+  .card-pos { font-size: 13px; font-weight: 800; color: #e2e8f0; text-shadow: 0 1px 4px rgba(0,0,0,0.8); }
+  .flag-rect { width: 24px; height: 16px; object-fit: cover; border-radius: 2px; box-shadow: 0 2px 4px rgba(0,0,0,0.6); background: #202733; }
+  .shield-flag-wrap { width: 24px; height: 26px; clip-path: polygon(0 0, 100% 0, 100% 70%, 50% 100%, 0 70%); background: #000; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.7); margin-top: 2px; }
+  .shield-flag-wrap img { width: 100%; height: 100%; object-fit: cover; }
+  .card-img-wrap { position: absolute; inset: 0; display: flex; justify-content: center; align-items: center; z-index: 1; }
+  .card-img { width: 124px; height: 124px; object-fit: cover; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.06) 0%, rgba(0,0,0,0.3) 100%); box-shadow: 0 6px 14px rgba(0,0,0,0.5); }
+  .card-info { position: relative; z-index: 2; text-align: center; margin: 8px 0; border-bottom: 1px solid rgba(255,255,255,0.15); padding-bottom: 6px; }
+  .card-name { font-weight: 900; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-shadow: 0 2px 4px rgba(0,0,0,0.7); }
+  .card-club { font-size: 11px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card-stats { position: relative; z-index: 2; display: grid; grid-template-columns: 1fr 1fr; gap: 3px 10px; font-size: 12px; margin-top: 4px; }
+  .stat-row { display: flex; justify-content: space-between; font-weight: 700; }
+  .stat-num { color: #fff; }
+  .stat-lbl { color: var(--muted); font-size: 11px; }
+
+  .date-badge { display: inline-block; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; border: 1px solid transparent; }
+  .date-badge.green { background: rgba(34, 197, 94, 0.15); color: #86efac; border-color: rgba(34, 197, 94, 0.35); }
+  .date-badge.yellow { background: rgba(234, 179, 8, 0.15); color: #fde047; border-color: rgba(234, 179, 8, 0.35); }
+  .date-badge.red { background: rgba(239, 68, 68, 0.15); color: #fca5a5; border-color: rgba(239, 68, 68, 0.35); }
+  .date-badge.empty { color: var(--muted); font-weight: normal; }
+
   @media(max-width: 900px) {
     .hero { flex-direction: column; align-items: flex-start; gap: 14px; }
     .ptc-toolbar { flex-direction: column; align-items: stretch; }
     .source-selector { width: 100%; justify-content: center; }
     .summary-banner { grid-template-columns: 1fr; }
     .squad-grid { grid-template-columns: repeat(2, 1fr); }
+    .detail-container { flex-direction: column; align-items: center; }
+    .detail-left { width: 100%; max-width: 220px; }
   }
 </style>
 </head>
@@ -253,7 +391,6 @@
       <button type="button" class="tab-button" onclick="switchCategory('limited')" id="tabLimited">⏳ Tiempo Limitado</button>
     </div>
 
-    <!-- Selector de Origen de Precios -->
     <div class="source-selector">
       <button type="button" class="source-btn active" id="btnSrcDb" onclick="setPriceSource('db')">🗄️ Base de Datos</button>
       <button type="button" class="source-btn" id="btnSrcManual" onclick="setPriceSource('manual')">✏️ Calculadora Manual</button>
@@ -264,7 +401,7 @@
   <div class="ptc-grid" id="ptcGrid"></div>
 </div>
 
-<!-- Modal de Solución con Alineación de Fichas -->
+<!-- Modal Principal de Solución -->
 <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
   <div class="modal" onclick="event.stopPropagation()">
     <div class="modal-top">
@@ -293,8 +430,41 @@
       </div>
     </div>
 
+    <!-- Panel de Requisitos Específicos -->
+    <div id="modalReqPanel" class="req-detail-panel" style="display:none">
+      <h4 id="lblModalReqTitle">Requisitos Especiales de Plantilla</h4>
+      <div class="req-tags-wrap" id="modalReqTags"></div>
+    </div>
+
     <h3 style="margin: 18px 0 8px; font-size: 15px; color: var(--accent)" id="lblSquadTitle">Alineación Sugerida</h3>
     <div class="squad-grid" id="squadGrid"></div>
+  </div>
+</div>
+
+<!-- Modal Secundario: Ficha Detallada del Jugador -->
+<div class="modal-bg" id="detailModalBg" style="z-index: 60" onclick="closeDetailModal(event)">
+  <div class="modal detail-modal" onclick="event.stopPropagation()">
+    <div class="modal-top" style="margin-bottom: 12px;">
+      <h3 id="detModalHeader" style="margin:0; font-size:18px">Detalle del Jugador</h3>
+      <button type="button" class="close-btn" onclick="closeDetailModal()">✕</button>
+    </div>
+    
+    <div class="detail-container">
+      <div class="detail-left" id="detailCardTarget"></div>
+      <div class="detail-right">
+        <h3 id="detName" style="margin:0 0 4px; font-size: 20px;">-</h3>
+        <p id="detSub" style="margin:0 0 12px; color:var(--muted); font-size: 13px;">-</p>
+        <div class="detail-grid">
+          <div class="detail-item"><small>Club</small><span id="detClub">-</span></div>
+          <div class="detail-item"><small>Liga</small><span id="detLeague">-</span></div>
+          <div class="detail-item"><small>Nacionalidad</small><span id="detCountry">-</span></div>
+          <div class="detail-item"><small>Edad</small><span id="detAge">-</span></div>
+          <div class="detail-item"><small>Altura / Peso</small><span id="detPhysique">-</span></div>
+          <div class="detail-item"><small>Precio Mercado SBC</small><span id="detPrice" style="color:var(--accent)">-</span></div>
+          <div class="detail-item"><small>Última Actualización</small><span id="detUpdated">-</span></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -319,16 +489,16 @@ var posTranslations = {
 };
 
 var reversePosLookup = {
-  'DC':'ST', 'ED':'RW', 'EI':'LW', 'DFC':'CB', 'LD':'RB', 'LI':'LB', 'POR':'GK', 'MCD':'CDM', 'MCO':'CAM',
-  'BU':'ST', 'AD':'RW', 'AG':'LW', 'MDC':'CDM', 'MOC':'CAM', 'DD':'RB', 'DG':'LB', 'G':'GK',
+  'DC':'ST', 'ED':'RW', 'EI':'LW', 'DFC':'CB', 'LD':'RB', 'LI':'LB', 'POR':'GK', 'MCD':'CDM', 'MCO':'CAM', 'MI':'LM', 'MD':'RM', 'MC':'CM',
+  'BU':'ST', 'AD':'RW', 'AG':'LW', 'MDC':'CDM', 'MOC':'CAM', 'DD':'RB', 'DG':'LB', 'G':'GK', 'MG':'LM',
   'RF':'RW', 'LF':'LW', 'ZM':'CM', 'ZDM':'CDM', 'ZOM':'CAM', 'IV':'CB', 'RV':'RB', 'LV':'LB', 'TW':'GK',
-  'ATT':'ST', 'AS':'LW', 'CC':'CM', 'CDC':'CDM', 'COC':'CAM', 'TD':'RB', 'TS':'LB',
-  'PL':'ST', 'PD':'RW', 'PE':'LW', 'VOL':'CDM', 'MEI':'CAM', 'ZAG':'CB', 'LE':'LB', 'GR':'GK'
+  'ATT':'ST', 'AS':'LW', 'CC':'CM', 'CDC':'CDM', 'COC':'CAM', 'TD':'RB', 'TS':'LB', 'ES':'LM',
+  'PL':'ST', 'PD':'RW', 'PE':'LW', 'VOL':'CDM', 'MEI':'CAM', 'ZAG':'CB', 'LE':'LB', 'GR':'GK', 'ME':'LM'
 };
 
 function normalizePosition(p) {
   if (!p) return 'ST';
-  var up = p.trim().toUpperCase();
+  var up = String(p).trim().toUpperCase();
   return reversePosLookup[up] || up;
 }
 
@@ -337,6 +507,102 @@ function displayPosition(p) {
   var standard = normalizePosition(p);
   var dict = posTranslations[currentLang] || posTranslations.es;
   return dict[standard] || standard;
+}
+
+/* LIGAS Y PAÍSES PARA BANDERAS Y DETALLES */
+var masterLeaguesData = [
+  { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)" } },
+  { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)" } },
+  { id: "eng_2", code: "gb-eng", names: { es: "Inglaterra (2ª Div - Championship)", en: "England (2nd Div - Championship)" } },
+  { id: "fr_1", code: "fr", names: { es: "Francia (1ª Div - Ligue 1)", en: "France (1st Div - Ligue 1)" } },
+  { id: "de_1", code: "de", names: { es: "Alemania (1ª Div - Bundesliga)", en: "Germany (1st Div - Bundesliga)" } },
+  { id: "it_1", code: "it", names: { es: "Italia (1ª Div - Serie A)", en: "Italy (1st Div - Serie A)" } },
+  { id: "nl_1", code: "nl", names: { es: "Holanda (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)" } },
+  { id: "pt_1", code: "pt", names: { es: "Portugal (1ª Div - Liga Portugal)", en: "Portugal (1st Div - Liga Portugal)" } },
+  { id: "es_1", code: "es", names: { es: "España (1ª Div - LaLiga)", en: "Spain (1st Div - LaLiga)" } },
+  { id: "es_2", code: "es", names: { es: "España (2ª Div - LaLiga Hypermotion)", en: "Spain (2nd Div - Hypermotion)" } },
+  { id: "br_1", code: "br", names: { es: "Brasil (1ª Div - Brasileirão)", en: "Brazil (1st Div - Brasileirão)" } }
+];
+
+var masterCountriesData = [
+  { code: "de", names: { es: "Alemania", en: "Germany" } },
+  { code: "ar", names: { es: "Argentina", en: "Argentina" } },
+  { code: "br", names: { es: "Brasil", en: "Brazil" } },
+  { code: "es", names: { es: "España", en: "Spain" } },
+  { code: "fr", names: { es: "Francia", en: "France" } },
+  { code: "gb-eng", names: { es: "Inglaterra", en: "England" } },
+  { code: "nl", names: { es: "Holanda", en: "Netherlands" } },
+  { code: "it", names: { es: "Italia", en: "Italy" } },
+  { code: "pt", names: { es: "Portugal", en: "Portugal" } },
+  { code: "no", names: { es: "Noruega", en: "Norway" } }
+];
+
+function getFlagUrl(str) {
+  if (!str) return 'https://flagcdn.com/w40/un.png';
+  var clean = str.trim().toLowerCase();
+
+  var foundLeague = masterLeaguesData.find(function(l) {
+    return Object.values(l.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean.includes(l.code);
+  });
+  if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
+
+  var foundCountry = masterCountriesData.find(function(c) {
+    return Object.values(c.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean === c.code;
+  });
+  if (foundCountry) return 'https://flagcdn.com/w40/' + foundCountry.code + '.png';
+
+  var fallbackDict = {
+    'premier': 'gb-eng', 'laliga': 'es', 'serie a': 'it', 'bundesliga': 'de',
+    'ligue 1': 'fr', 'eredivisie': 'nl', 'brasil': 'br', 'francia': 'fr',
+    'inglaterra': 'gb-eng', 'holanda': 'nl', 'españa': 'es', 'alemania': 'de'
+  };
+  for (var k in fallbackDict) {
+    if (clean.includes(k)) return 'https://flagcdn.com/w40/' + fallbackDict[k] + '.png';
+  }
+  return 'https://flagcdn.com/w40/un.png';
+}
+
+function getRarityClass(rarity, rating) {
+  var r = (rarity || 'normal').toLowerCase();
+  var rat = +rating || 0;
+  if (r === 'normal') {
+    if (rat <= 64) return 'card-bronze';
+    if (rat <= 74) return 'card-silver';
+    if (rat <= 82) return 'card-gold-light';
+    return 'card-gold-dark';
+  }
+  if (r === 'matchday') return 'card-matchday';
+  if (r === 'new_season') return 'card-new-season';
+  if (r === 'potm') return 'card-potm';
+  if (r === 'ptc') return 'card-ptc';
+  if (r === 'euro_evo') return 'card-euro-evo';
+  if (r === 'totw') return 'card-totw';
+  if (r === 'transfer_stars') return 'card-transfer-stars';
+  if (r === 'weekend_league') return 'card-weekend-league';
+  return 'card-gold-dark';
+}
+
+function getRarityLabel(r) {
+  var norm = (r || 'normal').toLowerCase();
+  if (norm === 'normal') return 'Normal';
+  var labels = {
+    matchday: 'Matchday', new_season: 'NewSeason', potm: 'Player of the Month',
+    ptc: 'PTC', euro_evo: 'European Evolutions', totw: 'Team of the Week',
+    transfer_stars: 'Transfer Stars', weekend_league: 'Weekend League'
+  };
+  return labels[norm] || r;
+}
+
+function getDateStatus(isoDate) {
+  if (!isoDate) return { text: '—', colorClass: 'empty' };
+  var target = new Date(isoDate);
+  if (isNaN(target.getTime())) return { text: isoDate, colorClass: 'red' };
+  var diffDays = Math.floor((new Date() - target) / (1000 * 60 * 60 * 24));
+  var dateFormatted = target.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: '2-digit' });
+  return {
+    text: dateFormatted,
+    colorClass: diffDays <= 0 ? 'green' : (diffDays <= 3 ? 'yellow' : 'red')
+  };
 }
 
 /* DICCIONARIO MULTILINGÜE */
@@ -360,7 +626,9 @@ var i18n = {
     badgeBasic: "Básico", badgeRepeatable: "Básico Repetible", badgeSeason: "Temporada", badgeLimited: "Limitado",
     modalSubtitle: "{players} jugadores · Media {target}",
     pendingDetails: "Requisitos de esta plantilla pendientes de definir.",
-    squadWord: "Plantilla", challengeWord: "Desafío"
+    squadWord: "Plantilla", challengeWord: "Desafío",
+    specialReqTitle: "Requisitos Especiales de Plantilla",
+    minPlayers: "Mín. {n} de {item}"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
@@ -381,197 +649,83 @@ var i18n = {
     badgeBasic: "Basic", badgeRepeatable: "Repeatable Basic", badgeSeason: "Season", badgeLimited: "Limited",
     modalSubtitle: "{players} players · Rating {target}",
     pendingDetails: "Squad requirements pending to be defined.",
-    squadWord: "Squad", challengeWord: "Challenge"
-  },
-  fr: {
-    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
-    heroTitle: "Défis de Création d'Équipe (DCE)",
-    heroSubtitle: "Découvrez les défis actifs et obtenez la solution la moins chère avec votre base de données ou la calculatrice.",
-    statPlayers: "Joueurs en BD", statActive: "DCE Actifs",
-    tabBasic: "📁 Basiques", tabSeason: "🏆 De Saison", tabLimited: "⏳ Temps Limité",
-    btnSrcDb: "🗄️ Base de Données", btnSrcManual: "✏️ Calculateur Manuel",
-    reqPlayers: "Joueurs :", reqTarget: "Note Requise :",
-    reqSquads: "Équipes Requises :",
-    reqRarity: "Rareté Exigée :",
-    viewSolution: "Voir l'équipe optimale →",
-    estCost: "Coût estimé :",
-    sumCost: "Coût de l'équipe", sumTarget: "Note Requise", sumExact: "Note Réelle",
-    squadTitle: "Équipe Recommandée",
-    noPricesWarning: "Aucun prix disponible. Vérifiez la base ou entrez des prix dans le calculateur manuel.",
-    anyPlayer: "Tout joueur de",
-    badgeBasic: "Basique", badgeRepeatable: "Basique Répétable", badgeSeason: "Saison", badgeLimited: "Limité",
-    modalSubtitle: "{players} joueurs · Note {target}",
-    pendingDetails: "Critères de cette équipe en attente de définition.",
-    squadWord: "Équipe", challengeWord: "Défi"
-  },
-  de: {
-    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
-    heroTitle: "Squad Building Challenges (PTC)",
-    heroSubtitle: "Finde die günstigste SBC-Kombination mit Datenbank- oder manuellen Rechnerpreisen.",
-    statPlayers: "Spieler in DB", statActive: "Aktive PTCs",
-    tabBasic: "📁 Basis", tabSeason: "🏆 Saison-PTC", tabLimited: "⏳ Zeitlich Begrenzt",
-    btnSrcDb: "🗄️ Datenbank", btnSrcManual: "✏️ Rechner Manuell",
-    reqPlayers: "Spieler:", reqTarget: "Benötigte Wertung:",
-    reqSquads: "Erforderliche Teams:",
-    reqRarity: "Benötigte Seltenheit:",
-    viewSolution: "Günstigste Aufstellung →",
-    estCost: "Geschätzte Kosten:",
-    sumCost: "Team-Kosten", sumTarget: "Ziel-Wertung", sumExact: "Genaue Wertung",
-    squadTitle: "Empfohlene Aufstellung",
-    noPricesWarning: "Keine Preise verfügbar. Bitte Datenbank oder manuelle Preise im Rechner prüfen.",
-    anyPlayer: "Jeder Spieler mit",
-    badgeBasic: "Basis", badgeRepeatable: "Wiederholbar Basis", badgeSeason: "Saison", badgeLimited: "Begrenzt",
-    modalSubtitle: "{players} Spieler · Wertung {target}",
-    pendingDetails: "Anforderungen für dieses Team noch nicht festgelegt.",
-    squadWord: "Team", challengeWord: "Challenge"
-  },
-  it: {
-    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
-    heroTitle: "Sfide Creazione Rosa (PTC)",
-    heroSubtitle: "Trova la combinazione più economica usando i prezzi del database o del calcolatore manuale.",
-    statPlayers: "Giocatori in BD", statActive: "PTC Attivi",
-    tabBasic: "📁 Base", tabSeason: "🏆 Stagionali", tabLimited: "⏳ Tempo Limitato",
-    btnSrcDb: "🗄️ Database", btnSrcManual: "✏️ Calcolatore Manuale",
-    reqPlayers: "Giocatori:", reqTarget: "Valutazione richiesta:",
-    reqSquads: "Rose richieste:",
-    reqRarity: "Rarità richiesta:",
-    viewSolution: "Vedi rosa migliore →",
-    estCost: "Costo stimato:",
-    sumCost: "Costo Rosa", sumTarget: "Valutazione Richiesta", sumExact: "Valutazione Reale",
-    squadTitle: "Rosa Suggerita",
-    noPricesWarning: "Nessun prezzo disponibile. Controlla il database o inserisci prezzi nel calcolatore.",
-    anyPlayer: "Qualsiasi giocatore da",
-    badgeBasic: "Base", badgeRepeatable: "Ripetibile Base", badgeSeason: "Stagione", badgeLimited: "Limitato",
-    modalSubtitle: "{players} giocatori · Valutazione {target}",
-    pendingDetails: "Requisiti di questa rosa in attesa di definizione.",
-    squadWord: "Rosa", challengeWord: "Sfida"
-  },
-  pt: {
-    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
-    heroTitle: "Desafios de Montagem de Elenco (DME)",
-    heroSubtitle: "Encontre a solução mais barata para os desafios usando preços da base de dados ou da calculadora.",
-    statPlayers: "Jogadores na BD", statActive: "DMEs Ativos",
-    tabBasic: "📁 Básicos", tabSeason: "🏆 De Temporada", tabLimited: "⏳ Tempo Limitado",
-    btnSrcDb: "🗄️ Base de Dados", btnSrcManual: "✏️ Calculadora Manual",
-    reqPlayers: "Jogadores:", reqTarget: "Classificação exigida:",
-    reqSquads: "Elencos exigidos:",
-    reqRarity: "Raridade exigida:",
-    viewSolution: "Ver elenco ideal →",
-    estCost: "Custo estimado:",
-    sumCost: "Custo do Elenco", sumTarget: "Nota Exigida", sumExact: "Nota Exata",
-    squadTitle: "Elenco Sugerido",
-    noPricesWarning: "Sem preços disponíveis. Verifique a base de dados ou insira preços manuais na calculadora.",
-    anyPlayer: "Qualquer jogador de",
-    badgeBasic: "Básico", badgeRepeatable: "Básico Repetível", badgeSeason: "Temporada", badgeLimited: "Limitado",
-    modalSubtitle: "{players} jogadores · Classificação {target}",
-    pendingDetails: "Requisitos deste elenco pendentes de definição.",
-    squadWord: "Elenco", challengeWord: "Desafio"
+    squadWord: "Squad", challengeWord: "Challenge",
+    specialReqTitle: "Special Squad Requirements",
+    minPlayers: "Min. {n} of {item}"
   }
 };
 
 /* NOMBRES DE LOS DESAFÍOS TRADUCIDOS */
 var ptcTitles = {
-  b_60: { es: "Mejora 60+", en: "60+ Upgrade", fr: "Renfort 60+", de: "60+-Upgrade", it: "Miglioramento 60+", pt: "Melhoria 60+" },
-  b_70: { es: "Mejora 70+", en: "70+ Upgrade", fr: "Renfort 70+", de: "70+-Upgrade", it: "Miglioramento 70+", pt: "Melhoria 70+" },
-  b_74: { es: "Mejora 74+", en: "74+ Upgrade", fr: "Renfort 74+", de: "74+-Upgrade", it: "Miglioramento 74+", pt: "Melhoria 74+" },
-  b_78: { es: "Mejora 78+", en: "78+ Upgrade", fr: "Renfort 78+", de: "78+-Upgrade", it: "Miglioramento 78+", pt: "Melhoria 78+" },
-  b_81: { es: "Mejora 81+", en: "81+ Upgrade", fr: "Renfort 81+", de: "81+-Upgrade", it: "Miglioramento 81+", pt: "Melhoria 81+" },
-  b_83: { es: "Mejora 83+", en: "83+ Upgrade", fr: "Renfort 83+", de: "83+-Upgrade", it: "Miglioramento 83+", pt: "Melhoria 83+" },
-  b_85: { es: "Mejora 85+", en: "85+ Upgrade", fr: "Renfort 85+", de: "85+-Upgrade", it: "Miglioramento 85+", pt: "Melhoria 85+" },
-  b_87: { es: "Mejora 87+", en: "87+ Upgrade", fr: "Renfort 87+", de: "87+-Upgrade", it: "Miglioramento 87+", pt: "Melhoria 87+" },
-  
-  b_daily_11: { es: "Diario 11", en: "Daily 11", fr: "Quotidien 11", de: "Täglich 11", it: "Giornaliero 11", pt: "Diário 11" },
-  b_weekly_17: { es: "Semanal 17", en: "Weekly 17", fr: "Hebdomadaire 17", de: "Wöchentlich 17", it: "Settimanale 17", pt: "Semanal 17" },
-  
-  b_bronze_group: { es: "Desafío Bronce", en: "Bronze Challenge", fr: "Défi Bronze", de: "Bronze-Challenge", it: "Sfida Bronzo", pt: "Desafio Bronze" },
-  b_silver_group: { es: "Desafío Plata", en: "Silver Challenge", fr: "Défi Argent", de: "Silber-Challenge", it: "Sfida Argento", pt: "Desafio Prata" },
-  b_gold_group: { es: "Desafío Oro", en: "Gold Challenge", fr: "Défi Or", de: "Gold-Challenge", it: "Sfida Oro", pt: "Desafio Ouro" },
-
-  s_aficionado_1: { es: "Aficionado 1", en: "Amateur 1", fr: "Amateur 1", de: "Amateur 1", it: "Dilettante 1", pt: "Amador 1" },
-  s_aficionado_2: { es: "Aficionado 2", en: "Amateur 2", fr: "Amateur 2", de: "Amateur 2", it: "Dilettante 2", pt: "Amador 2" },
-  s_aficionado_3: { es: "Aficionado 3", en: "Amateur 3", fr: "Amateur 3", de: "Amateur 3", it: "Dilettante 3", pt: "Amador 3" },
-  s_semipro_1: { es: "Semiprofesional 1", en: "Semi-Pro 1", fr: "Semi-Pro 1", de: "Halbprofi 1", it: "Semi-Pro 1", pt: "Semiprofissional 1" },
-  s_semipro_2: { es: "Semiprofesional 2", en: "Semi-Pro 2", fr: "Semi-Pro 2", de: "Halbprofi 2", it: "Semi-Pro 2", pt: "Semiprofissional 2" },
-  s_semipro_3: { es: "Semiprofesional 3", en: "Semi-Pro 3", fr: "Semi-Pro 3", de: "Halbprofi 3", it: "Semi-Pro 3", pt: "Semiprofissional 3" },
-  s_pro_1: { es: "Profesional 1", en: "Professional 1", fr: "Professionnel 1", de: "Profi 1", it: "Professionista 1", pt: "Profissional 1" },
-  s_pro_2: { es: "Profesional 2", en: "Professional 2", fr: "Professionnel 2", de: "Profi 2", it: "Professionista 2", pt: "Profissional 2" },
-  s_pro_3: { es: "Profesional 3", en: "Professional 3", fr: "Professionnel 3", de: "Profi 3", it: "Professionista 3", pt: "Profissional 3" },
-  s_legend_1: { es: "Legendario 1", en: "Legendary 1", fr: "Légendaire 1", de: "Legende 1", it: "Leggenda 1", pt: "Lendário 1" },
-
-  s_wl_1: { es: "Liga de Fin de Semana 1", en: "Weekend League 1", fr: "Ligue Week-end 1", de: "Weekend League 1", it: "Weekend League 1", pt: "Weekend League 1" },
-  s_wl_2: { es: "Liga de Fin de Semana 2", en: "Weekend League 2", fr: "Ligue Week-end 2", de: "Weekend League 2", it: "Weekend League 2", pt: "Weekend League 2" },
-
-  l_totw_upgrade: { es: "Mejora TOTW Activo", en: "Active TOTW Upgrade", fr: "Renfort TOTW Actif", de: "Aktives TDW-Upgrade", it: "Miglioramento TOTW Attivo", pt: "Melhoria TOTW Ativa" },
-  l_flash_challenge: { es: "Desafío Relámpago", en: "Flash Challenge", fr: "Défi Flash", de: "Blitz-Challenge", it: "Sfida Lampo", pt: "Desafio Relâmpago" },
-  l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)", fr: "Martin Ødegaard (91 POTM)", de: "Martin Ødegaard (91 POTM)", it: "Martin Ødegaard (91 POTM)", pt: "Martin Ødegaard (91 POTM)" }
+  b_60: { es: "Mejora 60+", en: "60+ Upgrade" },
+  b_70: { es: "Mejora 70+", en: "70+ Upgrade" },
+  b_74: { es: "Mejora 74+", en: "74+ Upgrade" },
+  b_78: { es: "Mejora 78+", en: "78+ Upgrade" },
+  b_81: { es: "Mejora 81+", en: "81+ Upgrade" },
+  b_83: { es: "Mejora 83+", en: "83+ Upgrade" },
+  b_85: { es: "Mejora 85+", en: "85+ Upgrade" },
+  b_87: { es: "Mejora 87+", en: "87+ Upgrade" },
+  b_daily_11: { es: "Diario 11", en: "Daily 11" },
+  b_weekly_17: { es: "Semanal 17", en: "Weekly 17" },
+  b_bronze_group: { es: "Desafío Bronce", en: "Bronze Challenge" },
+  b_silver_group: { es: "Desafío Plata", en: "Silver Challenge" },
+  b_gold_group: { es: "Desafío Oro", en: "Gold Challenge" },
+  s_aficionado_1: { es: "Aficionado 1", en: "Amateur 1" },
+  s_aficionado_2: { es: "Aficionado 2", en: "Amateur 2" },
+  s_aficionado_3: { es: "Aficionado 3", en: "Amateur 3" },
+  s_semipro_1: { es: "Semiprofesional 1", en: "Semi-Pro 1" },
+  s_semipro_2: { es: "Semiprofesional 2", en: "Semi-Pro 2" },
+  s_semipro_3: { es: "Semiprofesional 3", en: "Semi-Pro 3" },
+  s_pro_1: { es: "Profesional 1", en: "Professional 1" },
+  s_pro_2: { es: "Profesional 2", en: "Professional 2" },
+  s_pro_3: { es: "Profesional 3", en: "Professional 3" },
+  s_legend_1: { es: "Legendario 1", en: "Legendary 1" },
+  s_wl_1: { es: "Liga de Fin de Semana 1", en: "Weekend League 1" },
+  s_wl_2: { es: "Liga de Fin de Semana 2", en: "Weekend League 2" },
+  l_totw_upgrade: { es: "Mejora TOTW Activo", en: "Active TOTW Upgrade" },
+  l_flash_challenge: { es: "Desafío Relámpago", en: "Flash Challenge" },
+  l_odegaard_91: { es: "Martin Ødegaard (91 POTM)", en: "Martin Ødegaard (91 POTM)" }
 };
 
-/* DICCIONARIO DE RECOMPENSAS / PREMIOS */
+/* RECOMPENSAS / PREMIOS */
 var ptcRewards = {
-  b_bronze_group: {
-    type: 'player', name: 'Moore', pos: 'ST', rating: 75
-  },
-  b_silver_group: {
-    type: 'player', name: 'Bueno', pos: 'CB', rating: 78
-  },
-  b_gold_group: {
-    type: 'player', name: 'Merino', pos: 'CM', rating: 83
-  },
-  s_wl_1: {
-    type: 'pack', minRating: 81, event: 'Weekend League', draft: '1/3'
-  },
-  s_wl_2: {
-    type: 'pack', minRating: 84, event: 'Weekend League', draft: '1/3'
-  }
+  b_bronze_group: { type: 'player', name: 'Moore', pos: 'ST', rating: 75 },
+  b_silver_group: { type: 'player', name: 'Bueno', pos: 'CB', rating: 78 },
+  b_gold_group: { type: 'player', name: 'Merino', pos: 'CM', rating: 83 },
+  s_semipro_2: { type: 'player', name: 'Szoboszlai', pos: 'CAM', rating: 87, rarity: 'ptc' },
+  s_wl_1: { type: 'pack', minRating: 81, event: 'Weekend League', draft: '1/3' },
+  s_wl_2: { type: 'pack', minRating: 84, event: 'Weekend League', draft: '1/3' }
 };
 
 function formatPtcReward(ptcId) {
   var r = ptcRewards[ptcId];
   if (!r) return '';
-
   if (r.type === 'player') {
     var localizedPos = displayPosition(r.pos);
-    return r.name + ' (' + localizedPos + ') ⭐ ' + r.rating;
+    var rarityTag = r.rarity ? ' [' + r.rarity.toUpperCase() + ']' : '';
+    return r.name + ' (' + localizedPos + ') ⭐ ' + r.rating + rarityTag;
   }
-
   if (r.type === 'pack') {
-    var packWord = {
-      es: 'Sobre', en: 'Pack', fr: 'Pack', de: 'Pack', it: 'Pacchetto', pt: 'Pacote'
-    }[currentLang] || 'Sobre';
-
-    return packWord + ' ' + r.minRating + '+ ' + r.event + ' (' + r.draft + ' Draft)';
+    return 'Sobre ' + r.minRating + '+ ' + r.event + ' (' + r.draft + ' Draft)';
   }
-
   return '';
 }
 
 function createBlankRankSubchallenges(prefixKey) {
   return [1, 2, 3, 4].map(function(num) {
-    return {
-      subKey: prefixKey,
-      num: num,
-      players: 0,
-      target: 0,
-      isPending: true
-    };
+    return { subKey: prefixKey, num: num, players: 0, target: 0, isPending: true };
   });
 }
 
 function formatSubChallengeName(sub) {
   var t = i18n[currentLang] || i18n.es;
-  if (sub.subKey) {
-    var baseTitle = getPtcTitle(sub.subKey);
-    return baseTitle + ' - ' + t.challengeWord + ' ' + sub.num;
-  }
-  if (sub.isTargetSquad) {
-    return t.squadWord + ' ' + sub.target;
-  }
+  if (sub.subKey) return getPtcTitle(sub.subKey) + ' - ' + t.challengeWord + ' ' + sub.num;
+  if (sub.isTargetSquad) return t.squadWord + ' ' + sub.target;
   return sub.name || '';
 }
 
-/* DEFINICIÓN COMPLETA DE LOS PTCS */
+/* LISTADO DE PTCS */
 var ptcList = [
-  // --- BÁSICOS: 8 REPETIBLES (5 Jugadores) ---
   { id: "b_60", category: "basic", isRepeatable: true, players: 5, target: 50 },
   { id: "b_70", category: "basic", isRepeatable: true, players: 5, target: 60 },
   { id: "b_74", category: "basic", isRepeatable: true, players: 5, target: 70 },
@@ -580,16 +734,10 @@ var ptcList = [
   { id: "b_83", category: "basic", isRepeatable: true, players: 5, target: 81 },
   { id: "b_85", category: "basic", isRepeatable: true, players: 5, target: 83 },
   { id: "b_87", category: "basic", isRepeatable: true, players: 5, target: 85 },
-
-  // --- BÁSICOS: PERIÓDICOS ---
   { id: "b_daily_11", category: "basic", isRepeatable: false, players: 3, target: 70 },
   { id: "b_weekly_17", category: "basic", isRepeatable: false, players: 5, target: 78 },
-
-  // --- BÁSICOS: GRUPOS CON PREMIOS Y 3 SUB-PTCS ---
   {
-    id: "b_bronze_group",
-    category: "basic",
-    isRepeatable: false,
+    id: "b_bronze_group", category: "basic", isRepeatable: false,
     subchallenges: [
       { name: "Bronce 1", players: 0, target: 0, isPending: true },
       { name: "Bronce 2", players: 0, target: 0, isPending: true },
@@ -597,9 +745,7 @@ var ptcList = [
     ]
   },
   {
-    id: "b_silver_group",
-    category: "basic",
-    isRepeatable: false,
+    id: "b_silver_group", category: "basic", isRepeatable: false,
     subchallenges: [
       { name: "Plata 1", players: 0, target: 0, isPending: true },
       { name: "Plata 2", players: 0, target: 0, isPending: true },
@@ -607,47 +753,85 @@ var ptcList = [
     ]
   },
   {
-    id: "b_gold_group",
-    category: "basic",
-    isRepeatable: false,
+    id: "b_gold_group", category: "basic", isRepeatable: false,
     subchallenges: [
       { name: "Oro 1", players: 0, target: 0, isPending: true },
       { name: "Oro 2", players: 0, target: 0, isPending: true },
       { name: "Oro 3", players: 0, target: 0, isPending: true }
     ]
   },
-
-  // --- DE TEMPORADA: RANGOS (CON 4 SUB-PTCS EN BLANCO) ---
   { id: "s_aficionado_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_1") },
   { id: "s_aficionado_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_2") },
   { id: "s_aficionado_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_3") },
   { id: "s_semipro_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_1") },
-  { id: "s_semipro_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_2") },
+  {
+    id: "s_semipro_2",
+    category: "season",
+    isRepeatable: false,
+    subchallenges: [
+      {
+        name: "Semiprofesional 2.1",
+        rewardText: "Sobre Individual Élite Oro 81+ (1)",
+        players: 11,
+        target: 80,
+        reqs: {
+          minLeague: { name: "Francia (1ª Div - Ligue 1)", count: 3 },
+          minCountry: { name: "Brasil", count: 3 },
+          minRole: { role: "DEF", count: 3 },
+          minAge: 30, minAgeCount: 3,
+          minDri: 75, minDriCount: 3
+        }
+      },
+      {
+        name: "Semiprofesional 2.2",
+        rewardText: "Sobre Individual Élite Oro 82+ (1)",
+        players: 11,
+        target: 81,
+        reqs: {
+          minLeague: { name: "España (1ª Div - LaLiga)", count: 3 },
+          minCountry: { name: "Francia", count: 3 },
+          minRole: { role: "MID", count: 3 },
+          maxAge: 25, maxAgeCount: 3,
+          minSho: 75, minShoCount: 3
+        }
+      },
+      {
+        name: "Semiprofesional 2.3",
+        rewardText: "Sobre Individual Élite Oro 83+ (1)",
+        players: 11,
+        target: 82,
+        reqs: {
+          minLeague: { name: "Alemania (1ª Div - Bundesliga)", count: 3 },
+          minCountry: { name: "Inglaterra", count: 3 },
+          minRole: { role: "ATT", count: 3 },
+          maxWeight: 70, maxWeightCount: 3,
+          minPhy: 75, minPhyCount: 3
+        }
+      },
+      {
+        name: "Semiprofesional 2.4",
+        rewardText: "Sobre Individual Élite Oro 84+ (1)",
+        players: 11,
+        target: 83,
+        reqs: {
+          minLeague: { name: "Inglaterra (1ª Div - Premier)", count: 3 },
+          minCountry: { name: "Holanda", count: 3 },
+          exactPositions: [
+            { pos: "ST", count: 1 },
+            { pos: "LM", count: 1 },
+            { pos: "CB", count: 1 }
+          ]
+        }
+      }
+    ]
+  },
   { id: "s_semipro_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_semipro_3") },
   { id: "s_pro_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_1") },
   { id: "s_pro_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_2") },
   { id: "s_pro_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_3") },
   { id: "s_legend_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_legend_1") },
-
-  // --- DE TEMPORADA: WEEKEND LEAGUE ---
-  {
-    id: "s_wl_1",
-    category: "season",
-    isRepeatable: false,
-    players: 3,
-    target: 78,
-    requiredRarity: "weekend_league"
-  },
-  {
-    id: "s_wl_2",
-    category: "season",
-    isRepeatable: false,
-    players: 7,
-    target: 81,
-    requiredRarity: "weekend_league"
-  },
-
-  // --- TIEMPO LIMITADO ---
+  { id: "s_wl_1", category: "season", isRepeatable: false, players: 3, target: 78, requiredRarity: "weekend_league" },
+  { id: "s_wl_2", category: "season", isRepeatable: false, players: 7, target: 81, requiredRarity: "weekend_league" },
   {
     id: "l_odegaard_91",
     category: "limited",
@@ -666,25 +850,17 @@ var ptcList = [
 
 function getPtcTitle(ptcId) {
   var entry = ptcTitles[ptcId];
-  if (!entry) return ptcId;
-  return entry[currentLang] || entry.es || entry.en;
+  return entry ? (entry[currentLang] || entry.es || entry.en) : ptcId;
 }
 
 function getPtcBadgeInfo(ptc) {
   var t = i18n[currentLang] || i18n.es;
-  if (ptc.isRepeatable) {
-    return { label: t.badgeRepeatable, className: 'repeatable' };
-  }
-  if (ptc.category === 'limited') {
-    return { label: t.badgeLimited, className: 'limited' };
-  }
-  if (ptc.category === 'season') {
-    return { label: t.badgeSeason, className: 'season' };
-  }
+  if (ptc.isRepeatable) return { label: t.badgeRepeatable, className: 'repeatable' };
+  if (ptc.category === 'limited') return { label: t.badgeLimited, className: 'limited' };
+  if (ptc.category === 'season') return { label: t.badgeSeason, className: 'season' };
   return { label: t.badgeBasic, className: '' };
 }
 
-/* OBTENER BASE DE DATOS DE JUGADORES */
 function getDatabasePlayers() {
   var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6'];
   for (var i = 0; i < candidateKeys.length; i++) {
@@ -699,7 +875,6 @@ function getDatabasePlayers() {
   return [];
 }
 
-/* OBTENER PRECIOS MÍNIMOS POR MEDIA SEGÚN FUENTE Y FILTRO DE RAREZA */
 function getActivePrices(filterRarity) {
   if (priceSource === 'manual' && !filterRarity) {
     var raw = localStorage.getItem('ufm_ptc_prices');
@@ -728,15 +903,12 @@ function getActivePrices(filterRarity) {
     var rat = parseInt(p.rating, 10);
     var pr = (p.price !== '' && p.price != null) ? parseInt(p.price, 10) : null;
     if (rat >= 50 && rat <= 99 && pr !== null && !isNaN(pr) && pr > 0) {
-      if (!minPrices[rat] || pr < minPrices[rat]) {
-        minPrices[rat] = pr;
-      }
+      if (!minPrices[rat] || pr < minPrices[rat]) minPrices[rat] = pr;
     }
   });
   return minPrices;
 }
 
-/* LÓGICA DE CÁLCULO DE LA CALCULADORA */
 function thresholdFor(n, target) {
   return target * n - Math.floor(n / 2);
 }
@@ -786,6 +958,7 @@ function solveSbc(n, target, prices) {
 
 function getCardClass(rating, rarity) {
   if (rarity === 'weekend_league') return 'weekend_league';
+  if (rarity === 'ptc') return 'ptc';
   var rat = +rating || 0;
   if (rat <= 64) return 'bronze';
   if (rat <= 74) return 'silver';
@@ -819,18 +992,13 @@ function renderPtcList() {
 
     var badgeInfo = getPtcBadgeInfo(ptc);
     var localizedTitle = getPtcTitle(ptc.id);
-
     var rewardFormatted = formatPtcReward(ptc.id);
-    var rewardHtml = rewardFormatted 
-      ? `<div class="ptc-reward"><span>🎁</span> <b>${rewardFormatted}</b></div>` 
-      : '';
+    var rewardHtml = rewardFormatted ? `<div class="ptc-reward"><span>🎁</span> <b>${rewardFormatted}</b></div>` : '';
 
     var reqHtml = '';
     var costText = '—';
-
     var prices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
 
-    // Desafío compuesto (Multi-plantilla)
     if (ptc.subchallenges && ptc.subchallenges.length) {
       var targets = ptc.subchallenges.map(function(s) { return s.isPending ? '—' : s.target; }).join(', ');
       reqHtml = `
@@ -849,14 +1017,9 @@ function renderPtcList() {
           allSolved = false;
         }
       });
-      if (hasValidSol && allSolved) {
-        costText = Number(totalCost).toLocaleString('es-ES') + ' 🪙';
-      }
+      if (hasValidSol && allSolved) costText = Number(totalCost).toLocaleString('es-ES') + ' 🪙';
     } else {
-      var rarityHint = ptc.requiredRarity === 'weekend_league' 
-        ? `<div class="ptc-req-item"><span>${t.reqRarity}</span> <b style="color:var(--accent)">Weekend League</b></div>` 
-        : '';
-
+      var rarityHint = ptc.requiredRarity === 'weekend_league' ? `<div class="ptc-req-item"><span>${t.reqRarity}</span> <b style="color:var(--accent)">Weekend League</b></div>` : '';
       reqHtml = `
         <div class="ptc-req-item"><span>${t.reqPlayers}</span> <b>${ptc.players}</b></div>
         <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${ptc.target}</b></div>
@@ -893,11 +1056,23 @@ function openPtcModal(ptc) {
 
   var subTabsWrap = document.getElementById('subTabsWrap');
   if (ptc.subchallenges && ptc.subchallenges.length) {
-    subTabsWrap.style.display = 'flex';
+    subTabsWrap.style.display = 'grid';
+    var globalReward = formatPtcReward(ptc.id);
+
     subTabsWrap.innerHTML = ptc.subchallenges.map(function(sub, idx) {
       var targetLabel = sub.isPending ? 'Pendiente' : ('⭐ ' + sub.target);
       var subName = formatSubChallengeName(sub);
-      return `<button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">${subName} (${targetLabel})</button>`;
+      var rewardLabel = sub.rewardText ? ('🎁 ' + sub.rewardText) : (globalReward ? ('🎁 ' + globalReward) : '🎁 Premio del desafío');
+
+      return `
+        <button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">
+          <div class="sub-tab-top">
+            <span class="sub-tab-name">${subName}</span>
+            <span class="sub-tab-target">${targetLabel}</span>
+          </div>
+          <span class="sub-tab-reward">${rewardLabel}</span>
+        </button>
+      `;
     }).join('');
   } else {
     subTabsWrap.style.display = 'none';
@@ -915,6 +1090,244 @@ function selectSubChallenge(idx) {
   renderModalContent();
 }
 
+function getPlayerRole(pos) {
+  var p = normalizePosition(pos);
+  if (['CB', 'RB', 'LB'].includes(p)) return 'DEF';
+  if (['CM', 'CDM', 'CAM', 'RM', 'LM'].includes(p)) return 'MID';
+  if (['ST', 'RW', 'LW'].includes(p)) return 'ATT';
+  return 'GK';
+}
+
+/* COMPROBACIÓN ROBUSTA DE REQUISITOS (SOPORTA LM/MI, RM/MD, ETC.) */
+function checkPlayerMatches(p, type, cond) {
+  if (!p) return false;
+  if (type === 'exactPos') {
+    return normalizePosition(p.position) === normalizePosition(cond);
+  }
+  if (type === 'league') {
+    return p.league && (p.league === cond || p.league.toLowerCase().includes(cond.toLowerCase()));
+  }
+  if (type === 'country') {
+    return p.country && (p.country === cond || p.country.toLowerCase().includes(cond.toLowerCase()));
+  }
+  if (type === 'role') {
+    return getPlayerRole(p.position) === cond;
+  }
+  if (type === 'minAge') {
+    return p.age && parseInt(p.age, 10) >= cond;
+  }
+  if (type === 'maxAge') {
+    return p.age && parseInt(p.age, 10) <= cond;
+  }
+  if (type === 'maxWeight') {
+    return p.weight && parseInt(p.weight, 10) <= cond;
+  }
+  if (type === 'minDri') {
+    return p.dri && parseInt(p.dri, 10) >= cond;
+  }
+  if (type === 'minSho') {
+    return p.sho && parseInt(p.sho, 10) >= cond;
+  }
+  if (type === 'minPhy') {
+    return p.phy && parseInt(p.phy, 10) >= cond;
+  }
+  return false;
+}
+
+/* MOTOR DE RESOLUCIÓN GARANTIZANDO CONDICIONES ESTRICTAS */
+function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
+  var n = targetPtc.players;
+  var target = targetPtc.target;
+  var minTotalSum = thresholdFor(n, target);
+  var reqs = targetPtc.reqs;
+
+  if (!dbCandidates || dbCandidates.length === 0) {
+    var rawSol = solveSbc(n, target, prices);
+    if (!rawSol) return null;
+    var slots = [];
+    rawSol.counts.forEach(function(count, rating) {
+      for (var i = 0; i < count; i++) slots.push({ rating: rating, player: null });
+    });
+    slots.sort(function(a, b) { return b.rating - a.rating; });
+    return { cost: rawSol.cost, sumRating: rawSol.bestSum, slots: slots };
+  }
+
+  var candidates = dbCandidates.filter(function(p) {
+    var pr = parseInt(p.price, 10);
+    var rat = parseInt(p.rating, 10);
+    return !isNaN(pr) && pr > 0 && !isNaN(rat) && rat >= 50 && rat <= 99;
+  });
+
+  if (!reqs) {
+    var rawSol = solveSbc(n, target, prices);
+    if (!rawSol) return null;
+    var usedIds = new Set();
+    var slots = [];
+    var totalCost = 0;
+    var sumRating = 0;
+
+    var reqRatings = [];
+    rawSol.counts.forEach(function(count, rating) {
+      for (var i = 0; i < count; i++) reqRatings.push(rating);
+    });
+    reqRatings.sort(function(a, b) { return b - a; });
+
+    reqRatings.forEach(function(rat) {
+      var matched = candidates.filter(function(p) {
+        return parseInt(p.rating, 10) === rat && !usedIds.has(p.id);
+      }).sort(function(a, b) { return (+a.price) - (+b.price); })[0];
+
+      if (matched) {
+        usedIds.add(matched.id);
+        slots.push({ rating: rat, player: matched });
+        totalCost += (+matched.price);
+        sumRating += (+matched.rating);
+      } else {
+        slots.push({ rating: rat, player: null });
+        totalCost += (prices[rat] || 0);
+        sumRating += rat;
+      }
+    });
+
+    return { cost: totalCost, sumRating: sumRating, slots: slots };
+  }
+
+  // 1. Fase de Posiciones Exactas (Prioridad Absoluta)
+  var selectedPlayers = [];
+  var usedIds = new Set();
+
+  if (reqs.exactPositions && Array.isArray(reqs.exactPositions)) {
+    reqs.exactPositions.forEach(function(ep) {
+      for (var i = 0; i < ep.count; i++) {
+        var exactPool = candidates.filter(function(p) {
+          return !usedIds.has(p.id) && checkPlayerMatches(p, 'exactPos', ep.pos);
+        });
+        if (exactPool.length > 0) {
+          exactPool.sort(function(a, b) {
+            var diffA = Math.abs(a.rating - target);
+            var diffB = Math.abs(b.rating - target);
+            if (diffA !== diffB) return diffA - diffB;
+            return (+a.price) - (+b.price);
+          });
+          var chosenPosPlayer = exactPool[0];
+          usedIds.add(chosenPosPlayer.id);
+          selectedPlayers.push(chosenPosPlayer);
+        }
+      }
+    });
+  }
+
+  // 2. Otras Condiciones Grupales
+  var otherConditions = [];
+  if (reqs.minLeague) for (var i = 0; i < reqs.minLeague.count; i++) otherConditions.push({ type: 'league', cond: reqs.minLeague.name });
+  if (reqs.minCountry) for (var i = 0; i < reqs.minCountry.count; i++) otherConditions.push({ type: 'country', cond: reqs.minCountry.name });
+  if (reqs.minRole) for (var i = 0; i < reqs.minRole.count; i++) otherConditions.push({ type: 'role', cond: reqs.minRole.role });
+  if (reqs.minAge && reqs.minAgeCount) for (var i = 0; i < reqs.minAgeCount; i++) otherConditions.push({ type: 'minAge', cond: reqs.minAge });
+  if (reqs.maxAge && reqs.maxAgeCount) for (var i = 0; i < reqs.maxAgeCount; i++) otherConditions.push({ type: 'maxAge', cond: reqs.maxAge });
+  if (reqs.maxWeight && reqs.maxWeightCount) for (var i = 0; i < reqs.maxWeightCount; i++) otherConditions.push({ type: 'maxWeight', cond: reqs.maxWeight });
+  if (reqs.minDri && reqs.minDriCount) for (var i = 0; i < reqs.minDriCount; i++) otherConditions.push({ type: 'minDri', cond: reqs.minDri });
+  if (reqs.minSho && reqs.minShoCount) for (var i = 0; i < reqs.minShoCount; i++) otherConditions.push({ type: 'minSho', cond: reqs.minSho });
+  if (reqs.minPhy && reqs.minPhyCount) for (var i = 0; i < reqs.minPhyCount; i++) otherConditions.push({ type: 'minPhy', cond: reqs.minPhy });
+
+  otherConditions.forEach(function(reqItem) {
+    // Comprobar si algún jugador ya seleccionado cumple la condición
+    var covered = false;
+    for (var k = 0; k < selectedPlayers.length; k++) {
+      var sel = selectedPlayers[k];
+      if (!sel._tags) sel._tags = [];
+      if (!sel._tags.includes(reqItem.type) && checkPlayerMatches(sel, reqItem.type, reqItem.cond)) {
+        sel._tags.push(reqItem.type);
+        covered = true;
+        break;
+      }
+    }
+    if (covered) return;
+
+    // Buscar candidato disponible
+    var pool = candidates.filter(function(p) {
+      return !usedIds.has(p.id) && checkPlayerMatches(p, reqItem.type, reqItem.cond);
+    });
+
+    if (pool.length > 0) {
+      pool.sort(function(a, b) {
+        var diffA = Math.abs(a.rating - target);
+        var diffB = Math.abs(b.rating - target);
+        if (diffA !== diffB) return diffA - diffB;
+        return (+a.price) - (+b.price);
+      });
+      var picked = pool[0];
+      picked._tags = [reqItem.type];
+      usedIds.add(picked.id);
+      selectedPlayers.push(picked);
+    }
+  });
+
+  if (selectedPlayers.length > n) selectedPlayers = selectedPlayers.slice(0, n);
+
+  var remainingSlots = n - selectedPlayers.length;
+  var currentSum = selectedPlayers.reduce(function(acc, p) { return acc + (+p.rating); }, 0);
+  var currentCost = selectedPlayers.reduce(function(acc, p) { return acc + (+p.price); }, 0);
+
+  var slots = selectedPlayers.map(function(p) {
+    return { rating: +p.rating, player: p };
+  });
+
+  if (remainingSlots > 0) {
+    var neededSum = Math.max(0, minTotalSum - currentSum);
+    var approxNeededRating = Math.max(50, Math.min(99, Math.ceil(neededSum / remainingSlots)));
+    var remSol = solveSbc(remainingSlots, approxNeededRating, prices) || solveSbc(remainingSlots, target, prices);
+
+    if (remSol) {
+      var reqRatings = [];
+      remSol.counts.forEach(function(count, rating) {
+        for (var i = 0; i < count; i++) reqRatings.push(rating);
+      });
+      reqRatings.sort(function(a, b) { return b - a; });
+
+      reqRatings.forEach(function(rat) {
+        var matched = candidates.filter(function(p) {
+          return parseInt(p.rating, 10) === rat && !usedIds.has(p.id);
+        }).sort(function(a, b) { return (+a.price) - (+b.price); })[0];
+
+        if (matched) {
+          usedIds.add(matched.id);
+          slots.push({ rating: rat, player: matched });
+          currentCost += (+matched.price);
+          currentSum += (+matched.rating);
+        } else {
+          slots.push({ rating: rat, player: null });
+          currentCost += (prices[rat] || 0);
+          currentSum += rat;
+        }
+      });
+    } else {
+      var unassigned = candidates.filter(function(p) { return !usedIds.has(p.id); })
+        .sort(function(a, b) { return (+a.price) - (+b.price); });
+      for (var k = 0; k < remainingSlots; k++) {
+        var pExtra = unassigned[k];
+        if (pExtra) {
+          usedIds.add(pExtra.id);
+          slots.push({ rating: +pExtra.rating, player: pExtra });
+          currentCost += (+pExtra.price);
+          currentSum += (+pExtra.rating);
+        } else {
+          slots.push({ rating: target, player: null });
+          currentCost += (prices[target] || 0);
+          currentSum += target;
+        }
+      }
+    }
+  }
+
+  slots.sort(function(a, b) { return b.rating - a.rating; });
+
+  return {
+    cost: currentCost,
+    sumRating: currentSum,
+    slots: slots
+  };
+}
+
 function renderModalContent() {
   var t = i18n[currentLang] || i18n.es;
   var ptc = activeModalPtc;
@@ -926,6 +1339,9 @@ function renderModalContent() {
   
   var prices = getActivePrices(filterRarity);
   var db = priceSource === 'db' ? getDatabasePlayers() : [];
+  if (filterRarity) {
+    db = db.filter(function(p) { return p.rarity === filterRarity; });
+  }
 
   var localizedTitle = getPtcTitle(ptc.id);
   if (isMulti) {
@@ -936,7 +1352,35 @@ function renderModalContent() {
   var squadGrid = document.getElementById('squadGrid');
   squadGrid.innerHTML = '';
 
-  // Caso: plantilla pendiente de definir
+  var reqPanel = document.getElementById('modalReqPanel');
+  var reqTags = document.getElementById('modalReqTags');
+
+  if (currentTargetPtc.reqs) {
+    reqPanel.style.display = 'block';
+    reqTags.innerHTML = '';
+    var r = currentTargetPtc.reqs;
+
+    if (r.exactPositions) {
+      r.exactPositions.forEach(function(ep) {
+        reqTags.innerHTML += `<span class="req-tag" style="background:#28352d; border-color:#38a169; color:#68d391">⚽ ${displayPosition(ep.pos)} (${ep.count})</span>`;
+      });
+    }
+    if (r.minLeague) reqTags.innerHTML += `<span class="req-tag">🌍 ${r.minLeague.name} (Mín. ${r.minLeague.count})</span>`;
+    if (r.minCountry) reqTags.innerHTML += `<span class="req-tag">🏳️ ${r.minCountry.name} (Mín. ${r.minCountry.count})</span>`;
+    if (r.minRole) {
+      var roleName = { 'DEF':'Defensas', 'MID':'Centrocampistas', 'ATT':'Delanteros' }[r.minRole.role] || r.minRole.role;
+      reqTags.innerHTML += `<span class="req-tag">🛡️ ${roleName} (Mín. ${r.minRole.count})</span>`;
+    }
+    if (r.minAge) reqTags.innerHTML += `<span class="req-tag">🎂 Edad ≥ ${r.minAge} (Mín. ${r.minAgeCount})</span>`;
+    if (r.maxAge) reqTags.innerHTML += `<span class="req-tag">👶 Edad ≤ ${r.maxAge} (Mín. ${r.maxAgeCount})</span>`;
+    if (r.maxWeight) reqTags.innerHTML += `<span class="req-tag">⚖️ Peso ≤ ${r.maxWeight}kg (Mín. ${r.maxWeightCount})</span>`;
+    if (r.minDri) reqTags.innerHTML += `<span class="req-tag">⚡ REG ≥ ${r.minDri} (Mín. ${r.minDriCount})</span>`;
+    if (r.minSho) reqTags.innerHTML += `<span class="req-tag">🎯 TIR ≥ ${r.minSho} (Mín. ${r.minShoCount})</span>`;
+    if (r.minPhy) reqTags.innerHTML += `<span class="req-tag">💪 FIS ≥ ${r.minPhy} (Mín. ${r.minPhyCount})</span>`;
+  } else {
+    reqPanel.style.display = 'none';
+  }
+
   if (currentTargetPtc.isPending) {
     document.getElementById('modalPtcTitle').textContent = localizedTitle;
     document.getElementById('modalPtcSubtitle').textContent = t.pendingDetails;
@@ -947,18 +1391,17 @@ function renderModalContent() {
     return;
   }
 
-  var sol = solveSbc(currentTargetPtc.players, currentTargetPtc.target, prices);
-
   var subtitleTemplate = t.modalSubtitle || "{players} jugadores · Media {target}";
   var localizedSubtitle = subtitleTemplate.replace('{players}', currentTargetPtc.players).replace('{target}', currentTargetPtc.target);
-  if (filterRarity === 'weekend_league') {
-    localizedSubtitle += ' · [Weekend League]';
-  }
+  if (currentTargetPtc.rewardText) localizedSubtitle += ' · 🎁 ' + currentTargetPtc.rewardText;
+  if (filterRarity === 'weekend_league') localizedSubtitle += ' · [Weekend League]';
 
   document.getElementById('modalPtcTitle').textContent = localizedTitle;
   document.getElementById('modalPtcSubtitle').textContent = localizedSubtitle;
 
-  if (!sol) {
+  var solution = solveSquadWithRequirements(db, currentTargetPtc, prices);
+
+  if (!solution || !solution.slots || solution.slots.length === 0) {
     document.getElementById('solCost').textContent = '—';
     document.getElementById('solTarget').textContent = currentTargetPtc.target;
     document.getElementById('solAvg').textContent = '—';
@@ -966,41 +1409,25 @@ function renderModalContent() {
     return;
   }
 
-  document.getElementById('solCost').textContent = Number(sol.cost).toLocaleString('es-ES') + ' 🪙';
+  document.getElementById('solCost').textContent = Number(solution.cost).toLocaleString('es-ES') + ' 🪙';
   document.getElementById('solTarget').textContent = currentTargetPtc.target;
-  document.getElementById('solAvg').textContent = (sol.bestSum / currentTargetPtc.players).toFixed(2).replace('.', ',');
+  document.getElementById('solAvg').textContent = (solution.sumRating / currentTargetPtc.players).toFixed(2).replace('.', ',');
 
-  var usedPlayerIds = new Set();
-  var requiredRatings = [];
-  
-  sol.counts.forEach(function(count, rating) {
-    for (var i = 0; i < count; i++) {
-      requiredRatings.push(rating);
-    }
-  });
+  window._activeSquadPlayers = [];
 
-  requiredRatings.sort(function(a, b) { return b - a; });
-
-  requiredRatings.forEach(function(rat) {
+  solution.slots.forEach(function(item) {
     var slot = document.createElement('div');
     slot.className = 'squad-slot';
-
-    var chosen = null;
-    if (priceSource === 'db') {
-      var candidates = db.filter(function(p) {
-        if (filterRarity && p.rarity !== filterRarity) return false;
-        return parseInt(p.rating, 10) === rat && p.price && !usedPlayerIds.has(p.id);
-      }).sort(function(a, b) { return (+a.price) - (+b.price); });
-      chosen = candidates[0];
-    }
+    var chosen = item.player;
+    var rat = item.rating;
 
     if (chosen) {
-      usedPlayerIds.add(chosen.id);
+      var pIndex = window._activeSquadPlayers.push(chosen) - 1;
       var cClass = getCardClass(chosen.rating, chosen.rarity);
       var img = chosen.image ? chosen.image : DEFAULT_AVATAR;
 
       slot.innerHTML = `
-        <div class="mini-card ${cClass}">
+        <div class="mini-card ${cClass}" onclick="openPlayerCardDetail(${pIndex})">
           <div class="mini-card-top">
             <span class="mini-card-rat">${chosen.rating}</span>
             <span class="mini-card-pos">${displayPosition(chosen.position)}</span>
@@ -1024,6 +1451,70 @@ function renderModalContent() {
     }
     squadGrid.appendChild(slot);
   });
+}
+
+/* MODAL DE FICHA DETALLADA AL HACER CLICK EN UN JUGADOR */
+function openPlayerCardDetail(index) {
+  var p = window._activeSquadPlayers ? window._activeSquadPlayers[index] : null;
+  if (!p) return;
+
+  var imgUrl = p.image ? p.image : DEFAULT_AVATAR;
+  var natFlag = getFlagUrl(p.country);
+  var leagueFlag = getFlagUrl(p.league || p.country);
+  var rClass = getRarityClass(p.rarity, p.rating);
+  var rarityText = getRarityLabel(p.rarity);
+  var cleanName = p.name ? p.name.replace(/\s*\([^)]*\)/g, '').trim() : '';
+  var status = getDateStatus(p.price_date);
+
+  var cardHtml = `
+    <div class="fut-card ${rClass}">
+      <div class="card-rarity-tag">${rarityText}</div>
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="card-rat">${p.rating}</span>
+          <span class="card-pos">${displayPosition(p.position)}</span>
+          <img class="flag-rect" title="${p.country || 'Nacionalidad'}" src="${natFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          <div class="shield-flag-wrap" title="${p.league || 'Liga'}">
+            <img src="${leagueFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          </div>
+        </div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="${imgUrl}" onerror="this.src='${DEFAULT_AVATAR}'">
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${cleanName}</div>
+        <div class="card-club">${p.club || 'Sin Club'}</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">RIT</span></div>
+        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">REG</span></div>
+        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">TIR</span></div>
+        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">DEF</span></div>
+        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">PAS</span></div>
+        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">FIS</span></div>
+      </div>
+    </div>
+  `;
+
+  document.getElementById('detailCardTarget').innerHTML = cardHtml;
+  document.getElementById('detName').textContent = cleanName + ' (' + p.rating + ')';
+  document.getElementById('detSub').textContent = displayPosition(p.position) + ' · ' + rarityText;
+  document.getElementById('detClub').textContent = p.club || '—';
+  document.getElementById('detLeague').textContent = p.league || '—';
+  document.getElementById('detCountry').textContent = p.country || '—';
+  document.getElementById('detAge').textContent = p.age ? (p.age + ' años') : '—';
+  document.getElementById('detPhysique').textContent = (p.height ? p.height + ' cm' : '—') + ' / ' + (p.weight ? p.weight + ' kg' : '—');
+  document.getElementById('detPrice').textContent = p.price ? (Number(p.price).toLocaleString('es-ES') + ' 🪙') : 'Sin precio';
+  document.getElementById('detUpdated').innerHTML = '<span class="date-badge ' + status.colorClass + '">' + status.text + '</span>';
+
+  document.getElementById('detailModalBg').classList.add('open');
+}
+
+function closeDetailModal(e) {
+  if (!e || e.target === document.getElementById('detailModalBg')) {
+    document.getElementById('detailModalBg').classList.remove('open');
+  }
 }
 
 function switchCategory(cat) {
@@ -1066,6 +1557,7 @@ function applyTranslations() {
   document.getElementById('lblSumTarget').textContent = t.sumTarget;
   document.getElementById('lblSumExact').textContent = t.sumExact;
   document.getElementById('lblSquadTitle').textContent = t.squadTitle;
+  document.getElementById('lblModalReqTitle').textContent = t.specialReqTitle;
 }
 
 function changeLanguage(lang) {
