@@ -26,14 +26,28 @@
   box-sizing: border-box;
 }
 
-body {
+html, body {
+  height: 100%;
   margin: 0;
+  overflow: hidden;
+}
+
+body {
   background: var(--bg-gradient);
   background-attachment: fixed;
   color: var(--text);
   font-family: var(--font-main);
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   -webkit-font-smoothing: antialiased;
+}
+
+.page-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-gutter: stable;
 }
 
 /* Scrollbar dorada gamer */
@@ -591,8 +605,9 @@ input:focus, select:focus {
 .fut-card.card-matchday .card-rat { color: #fdba74; }
 .fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
 .fut-card.card-potm .card-rat { color: #e9d5ff; }
-.fut-card.card-ptc { background: radial-gradient(circle at 50% 30%, #4a2810 0%, #2b170a 60%, #130a04 100%); border-color: #f59e0b; }
-.fut-card.card-ptc .card-rat { color: #fde68a; }
+.fut-card.card-ptc { background: radial-gradient(circle at 50% 20%, #4a2910 0%, #291608 55%, #100803 100%); border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.35); }
+.fut-card.card-ptc .card-rat { color: #fbbf24; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95); }
+.fut-card.card-ptc .card-pos { color: #fde68a; }
 
 .card-top {
   position: relative;
@@ -734,7 +749,7 @@ input:focus, select:focus {
   border: 1.5px solid #8e7330;
   border-radius: 4px;
   overflow: hidden;
-  height: 230px;
+  height: 244px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -832,15 +847,7 @@ input:focus, select:focus {
 }
 
 .ptc-brush-effect {
-  position: absolute;
-  bottom: 35px;
-  left: -10%;
-  width: 120%;
-  height: 48px;
-  z-index: 4;
-  background: radial-gradient(ellipse at center, rgba(205, 161, 62, 0.45) 0%, rgba(0,0,0,0.85) 60%, transparent 85%);
-  clip-path: polygon(0 45%, 15% 25%, 35% 35%, 60% 15%, 85% 35%, 100% 20%, 95% 75%, 65% 85%, 25% 75%, 0 85%);
-  pointer-events: none;
+  display: none !important;
 }
 
 .ptc-game-footer {
@@ -909,7 +916,7 @@ input:focus, select:focus {
   border: 1.5px solid #8e7330;
   border-radius: 4px;
   overflow: hidden;
-  height: 230px;
+  height: 244px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -958,7 +965,7 @@ input:focus, select:focus {
 
 .ptc-player-card-center {
   position: absolute;
-  top: 6px;
+  top: 5px;
   left: 0;
   right: 0;
   display: flex;
@@ -967,41 +974,406 @@ input:focus, select:focus {
   pointer-events: none;
 }
 
-.ptc-player-card-center .fut-card {
-  width: 170px !important;
-  transform: scale(0.70);
-  transform-origin: top center;
-  box-shadow: 0 6px 16px rgba(0,0,0,0.85);
+/* Escudo deformado / Shield Card para jugadores en PTC */
+.card-shield-border {
+  position: relative;
+  width: 152px;
+  height: 214px;
+  clip-path: polygon(0 7.5%, 20% 0, 80% 0, 100% 7.5%, 100% 90%, 50% 100%, 0 90%);
+  padding: 2.5px;
+  box-sizing: border-box;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-shield-border.shield-bronze {
+  background: linear-gradient(145deg, #d79a78 0%, #ffc4a8 30%, #8d5b3e 70%, #5a3c2a 100%);
+}
+
+.card-shield-border.shield-silver {
+  background: linear-gradient(145deg, #e2e8f0 0%, #ffffff 30%, #94a3b8 70%, #485461 100%);
+}
+
+.card-shield-border.shield-gold,
+.card-shield-border.shield-gold-light,
+.card-shield-border.shield-gold-dark {
+  background: linear-gradient(145deg, #ffe494 0%, #fff7cc 30%, #ca8a04 70%, #7c5b0f 100%);
+}
+
+.card-shield-border.shield-ptc {
+  background: linear-gradient(145deg, #f59e0b 0%, #fde68a 25%, #d97706 60%, #b45309 85%, #78350f 100%);
+  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border .fut-card {
+  width: 100% !important;
+  height: 100% !important;
+  clip-path: polygon(0 7.5%, 20% 0, 80% 0, 100% 7.5%, 100% 90%, 50% 100%, 0 90%) !important;
+  border-radius: 0 !important;
+  border: none !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  padding: 6px 6px 4px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+}
+
+.card-shield-border .card-top {
+  position: relative !important;
+  height: 86px !important;
+  width: 100% !important;
+  margin-top: 6px !important;
+}
+
+.card-shield-border .card-meta {
+  position: absolute !important;
+  left: 3px !important;
+  top: 6px !important;
+  width: 28px !important;
+  gap: 1.5px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  z-index: 5 !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
+.card-shield-border .card-rat {
+  font-size: 21px !important;
+  line-height: 1 !important;
+  font-weight: 900 !important;
+}
+
+.card-shield-border .card-pos {
+  font-size: 10.5px !important;
+  font-weight: 900 !important;
+  line-height: 1 !important;
+}
+
+.card-shield-border .flag-rect {
+  width: 18px !important;
+  height: 12px !important;
+}
+
+.card-shield-border .shield-flag-wrap {
+  width: 18px !important;
+  height: 20px !important;
+  margin-top: 1px !important;
+}
+
+.card-shield-border .card-img-wrap {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  z-index: 1 !important;
+  pointer-events: none !important;
+}
+
+.card-shield-border .card-img {
+  width: 82px !important;
+  height: 82px !important;
+  object-fit: cover !important;
+  border-radius: 50% !important;
+  margin: 0 auto !important;
+  display: block !important;
+}
+
+.card-shield-border .card-info {
+  position: relative !important;
+  z-index: 3 !important;
+  text-align: center !important;
+  margin: 4px 0 0 !important;
+  padding-bottom: 4px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+.card-shield-border .card-name {
+  font-size: 12px !important;
+  font-weight: 900 !important;
+  line-height: 1.15 !important;
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.3px !important;
+}
+
+.card-shield-border .card-club {
+  display: none !important;
+}
+
+.card-shield-border .card-stats {
+  position: relative !important;
+  z-index: 3 !important;
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 3.5px 12px !important;
+  padding: 0 12px !important;
+  margin-top: 10px !important;
+  margin-bottom: 0 !important;
+  font-size: 11px !important;
+  line-height: 1.25 !important;
+}
+
+.card-shield-border .stat-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+}
+
+.card-shield-border .stat-num {
+  font-weight: 900 !important;
+  font-size: 12px !important;
+  color: #fff !important;
+}
+
+.card-shield-border .stat-lbl {
+  font-size: 10px !important;
+  font-weight: 700 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
 }
 
 .ptc-squad-counter {
   position: absolute;
   bottom: 44px;
-  left: 0;
-  right: 0;
-  text-align: center;
-  font-size: 13px;
+  left: 8px;
+  text-align: left;
+  font-size: 12px;
   font-weight: 900;
   color: #ffffff;
-  z-index: 6;
-  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.9);
+  z-index: 10;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.95), 0 0 6px rgba(0, 0, 0, 0.9);
   pointer-events: none;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  line-height: 1.2;
 }
 
 .theme-group-bronze .ptc-bg-side {
-  background: #3e271a;
-  border-left: 55px solid #5a3c2a;
-  border-right: 55px solid #5a3c2a;
+  background: radial-gradient(circle at 50% 30%, #1a120b 0%, #0a0705 100%);
+  border-left: 28px solid #5a3c2a;
+  border-right: 28px solid #5a3c2a;
 }
 
 .theme-group-silver .ptc-bg-side {
-  background: #485461;
-  border-left: 55px solid #6c7d8a;
-  border-right: 55px solid #6c7d8a;
+  background: radial-gradient(circle at 50% 30%, #151a1e 0%, #080a0c 100%);
+  border-left: 28px solid #485461;
+  border-right: 28px solid #485461;
 }
 
 .theme-group-gold .ptc-bg-side {
-  background: #4a3810;
-  border-left: 55px solid #6c541c;
-  border-right: 55px solid #6c541c;
+  background: radial-gradient(circle at 50% 30%, #1c1608 0%, #0a0803 100%);
+  border-left: 28px solid #6c541c;
+  border-right: 28px solid #6c541c;
+}
+
+.theme-group-season .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #20170a 0%, #0d0a04 100%);
+  border-left: 45px solid #4a381c;
+  border-right: 45px solid #4a381c;
+}
+
+/* Tarjeta de Nivel de Temporada Bloqueada */
+.theme-locked-season {
+  background: #000;
+  border: 1.5px solid #6b5523;
+}
+
+.theme-locked-season .ptc-bg-side {
+  background: radial-gradient(circle at 50% 30%, #1c1810 0%, #0c0a06 100%);
+  border-left: 35px solid #362812;
+  border-right: 35px solid #362812;
+}
+
+.theme-locked-season .ptc-shield-plate {
+  background: #4a3c1c;
+}
+
+.theme-locked-season .ptc-shield-plate::before {
+  background: radial-gradient(circle at 50% 30%, #2f2511, #130f06);
+}
+
+.theme-locked-season .ptc-locked-icon {
+  font-size: 42px;
+  filter: drop-shadow(0 4px 10px rgba(0,0,0,0.9));
+  transform: translateY(-2px);
+}
+
+.theme-locked-season .ptc-card-locked-badge {
+  position: absolute !important;
+  top: 8px;
+  left: 8px;
+  z-index: 10;
+  background: rgba(14, 16, 12, 0.9);
+  border: 1.5px solid #6b5523;
+  backdrop-filter: blur(4px);
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 800;
+  color: #c8be9f;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Tarjeta Weekend League In-Game (Captura 1) */
+.ptc-card-wl {
+  position: relative;
+  background: #000;
+  border: 1.5px solid #8e7330;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 230px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+}
+
+.ptc-card-wl:hover {
+  transform: translateY(-4px);
+  border-color: #fae69e;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.8), 0 0 16px rgba(34, 197, 94, 0.35);
+}
+
+.ptc-card-wl .ptc-bg-side {
+  background: radial-gradient(circle at 50% 35%, #0f2c1a 0%, #06150c 60%, #020704 100%);
+  border-left: 22px solid #144425;
+  border-right: 22px solid #144425;
+}
+
+.ptc-wl-header-bar {
+  position: absolute;
+  top: 7px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.ptc-wl-timer {
+  background: rgba(250, 230, 158, 0.9);
+  color: #120e04;
+  font-size: 11px;
+  font-weight: 900;
+  padding: 2px 7px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.ptc-wl-difficulty {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 900;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 2px 6px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.ptc-wl-plate {
+  position: absolute;
+  top: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 146px;
+  height: 154px;
+  background: radial-gradient(circle at 50% 40%, #153b22 0%, #0c2014 60%, #061109 100%);
+  border: 1.5px solid #22c55e;
+  clip-path: polygon(0 8%, 20% 0, 80% 0, 100% 8%, 100% 90%, 50% 100%, 0 90%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 6px;
+  z-index: 3;
+}
+
+.ptc-wl-rat-tag {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  background: #22c55e;
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.1;
+}
+
+.ptc-wl-info-icon {
+  position: absolute;
+  top: 6px;
+  right: 8px;
+  width: 14px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ptc-wl-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 0.95;
+  text-align: center;
+  color: #86efac;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  margin-top: 12px;
+  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+}
+
+.ptc-wl-sub {
+  font-size: 10px;
+  font-weight: 900;
+  color: #bbf7d0;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-top: 4px;
+  text-align: center;
+}
+
+.ptc-wl-draft-badge {
+  margin-top: 6px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(134, 239, 172, 0.4);
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 10px;
+  font-weight: 900;
+  color: #86efac;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }

@@ -162,6 +162,7 @@
   </nav>
 </header>
 
+<main class="page-scroll">
 <div class="wrap">
   <div class="card header">
     <div class="db-badge-logo">
@@ -283,6 +284,7 @@
     <div id="status" class="status"></div>
   </div>
 </div>
+</main>
 
 <!-- Modal Principal -->
 <div id="modalBg" class="modal-bg" onclick="closeModal(event)">
@@ -726,7 +728,10 @@ var i18n = {
     confirmDelete: "¿Seguro que deseas eliminar a {name} de la base de datos?",
     quickPriceTitle: "Cambiar Precio", quickPriceHelp: "Introduce el nuevo precio para este jugador.",
     updatedOn: "Actualizado:", lastUpdate: "Última Actualización",
-    statusToday: "Hoy", statusDaysAgo: "Hace {n}d"
+    statusToday: "Hoy", statusDaysAgo: "Hace {n}d",
+    dClub: "Club", dLeague: "Liga", dCountry: "Nacionalidad", dAge: "Edad",
+    dPhys: "Altura / Peso", dPrice: "Precio Mercado SBC", dUpdated: "Última Actualización",
+    yearsOld: "años", noPrice: "Sin precio", detModalTitle: "Detalle del Jugador"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
@@ -760,7 +765,10 @@ var i18n = {
     confirmDelete: "Are you sure you want to delete {name} from the database?",
     quickPriceTitle: "Change Price", quickPriceHelp: "Enter the new price for this player.",
     updatedOn: "Updated:", lastUpdate: "Last Update",
-    statusToday: "Today", statusDaysAgo: "{n}d ago"
+    statusToday: "Today", statusDaysAgo: "{n}d ago",
+    dClub: "Club", dLeague: "League", dCountry: "Nation", dAge: "Age",
+    dPhys: "Height / Weight", dPrice: "SBC Market Price", dUpdated: "Last Update",
+    yearsOld: "years", noPrice: "No price", detModalTitle: "Player Details"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
@@ -794,7 +802,10 @@ var i18n = {
     confirmDelete: "Voulez-vous vraiment supprimer {name} de la base de données ?",
     quickPriceTitle: "Changer le Prix", quickPriceHelp: "Entrez le nouveau prix pour ce joueur.",
     updatedOn: "Mis à jour:", lastUpdate: "Dernière Mise à Jour",
-    statusToday: "Aujourd'hui", statusDaysAgo: "Il y a {n}j"
+    statusToday: "Aujourd'hui", statusDaysAgo: "Il y a {n}j",
+    dClub: "Club", dLeague: "Ligue", dCountry: "Nationalité", dAge: "Âge",
+    dPhys: "Taille / Poids", dPrice: "Prix Marché DCE", dUpdated: "Dernière Mise à Jour",
+    yearsOld: "ans", noPrice: "Sans prix", detModalTitle: "Détails du Joueur"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
@@ -828,7 +839,10 @@ var i18n = {
     confirmDelete: "Möchtest du {name} wirklich aus der Datenbank löschen?",
     quickPriceTitle: "Preis Ändern", quickPriceHelp: "Gib den neuen Preis für diesen Spieler ein.",
     updatedOn: "Aktualisiert:", lastUpdate: "Letzte Aktualisierung",
-    statusToday: "Heute", statusDaysAgo: "Vor {n}T"
+    statusToday: "Heute", statusDaysAgo: "Vor {n}T",
+    dClub: "Verein", dLeague: "Liga", dCountry: "Nation", dAge: "Alter",
+    dPhys: "Größe / Gewicht", dPrice: "SBC-Marktpreis", dUpdated: "Letzte Aktualisierung",
+    yearsOld: "Jahre", noPrice: "Kein Preis", detModalTitle: "Spielerdetails"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
@@ -860,9 +874,12 @@ var i18n = {
     selLeague: "-- Seleziona Campionato --", selCountry: "-- Seleziona Nazione --",
     ctxEditPrice: "💰 Modifica Prezzo", ctxEdit: "✏️ Modifica Tutto", ctxDelete: "🗑️ Elimina",
     confirmDelete: "Sei sicuro di voler eliminare {name} dal database?",
-    quickPriceTitle: "Modifica Prezzo", quickPriceHelp: "Inserisci il nuovo prezzo per questo giocatore.",
+    quickPriceTitle: "Modifica Prezzo", quickPriceHelp: "Inserisci il nuovo precio per questo giocatore.",
     updatedOn: "Aggiornato:", lastUpdate: "Ultimo Aggiornamento",
-    statusToday: "Oggi", statusDaysAgo: "{n}g fa"
+    statusToday: "Oggi", statusDaysAgo: "{n}g fa",
+    dClub: "Club", dLeague: "Campionato", dCountry: "Nazionalità", dAge: "Età",
+    dPhys: "Altezza / Peso", dPrice: "Prezzo Mercato SCR", dUpdated: "Ultimo Aggiornamento",
+    yearsOld: "anni", noPrice: "Nessun prezzo", detModalTitle: "Dettagli Giocatore"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
@@ -896,7 +913,10 @@ var i18n = {
     confirmDelete: "Tem certeza de que deseja excluir {name} da base de dados?",
     quickPriceTitle: "Alterar Preço", quickPriceHelp: "Digite o novo preço para este jogador.",
     updatedOn: "Atualizado:", lastUpdate: "Última Actualização",
-    statusToday: "Hoje", statusDaysAgo: "Há {n}d"
+    statusToday: "Hoje", statusDaysAgo: "Há {n}d",
+    dClub: "Clube", dLeague: "Liga", dCountry: "Nacionalidade", dAge: "Idade",
+    dPhys: "Altura / Peso", dPrice: "Preço Mercado DME", dUpdated: "Última Actualização",
+    yearsOld: "anos", noPrice: "Sem preço", detModalTitle: "Detalhes do Jogador"
   }
 };
 
@@ -906,6 +926,9 @@ function changeLanguage(lang) {
   applyTranslations();
   populateFormSelects();
   render();
+  if (detailTargetIndex >= 0 && $('playerDetailContainer').style.display !== 'none') {
+    openPlayerDetail(detailTargetIndex);
+  }
 }
 
 function applyTranslations() {
@@ -982,6 +1005,14 @@ function applyTranslations() {
   $('ctxEditPrice').textContent = t.ctxEditPrice;
   $('ctxEdit').textContent = t.ctxEdit;
   $('ctxDelete').textContent = t.ctxDelete;
+
+  if ($('dClub')) $('dClub').textContent = t.dClub;
+  if ($('dLeague')) $('dLeague').textContent = t.dLeague;
+  if ($('dCountry')) $('dCountry').textContent = t.dCountry;
+  if ($('dAge')) $('dAge').textContent = t.dAge;
+  if ($('dPhys')) $('dPhys').textContent = t.dPhys;
+  if ($('dPrice')) $('dPrice').textContent = t.dPrice;
+  if ($('dUpdated')) $('dUpdated').textContent = t.dUpdated;
 
   document.querySelectorAll('.lblStatPac').forEach(e => e.textContent = t.statPac);
   document.querySelectorAll('.lblStatSho').forEach(e => e.textContent = t.statSho);
@@ -1211,16 +1242,25 @@ function openPlayerDetail(index) {
   $('quickPriceContainer').style.display = 'none';
   $('playerDetailContainer').style.display = 'block';
 
+  var t = i18n[currentLang] || i18n.es;
+  var natName = p.country ? (getCountryDisplayName(masterCountriesData.find(function(c) {
+    return c.names.es === p.country || Object.values(c.names).includes(p.country) || c.code === p.country;
+  })) || p.country) : '—';
+
+  var legName = p.league ? (getLeagueDisplayName(masterLeaguesData.find(function(l) {
+    return l.names.es === p.league || Object.values(l.names).includes(p.league);
+  })) || p.league) : '—';
+
   $('detailCardTarget').innerHTML = generateFutCardHtml(p);
   $('detName').textContent = cleanName + ' (' + p.rating + ')';
   $('detSub').textContent = displayPosition(p.position) + ' · ' + getRarityLabel(p.rarity, p.rating);
   $('detClub').textContent = p.club || '—';
-  $('detLeague').textContent = p.league || '—';
-  $('detCountry').textContent = p.country || '—';
-  $('detAge').textContent = p.age ? p.age + (currentLang === 'es' ? ' años' : ' years') : '—';
+  $('detLeague').textContent = legName;
+  $('detCountry').textContent = natName;
+  $('detAge').textContent = p.age ? (p.age + ' ' + (t.yearsOld || 'años')) : '—';
   $('detPhysique').textContent = (p.height ? p.height + ' cm' : '—') + ' / ' + (p.weight ? p.weight + ' kg' : '—');
   
-  var priceDisplay = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : (currentLang === 'es' ? 'Sin precio' : 'No price');
+  var priceDisplay = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : (t.noPrice || 'Sin precio');
   $('detPrice').textContent = priceDisplay;
   
   var status = getDateStatus(p.price_date);

@@ -189,6 +189,7 @@
   </nav>
 </header>
 
+<main class="page-scroll">
 <div class="wrap">
   <div class="hero">
     <div class="hero-info">
@@ -222,6 +223,7 @@
 
   <div class="ptc-grid" id="ptcGrid"></div>
 </div>
+</main>
 
 <!-- Modal Principal de Solución -->
 <div class="modal-bg" id="modalBg" onclick="closeModal(event)">
@@ -265,7 +267,7 @@
 <div class="modal-bg" id="detailModalBg" style="z-index: 60" onclick="closeDetailModal(event)">
   <div class="modal detail-modal" onclick="event.stopPropagation()">
     <div class="modal-top" style="margin-bottom: 12px;">
-      <h3 style="margin:0; font-size:18px; color:#fae69e; font-family:var(--font-display);">Detalle del Jugador</h3>
+      <h3 style="margin:0; font-size:18px; color:#fae69e; font-family:var(--font-display);" id="lblDetModalTitle">Detalle del Jugador</h3>
       <button type="button" class="close-btn" onclick="closeDetailModal()">✕</button>
     </div>
     
@@ -275,16 +277,44 @@
         <h3 id="detName" style="margin:0 0 4px; font-size: 20px; color:#fff;">-</h3>
         <p id="detSub" style="margin:0 0 12px; color:var(--muted); font-size: 13px;">-</p>
         <div class="detail-grid">
-          <div class="detail-item"><small>Club</small><span id="detClub">-</span></div>
-          <div class="detail-item"><small>Liga</small><span id="detLeague">-</span></div>
-          <div class="detail-item"><small>Nacionalidad</small><span id="detCountry">-</span></div>
-          <div class="detail-item"><small>Edad</small><span id="detAge">-</span></div>
-          <div class="detail-item"><small>Altura / Peso</small><span id="detPhysique">-</span></div>
-          <div class="detail-item"><small>Precio Mercado SBC</small><span id="detPrice" style="color:var(--gold)">-</span></div>
-          <div class="detail-item"><small>Última Actualización</small><span id="detUpdated">-</span></div>
+          <div class="detail-item"><small id="lblDetClub">Club</small><span id="detClub">-</span></div>
+          <div class="detail-item"><small id="lblDetLeague">Liga</small><span id="detLeague">-</span></div>
+          <div class="detail-item"><small id="lblDetCountry">Nacionalidad</small><span id="detCountry">-</span></div>
+          <div class="detail-item"><small id="lblDetAge">Edad</small><span id="detAge">-</span></div>
+          <div class="detail-item"><small id="lblDetPhys">Altura / Peso</small><span id="detPhysique">-</span></div>
+          <div class="detail-item"><small id="lblDetPrice">Precio Mercado SBC</small><span id="detPrice" style="color:var(--gold)">-</span></div>
+          <div class="detail-item"><small id="lblDetUpdated">Última Actualización</small><span id="detUpdated">-</span></div>
         </div>
       </div>
     </div>
+    <div class="modal-actions" style="margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end;">
+      <button type="button" class="primary" onclick="openQuickPriceFromPtcDetail()" id="btnEditPricePtcDetail">💰 Modificar Precio</button>
+      <button type="button" class="secondary" onclick="closeDetailModal()" id="btnClosePtcDetail">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Rápido: Cambiar Precio en PTC -->
+<div id="quickPriceModalBg" class="modal-bg" style="z-index: 75" onclick="closeQuickPriceModal(event)">
+  <div class="modal" style="max-width: 440px;" onclick="event.stopPropagation()">
+    <div class="modal-top">
+      <div class="modal-title-wrap">
+        <h3 class="modal-title-gradient" id="lblQuickPriceTitle">Cambiar Precio</h3>
+        <span class="modal-subtitle" id="lblQuickPriceHelp">Actualiza el precio en la Base de Datos</span>
+      </div>
+      <button type="button" class="close-btn" onclick="closeQuickPriceModal()">✕</button>
+    </div>
+    <form onsubmit="submitQuickPriceFromPtc(event)">
+      <p style="font-size: 14px; margin: 4px 0 14px; color: #fff;" id="quickPricePlayerLabel">Jugador: -</p>
+      <label style="font-size: 12px; color: var(--muted); font-weight: 700; display: block;">
+        <span id="lblQuickPriceInput">Nuevo Precio SBC / Mercado (monedas)</span>
+        <input type="number" id="quickPriceInput" placeholder="Ej: 45000" style="margin-top: 6px;" required min="0">
+      </label>
+      <div class="modal-actions" style="margin-top: 18px; display: flex; gap: 10px; justify-content: flex-end;">
+        <button type="button" class="danger" onclick="closeQuickPriceModal()" id="btnCancelQuickPrice">Cancelar</button>
+        <button class="primary" type="submit" id="btnSaveQuickPrice">Guardar y Recalcular</button>
+      </div>
+    </form>
   </div>
 </div>
 
