@@ -611,6 +611,12 @@ var ptcRewards = {
     country: 'Francia', league: 'España (1ª Div - LaLiga)', club: 'Real Madrid',
     stats: { pac: 95, dri: 90, sho: 90, def: 39, pas: 71, phy: 85 },
     image: 'https://cdn-img.staticzz.com/img/jogadores/new/45/08/394508_kylian_mbappe_20260217195145.png'
+  },s_legend_1: {
+    type: 'player', name: 'Raphinha', pos: 'LM', rating: 92,
+    rarity: 'ptc',
+    country: 'Brasil', league: 'España (1ª Div - LaLiga)', club: 'FC Barcelona',
+    stats: { pac: 93, dri: 90, sho: 91, def: 43, pas: 83, phy: 73 },
+    image: 'https://cdn-img.staticzz.com/img/jogadores/new/10/13/491013_raphinha_20251203082154.png'
   },
   s_wl_1: { type: 'wl', minRating: 81, difficulty: 'Fácil' },
   s_wl_2: { type: 'wl', minRating: 84, difficulty: 'Media' }
@@ -749,7 +755,7 @@ var ptcList = [
   { id: "s_pro_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_1", 83) },
   { id: "s_pro_2", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_2", 83) },
   { id: "s_pro_3", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_pro_3", 83) },
-  { id: "s_legend_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_legend_1") },
+  { id: "s_legend_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_legend_1", 84) },
   { id: "s_wl_1", category: "season", isRepeatable: false, players: 3, target: 78, requiredRarity: "weekend_league" },
   { id: "s_wl_2", category: "season", isRepeatable: false, players: 7, target: 81, requiredRarity: "weekend_league" },
   {
