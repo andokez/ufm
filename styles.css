@@ -639,20 +639,106 @@ input:focus, select:focus {
 .fut-card.card-gold-dark .card-pos { color: #fde047; }
 .fut-card.card-gold-dark .stat-num { color: #ffffff; }
 .fut-card.card-gold-dark .stat-lbl { color: #fae69e; }
-.fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
-.fut-card.card-euro-evo .card-rat { color: #38bdf8; }
-.fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
-.fut-card.card-new-season .card-rat { color: #facc15; }
-.fut-card.card-totw { background: linear-gradient(135deg, #18181b 40%, #854d0e 80%, #facc15 100%); border-color: #eab308; }
-.fut-card.card-totw .card-rat { color: #fef08a; }
-.fut-card.card-transfer-stars { background: radial-gradient(circle at 60% 40%, #064e3b, #042f2e, #021718); border-color: #2dd4bf; }
-.fut-card.card-transfer-stars .card-rat { color: #5eead4; }
-.fut-card.card-weekend-league { background: radial-gradient(circle at 50% 50%, #143522, #0d1e15, #080d09); border-color: #22c55e; }
-.fut-card.card-weekend-league .card-rat { color: #4ade80; }
-.fut-card.card-matchday { background: radial-gradient(circle at 50% 25%, #2a1b14 0%, #111114 80%), linear-gradient(135deg, rgba(249,115,22,0.3), transparent 60%); border-color: #f97316; }
-.fut-card.card-matchday .card-rat { color: #fdba74; }
-.fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
-.fut-card.card-potm .card-rat { color: #e9d5ff; }
+/* European Evolutions: Fucsia/Magenta y Azul Eléctrico con rayos de energía */
+.fut-card.card-euro-evo {
+  background:
+    radial-gradient(ellipse 90% 75% at 20% 25%, rgba(217, 70, 239, 0.75) 0%, transparent 60%),
+    radial-gradient(ellipse 90% 75% at 85% 75%, rgba(6, 182, 212, 0.8) 0%, transparent 60%),
+    repeating-linear-gradient(125deg, transparent 0px, transparent 20px, rgba(244, 114, 182, 0.18) 20px, rgba(56, 189, 248, 0.22) 23px, transparent 26px),
+    linear-gradient(135deg, #500754 0%, #1a0836 45%, #04254d 75%, #021729 100%);
+  border-color: #38bdf8;
+  box-shadow: 0 0 16px rgba(56, 189, 248, 0.4), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-euro-evo .card-rat { color: #ffffff; text-shadow: 0 0 10px #38bdf8, 0 2px 6px #000; }
+.fut-card.card-euro-evo .card-pos { color: #f472b6; text-shadow: 0 0 6px #d946ef; }
+.fut-card.card-euro-evo .stat-num { color: #ffffff; }
+.fut-card.card-euro-evo .stat-lbl { color: #bae6fd; }
+
+/* NewSeason: Grafito oscuro con pinceladas de oro y estelas doradas */
+.fut-card.card-new-season {
+  background:
+    radial-gradient(circle at 85% 15%, rgba(250, 230, 158, 0.45) 0%, rgba(202, 138, 4, 0.25) 30%, transparent 65%),
+    repeating-linear-gradient(140deg, #18181b 0px, #27272a 4px, #18181b 8px, #09090b 14px),
+    linear-gradient(180deg, #1c1c1f 0%, #0a0a0c 100%);
+  border-color: #d4af37;
+  box-shadow: 0 0 14px rgba(212, 175, 55, 0.35), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-new-season .card-rat { color: #fde047; text-shadow: 0 0 10px rgba(234, 179, 8, 0.6), 0 2px 6px #000; }
+.fut-card.card-new-season .card-pos { color: #fae69e; }
+.fut-card.card-new-season .stat-num { color: #ffffff; }
+.fut-card.card-new-season .stat-lbl { color: #d4af37; }
+
+/* Team of the Week (TOTW): Polígonos oscuros con la X dorada brillante en el centro */
+.fut-card.card-totw {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.35) 0%, transparent 55%),
+    linear-gradient(45deg, transparent 40%, rgba(254, 240, 138, 0.35) 48%, rgba(234, 179, 8, 0.5) 50%, rgba(254, 240, 138, 0.35) 52%, transparent 60%),
+    linear-gradient(135deg, transparent 40%, rgba(254, 240, 138, 0.35) 48%, rgba(234, 179, 8, 0.5) 50%, rgba(254, 240, 138, 0.35) 52%, transparent 60%),
+    radial-gradient(circle, #27272a 20%, #09090b 80%);
+  border-color: #eab308;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.45), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-totw .card-rat { color: #fef08a; text-shadow: 0 0 10px #eab308, 0 2px 6px #000; }
+.fut-card.card-totw .card-pos { color: #fef9c3; }
+.fut-card.card-totw .stat-num { color: #ffffff; }
+.fut-card.card-totw .stat-lbl { color: #fde047; }
+
+/* Transfer Stars: Vórtice verde petróleo con rayos cian y flechas de energía */
+.fut-card.card-transfer-stars {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(45, 212, 191, 0.4) 0%, transparent 60%),
+    repeating-conic-gradient(from 45deg at 50% 50%, #042f2e 0deg 15deg, #115e59 15deg 30deg, #021e1d 30deg 45deg),
+    linear-gradient(145deg, #0f766e 0%, #042f2e 60%, #011514 100%);
+  border-color: #2dd4bf;
+  box-shadow: 0 0 18px rgba(45, 212, 191, 0.4), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-transfer-stars .card-rat { color: #5eead4; text-shadow: 0 0 10px rgba(45, 212, 191, 0.7), 0 2px 6px #000; }
+.fut-card.card-transfer-stars .card-pos { color: #99f6e4; }
+.fut-card.card-transfer-stars .stat-num { color: #ffffff; }
+.fut-card.card-transfer-stars .stat-lbl { color: #5eead4; }
+
+/* Weekend League: Piedra volcánica oscura con magma/grietas verde esmeralda */
+.fut-card.card-weekend-league {
+  background:
+    radial-gradient(circle at 50% 55%, rgba(34, 197, 94, 0.55) 0%, rgba(21, 128, 61, 0.3) 40%, transparent 70%),
+    repeating-linear-gradient(110deg, #09130d 0px, #14281b 3px, #050a07 6px, #020503 12px),
+    linear-gradient(180deg, #122418 0%, #040906 100%);
+  border-color: #22c55e;
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.45), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-weekend-league .card-rat { color: #86efac; text-shadow: 0 0 10px rgba(34, 197, 94, 0.8), 0 2px 6px #000; }
+.fut-card.card-weekend-league .card-pos { color: #bbf7d0; }
+.fut-card.card-weekend-league .stat-num { color: #ffffff; }
+.fut-card.card-weekend-league .stat-lbl { color: #86efac; }
+/* Matchday: Cristal astillado, explosión de chispas naranja fuego y grafito oscuro */
+.fut-card.card-matchday {
+  background:
+    radial-gradient(circle at 75% 85%, rgba(249, 115, 22, 0.45) 0%, transparent 55%),
+    radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.15) 0%, transparent 40%),
+    polygon(0 0),
+    linear-gradient(135deg, #1f2329 0%, #111215 50%, #08080a 100%),
+    repeating-linear-gradient(60deg, transparent 0px, transparent 15px, rgba(255, 255, 255, 0.05) 15px, rgba(249, 115, 22, 0.1) 18px, transparent 20px);
+  border-color: #f97316;
+  box-shadow: 0 0 16px rgba(249, 115, 22, 0.35), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-matchday .card-rat { color: #fed7aa; text-shadow: 0 0 10px rgba(249, 115, 22, 0.8), 0 2px 6px #000; }
+.fut-card.card-matchday .card-pos { color: #fb923c; }
+.fut-card.card-matchday .stat-num { color: #ffffff; }
+.fut-card.card-matchday .stat-lbl { color: #fdba74; }
+
+/* Player of the Month (POTM): Violeta profundo con estelas de plumas lilas */
+.fut-card.card-potm {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 30%, rgba(192, 132, 252, 0.35) 0%, transparent 60%),
+    repeating-linear-gradient(145deg, transparent 0px, transparent 12px, rgba(216, 180, 254, 0.08) 12px, rgba(168, 85, 247, 0.15) 15px, transparent 18px),
+    linear-gradient(180deg, #3b0764 0%, #1e0538 50%, #0d021a 100%);
+  border-color: #c084fc;
+  box-shadow: 0 0 16px rgba(192, 132, 252, 0.4), 0 8px 24px rgba(0, 0, 0, 0.9);
+}
+.fut-card.card-potm .card-rat { color: #f3e8ff; text-shadow: 0 0 10px rgba(192, 132, 252, 0.7), 0 2px 6px #000; }
+.fut-card.card-potm .card-pos { color: #d8b4fe; }
+.fut-card.card-potm .stat-num { color: #ffffff; }
+.fut-card.card-potm .stat-lbl { color: #e9d5ff; }
 .fut-card.card-ptc {
   background:
     /* Layer 1: Centro marrón clarito donde nacen los rayos, degradando a marrón chocolate oscuro en bordes y base */
@@ -1120,6 +1206,41 @@ input:focus, select:focus {
 .card-shield-border.shield-ptc {
   background: linear-gradient(145deg, #fce588 0%, #fff7d6 20%, #d4a017 48%, #f7d050 72%, #a87910 88%, #634604 100%);
   filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-euro_evo {
+  background: linear-gradient(145deg, #f472b6 0%, #d946ef 35%, #0284c7 70%, #38bdf8 100%);
+  filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.5)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-new_season {
+  background: linear-gradient(145deg, #fae69e 0%, #b8861d 30%, #52525b 70%, #18181b 100%);
+  filter: drop-shadow(0 0 10px rgba(212, 175, 55, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-totw {
+  background: linear-gradient(145deg, #fef08a 0%, #eab308 30%, #713f12 70%, #18181b 100%);
+  filter: drop-shadow(0 0 12px rgba(234, 179, 8, 0.55)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-transfer_stars {
+  background: linear-gradient(145deg, #99f6e4 0%, #2dd4bf 35%, #0f766e 70%, #042f2e 100%);
+  filter: drop-shadow(0 0 12px rgba(45, 212, 191, 0.5)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-weekend_league {
+  background: linear-gradient(145deg, #86efac 0%, #22c55e 35%, #15803d 70%, #052e16 100%);
+  filter: drop-shadow(0 0 12px rgba(34, 197, 94, 0.55)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-matchday {
+  background: linear-gradient(145deg, #fed7aa 0%, #f97316 35%, #9a3412 70%, #431407 100%);
+  filter: drop-shadow(0 0 12px rgba(249, 115, 22, 0.55)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border.shield-potm {
+  background: linear-gradient(145deg, #f3e8ff 0%, #c084fc 35%, #7e22ce 70%, #2e0854 100%);
+  filter: drop-shadow(0 0 12px rgba(192, 132, 252, 0.55)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
 }
 
 .card-shield-border .fut-card.card-ptc .stat-lbl {
