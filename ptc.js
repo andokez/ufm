@@ -799,7 +799,7 @@ function getPtcBadgeInfo(ptc) {
 }
 
 function getDatabasePlayers() {
-  var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6'];
+  var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4', 'ufm_database_players_v2'];
   for (var i = 0; i < candidateKeys.length; i++) {
     try {
       var raw = localStorage.getItem(candidateKeys[i]);
@@ -1008,7 +1008,13 @@ function renderPtcList() {
       card.className = 'ptc-card-game ' + (ptc.theme || '');
       var repeatTitle = (currentLang === 'es' ? 'REPETIBLE #' : 'REPEATABLE #') + ptc.repeatNum;
       var pPrices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
-      var sSol = solveSbc(ptc.players, ptc.target, pPrices);
+      var sSol = null;
+      if (priceSource === 'db' && db && db.length > 0) {
+        var dbFiltered = ptc.requiredRarity ? db.filter(function(p) { return p.rarity === ptc.requiredRarity; }) : db;
+        sSol = solveSquadWithRequirements(dbFiltered, ptc, pPrices);
+      } else {
+        sSol = solveSbc(ptc.players, ptc.target, pPrices);
+      }
       var costBadgeText = sSol && sSol.cost ? (Number(sSol.cost).toLocaleString('es-ES') + ' 🪙') : '—';
 
       card.innerHTML = `
@@ -1275,8 +1281,127 @@ function checkPlayerMatches(p, type, cond) {
   return false;
 }
 
+function solveOptimalSquad(pool, k, targetSum) {
+  if (k <= 0) return { cost: 0, sum: 0, players: [] };
+  if (!pool || pool.length === 0) return null;
+
+  // Ordenar candidatos por precio ascendente
+  var sortedPool = pool.slice().sort(function(a, b) {
+    var pA = (+a.price) || 0;
+    var pB = (+b.price) || 0;
+    if (pA !== pB) return pA - pB;
+    return (+b.rating) - (+a.rating);
+  });
+
+  // Si los k jugadores más baratos ya alcanzan o superan la suma requerida,
+  // son sin duda la combinación más barata posible.
+  if (sortedPool.length >= k) {
+    var cheapestK = sortedPool.slice(0, k);
+    var cheapestSum = cheapestK.reduce(function(acc, p) { return acc + (+p.rating); }, 0);
+    if (cheapestSum >= targetSum) {
+      var cheapestCost = cheapestK.reduce(function(acc, p) { return acc + (+p.price); }, 0);
+      return {
+        cost: cheapestCost,
+        sum: cheapestSum,
+        players: cheapestK.sort(function(a, b) { return (+b.rating) - (+a.rating); })
+      };
+    }
+  }
+
+  // Podar para rendimiento instantáneo (< 5ms): mantener máximo k jugadores más baratos por cada media
+  var byRating = {};
+  var pruned = [];
+  for (var i = 0; i < sortedPool.length; i++) {
+    var p = sortedPool[i];
+    var r = +p.rating;
+    byRating[r] = (byRating[r] || 0) + 1;
+    if (byRating[r] <= k) {
+      pruned.push(p);
+    }
+  }
+
+  var actualK = Math.min(k, pruned.length);
+  if (actualK <= 0) return null;
+
+  var maxSum = actualK * 99;
+  var stride = maxSum + 1;
+  var totalStates = (actualK + 1) * stride;
+
+  var dpCost = new Int32Array(totalStates).fill(-1);
+  var dpParentS = new Int32Array(totalStates).fill(-1);
+  var dpPlayer = new Int32Array(totalStates).fill(-1);
+
+  dpCost[0] = 0;
+
+  for (var pIdx = 0; pIdx < pruned.length; pIdx++) {
+    var player = pruned[pIdx];
+    var pRat = +player.rating;
+    var pPrice = +player.price;
+
+    for (var c = actualK; c >= 1; c--) {
+      var cOffset = c * stride;
+      var prevCOffset = (c - 1) * stride;
+
+      for (var s = maxSum; s >= pRat; s--) {
+        var prevCost = dpCost[prevCOffset + (s - pRat)];
+        if (prevCost !== -1) {
+          var newCost = prevCost + pPrice;
+          var currIdx = cOffset + s;
+          var currCost = dpCost[currIdx];
+
+          if (currCost === -1 || newCost < currCost) {
+            dpCost[currIdx] = newCost;
+            dpParentS[currIdx] = s - pRat;
+            dpPlayer[currIdx] = pIdx;
+          }
+        }
+      }
+    }
+  }
+
+  // Buscar el estado con count actualK que cumpla sum >= targetSum minimizando el coste
+  var bestCost = -1;
+  var bestS = -1;
+  for (var s = targetSum; s <= maxSum; s++) {
+    var costAtS = dpCost[actualK * stride + s];
+    if (costAtS !== -1) {
+      if (bestCost === -1 || costAtS < bestCost || (costAtS === bestCost && s < bestS)) {
+        bestCost = costAtS;
+        bestS = s;
+      }
+    }
+  }
+
+  // Si con los jugadores disponibles no se llega a targetSum, elegir la mayor suma posible
+  if (bestCost === -1) {
+    for (var s = targetSum - 1; s >= 0; s--) {
+      var costBelow = dpCost[actualK * stride + s];
+      if (costBelow !== -1) {
+        bestCost = costBelow;
+        bestS = s;
+        break;
+      }
+    }
+  }
+
+  if (bestCost === -1) return null;
+
+  // Reconstruir los jugadores elegidos
+  var chosen = [];
+  var currS = bestS;
+  for (var c = actualK; c >= 1; c--) {
+    var stateIdx = c * stride + currS;
+    var chosenPIdx = dpPlayer[stateIdx];
+    chosen.push(pruned[chosenPIdx]);
+    currS = dpParentS[stateIdx];
+  }
+
+  chosen.sort(function(a, b) { return (+b.rating) - (+a.rating); });
+  return { cost: bestCost, sum: bestS, players: chosen };
+}
+
 function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
-  var n = targetPtc.players;
+  var n = targetPtc.players || 11;
   var target = targetPtc.target;
   var minTotalSum = thresholdFor(n, target);
   var reqs = targetPtc.reqs;
@@ -1292,64 +1417,62 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     return { cost: rawSol.cost, sumRating: rawSol.bestSum, slots: slots };
   }
 
-  var candidates = dbCandidates.filter(function(p) {
+  // Asignar a cada candidato un UID único y su índice original para evitar bloqueos por id undefined
+  var candidates = dbCandidates.map(function(p, idx) {
+    var cleanN = p.name ? p.name.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase() : 'p';
+    var uid = (p.id != null && p.id !== '') ? String(p.id) : (cleanN + '_' + p.rating + '_' + normalizePosition(p.position) + '_' + (p.club || '') + '_' + idx);
+    return Object.assign({}, p, { _uid: uid, _dbIndex: idx });
+  }).filter(function(p) {
     var pr = parseInt(p.price, 10);
     var rat = parseInt(p.rating, 10);
     return !isNaN(pr) && pr > 0 && !isNaN(rat) && rat >= 50 && rat <= 99;
   });
 
+  var usedUids = new Set();
+  var selectedPlayers = [];
+
+  // 1. Si no hay requisitos especiales (como en los desafíos Repetibles):
   if (!reqs) {
+    var optimal = solveOptimalSquad(candidates, n, minTotalSum);
+    if (optimal && optimal.players.length > 0) {
+      var slots = optimal.players.map(function(p) {
+        return { rating: +p.rating, player: p };
+      });
+      // Si faltan jugadores para completar n, rellenar con placeholders
+      if (slots.length < n) {
+        var missingCount = n - slots.length;
+        var avgNeeded = Math.round((minTotalSum - optimal.sum) / missingCount) || target;
+        for (var m = 0; m < missingCount; m++) {
+          slots.push({ rating: avgNeeded, player: null });
+        }
+      }
+      slots.sort(function(a, b) { return b.rating - a.rating; });
+      return { cost: optimal.cost, sumRating: optimal.sum, slots: slots };
+    }
+
+    // Fallback si no hay solución en DB
     var rawSol = solveSbc(n, target, prices);
     if (!rawSol) return null;
-    var usedIds = new Set();
     var slots = [];
-    var totalCost = 0;
-    var sumRating = 0;
-
-    var reqRatings = [];
     rawSol.counts.forEach(function(count, rating) {
-      for (var i = 0; i < count; i++) reqRatings.push(rating);
+      for (var i = 0; i < count; i++) slots.push({ rating: rating, player: null });
     });
-    reqRatings.sort(function(a, b) { return b - a; });
-
-    reqRatings.forEach(function(rat) {
-      var matched = candidates.filter(function(p) {
-        return parseInt(p.rating, 10) === rat && !usedIds.has(p.id);
-      }).sort(function(a, b) { return (+a.price) - (+b.price); })[0];
-
-      if (matched) {
-        usedIds.add(matched.id);
-        slots.push({ rating: rat, player: matched });
-        totalCost += (+matched.price);
-        sumRating += (+matched.rating);
-      } else {
-        slots.push({ rating: rat, player: null });
-        totalCost += (prices[rat] || 0);
-        sumRating += rat;
-      }
-    });
-
-    return { cost: totalCost, sumRating: sumRating, slots: slots };
+    slots.sort(function(a, b) { return b.rating - a.rating; });
+    return { cost: rawSol.cost, sumRating: rawSol.bestSum, slots: slots };
   }
 
-  var selectedPlayers = [];
-  var usedIds = new Set();
-
+  // 2. Si hay requisitos especiales:
   if (reqs.exactPositions && Array.isArray(reqs.exactPositions)) {
     reqs.exactPositions.forEach(function(ep) {
       for (var i = 0; i < ep.count; i++) {
         var exactPool = candidates.filter(function(p) {
-          return !usedIds.has(p.id) && checkPlayerMatches(p, 'exactPos', ep.pos);
+          return !usedUids.has(p._uid) && checkPlayerMatches(p, 'exactPos', ep.pos);
         });
         if (exactPool.length > 0) {
-          exactPool.sort(function(a, b) {
-            var diffA = Math.abs(a.rating - target);
-            var diffB = Math.abs(b.rating - target);
-            if (diffA !== diffB) return diffA - diffB;
-            return (+a.price) - (+b.price);
-          });
+          // El más barato que cumpla la posición
+          exactPool.sort(function(a, b) { return (+a.price) - (+b.price); });
           var chosenPosPlayer = exactPool[0];
-          usedIds.add(chosenPosPlayer.id);
+          usedUids.add(chosenPosPlayer._uid);
           selectedPlayers.push(chosenPosPlayer);
         }
       }
@@ -1381,19 +1504,15 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     if (covered) return;
 
     var pool = candidates.filter(function(p) {
-      return !usedIds.has(p.id) && checkPlayerMatches(p, reqItem.type, reqItem.cond);
+      return !usedUids.has(p._uid) && checkPlayerMatches(p, reqItem.type, reqItem.cond);
     });
 
     if (pool.length > 0) {
-      pool.sort(function(a, b) {
-        var diffA = Math.abs(a.rating - target);
-        var diffB = Math.abs(b.rating - target);
-        if (diffA !== diffB) return diffA - diffB;
-        return (+a.price) - (+b.price);
-      });
+      // El más barato que cumpla el requisito
+      pool.sort(function(a, b) { return (+a.price) - (+b.price); });
       var picked = pool[0];
       picked._tags = [reqItem.type];
-      usedIds.add(picked.id);
+      usedUids.add(picked._uid);
       selectedPlayers.push(picked);
     }
   });
@@ -1410,47 +1529,28 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
 
   if (remainingSlots > 0) {
     var neededSum = Math.max(0, minTotalSum - currentSum);
-    var approxNeededRating = Math.max(50, Math.min(99, Math.ceil(neededSum / remainingSlots)));
-    var remSol = solveSbc(remainingSlots, approxNeededRating, prices) || solveSbc(remainingSlots, target, prices);
+    var remainingCandidates = candidates.filter(function(p) { return !usedUids.has(p._uid); });
+    var remOptimal = solveOptimalSquad(remainingCandidates, remainingSlots, neededSum);
 
-    if (remSol) {
-      var reqRatings = [];
-      remSol.counts.forEach(function(count, rating) {
-        for (var i = 0; i < count; i++) reqRatings.push(rating);
+    if (remOptimal && remOptimal.players.length > 0) {
+      remOptimal.players.forEach(function(p) {
+        slots.push({ rating: +p.rating, player: p });
       });
-      reqRatings.sort(function(a, b) { return b - a; });
+      currentCost += remOptimal.cost;
+      currentSum += remOptimal.sum;
 
-      reqRatings.forEach(function(rat) {
-        var matched = candidates.filter(function(p) {
-          return parseInt(p.rating, 10) === rat && !usedIds.has(p.id);
-        }).sort(function(a, b) { return (+a.price) - (+b.price); })[0];
-
-        if (matched) {
-          usedIds.add(matched.id);
-          slots.push({ rating: rat, player: matched });
-          currentCost += (+matched.price);
-          currentSum += (+matched.rating);
-        } else {
-          slots.push({ rating: rat, player: null });
-          currentCost += (prices[rat] || 0);
-          currentSum += rat;
+      var missing = n - slots.length;
+      if (missing > 0) {
+        var approx = Math.max(50, Math.min(99, Math.round((minTotalSum - currentSum) / missing))) || target;
+        for (var m = 0; m < missing; m++) {
+          slots.push({ rating: approx, player: null });
         }
-      });
+      }
     } else {
-      var unassigned = candidates.filter(function(p) { return !usedIds.has(p.id); })
-        .sort(function(a, b) { return (+a.price) - (+b.price); });
       for (var k = 0; k < remainingSlots; k++) {
-        var pExtra = unassigned[k];
-        if (pExtra) {
-          usedIds.add(pExtra.id);
-          slots.push({ rating: +pExtra.rating, player: pExtra });
-          currentCost += (+pExtra.price);
-          currentSum += (+pExtra.rating);
-        } else {
-          slots.push({ rating: target, player: null });
-          currentCost += (prices[target] || 0);
-          currentSum += target;
-        }
+        slots.push({ rating: target, player: null });
+        currentCost += (prices[target] || 0);
+        currentSum += target;
       }
     }
   }
@@ -1713,6 +1813,90 @@ function closeQuickPriceModal(e) {
   }
 }
 
+function updatePlayerPriceInStorage(p, newPrice) {
+  var isoDate = new Date().toISOString();
+  p.price = newPrice;
+  p.price_date = isoDate;
+
+  var allKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4', 'ufm_database_players_v2'];
+  var normPName = normalizeSimple(p.name);
+  var pRating = +p.rating || 0;
+  var normPPos = normalizePosition(p.position);
+  var anyUpdated = false;
+
+  allKeys.forEach(function(key) {
+    try {
+      var raw = localStorage.getItem(key);
+      if (!raw) return;
+      var list = JSON.parse(raw);
+      if (!Array.isArray(list) || list.length === 0) return;
+
+      var changed = false;
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i];
+        var isMatch = false;
+
+        // 1. Coincidencia por ID exacto si ambos lo tienen
+        if (p.id && item.id && String(p.id) === String(item.id)) {
+          isMatch = true;
+        }
+        // 2. Coincidencia por UID único
+        else if (p._uid && item._uid && p._uid === item._uid) {
+          isMatch = true;
+        }
+        // 3. Coincidencia por índice de base de datos si coincide nombre y valoración
+        else if (p._dbIndex != null && p._dbIndex === i && normalizeSimple(item.name) === normPName) {
+          isMatch = true;
+        }
+        // 4. Coincidencia por nombre normalizado (sin tildes) + valoración
+        else {
+          var normItemName = normalizeSimple(item.name);
+          if (normItemName && normPName && (normItemName === normPName || normItemName.replace(/\s+/g,'') === normPName.replace(/\s+/g,''))) {
+            if (+item.rating === pRating) {
+              var normItemPos = normalizePosition(item.position);
+              if (normItemPos === normPPos || !item.position || !p.position) {
+                isMatch = true;
+              }
+            }
+          }
+        }
+
+        if (isMatch) {
+          item.price = newPrice;
+          item.price_date = isoDate;
+          changed = true;
+          anyUpdated = true;
+        }
+      }
+
+      if (changed) {
+        localStorage.setItem(key, JSON.stringify(list));
+      }
+    } catch(err) {}
+  });
+
+  // Asegurar sincronización en la clave activa principal
+  if (!anyUpdated) {
+    try {
+      var currentDb = getDatabasePlayers();
+      var foundInDb = false;
+      for (var j = 0; j < currentDb.length; j++) {
+        var it = currentDb[j];
+        if (normalizeSimple(it.name) === normPName && +it.rating === pRating) {
+          it.price = newPrice;
+          it.price_date = isoDate;
+          foundInDb = true;
+        }
+      }
+      if (!foundInDb) {
+        var clone = Object.assign({}, p, { price: newPrice, price_date: isoDate });
+        currentDb.push(clone);
+      }
+      localStorage.setItem(DB_KEY, JSON.stringify(currentDb));
+    } catch(e) {}
+  }
+}
+
 function submitQuickPriceFromPtc(e) {
   if (e && e.preventDefault) e.preventDefault();
   if (window._activeDetailPlayerIndex == null || !window._activeSquadPlayers) return;
@@ -1723,50 +1907,8 @@ function submitQuickPriceFromPtc(e) {
   var newPrice = input && input.value !== '' ? parseInt(input.value, 10) : '';
   if (isNaN(newPrice) || newPrice < 0) return;
 
-  p.price = newPrice;
-  p.price_date = new Date().toISOString();
-
-  // Guardar en localStorage para que la base de datos persista el cambio
-  var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6'];
-  var updatedAny = false;
-  candidateKeys.forEach(function(key) {
-    try {
-      var raw = localStorage.getItem(key);
-      if (raw) {
-        var dbList = JSON.parse(raw);
-        if (Array.isArray(dbList) && dbList.length > 0) {
-          var normPPos = normalizePosition(p.position);
-          var cleanPName = p.name ? p.name.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase() : '';
-          var found = false;
-          for (var i = 0; i < dbList.length; i++) {
-            var item = dbList[i];
-            var normItemPos = normalizePosition(item.position);
-            var cleanItemName = item.name ? item.name.replace(/\s*\([^)]*\)/g, '').trim().toLowerCase() : '';
-            if ((p.id && item.id && item.id === p.id) ||
-                (cleanItemName === cleanPName && +item.rating === +p.rating && normItemPos === normPPos)) {
-              item.price = newPrice;
-              item.price_date = p.price_date;
-              found = true;
-              break;
-            }
-          }
-          if (found) {
-            localStorage.setItem(key, JSON.stringify(dbList));
-            updatedAny = true;
-          }
-        }
-      }
-    } catch(err) {}
-  });
-
-  if (!updatedAny) {
-    try {
-      var currentDb = getDatabasePlayers();
-      var clone = Object.assign({}, p, { price: newPrice, price_date: p.price_date });
-      currentDb.push(clone);
-      localStorage.setItem(DB_KEY, JSON.stringify(currentDb));
-    } catch(err) {}
-  }
+  // Actualizar en todas las claves de base de datos y memoria
+  updatePlayerPriceInStorage(p, newPrice);
 
   // Actualizar visualmente la ficha detallada
   var detPrice = document.getElementById('detPrice');
@@ -1796,6 +1938,7 @@ function closeModal(e) {
   if (!e || e.target === document.getElementById('modalBg')) {
     document.getElementById('modalBg').classList.remove('open');
     activeModalPtc = null;
+    renderPtcList();
   }
 }
 

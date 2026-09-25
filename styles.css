@@ -605,9 +605,69 @@ input:focus, select:focus {
 .fut-card.card-matchday .card-rat { color: #fdba74; }
 .fut-card.card-potm { background: radial-gradient(circle at 50% 30%, #581c87 0%, #200d3d 50%, #0e051c 100%); border-color: #c084fc; }
 .fut-card.card-potm .card-rat { color: #e9d5ff; }
-.fut-card.card-ptc { background: radial-gradient(circle at 50% 20%, #4a2910 0%, #291608 55%, #100803 100%); border-color: #f59e0b; box-shadow: 0 0 15px rgba(245, 158, 11, 0.35); }
-.fut-card.card-ptc .card-rat { color: #fbbf24; text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95); }
-.fut-card.card-ptc .card-pos { color: #fde68a; }
+.fut-card.card-ptc {
+  background:
+    /* Layer 1: Centro marrón clarito donde nacen los rayos, degradando a marrón chocolate oscuro en bordes y base */
+    radial-gradient(ellipse 95% 75% at 50% 36%, rgba(185, 135, 82, 0.52) 0%, rgba(125, 85, 48, 0.38) 32%, rgba(42, 26, 14, 0.72) 68%, rgba(15, 9, 5, 0.96) 100%),
+    /* Layer 2: Haz suave de luz cálida diagonal */
+    linear-gradient(125deg, transparent 25%, rgba(230, 195, 135, 0.16) 45%, rgba(160, 110, 65, 0.12) 55%, transparent 72%),
+    /* Layer 3: Fondo marrón predominante con rayos marrón claro y algún fino rayo clarito */
+    repeating-conic-gradient(
+      from 15deg at 50% 36%,
+      #2c1c11 0deg 9deg,
+      #4a301e 9deg 17deg,
+      #7a5231 17deg 23deg,
+      #d4aa65 23deg 25.5deg,   /* rayo clarito */
+      #a67546 25.5deg 32deg,
+      #533620 32deg 40deg,
+      #24160c 40deg 50deg,
+      #664326 50deg 57deg,
+      #eed49e 57deg 59deg,     /* rayo fino clarito */
+      #8f623a 59deg 67deg,
+      #3d2616 67deg 76deg,
+      #1d1109 76deg 84deg,
+      #5c3c23 84deg 90deg
+    );
+  border-color: #d4af37;
+  box-shadow: 0 0 16px rgba(180, 130, 50, 0.35), 0 8px 24px rgba(0, 0, 0, 0.85);
+  position: relative;
+  overflow: hidden;
+}
+
+.fut-card.card-ptc::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 50% 36%, rgba(240, 205, 145, 0.25) 0%, rgba(160, 110, 60, 0.12) 30%, transparent 60%),
+    linear-gradient(180deg, transparent 62%, rgba(15, 9, 5, 0.85) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.fut-card.card-ptc::after {
+  display: none;
+}
+
+.fut-card.card-ptc .card-rat {
+  color: #ffe699;
+  text-shadow: 0 0 10px rgba(212, 160, 23, 0.65), 0 2px 6px rgba(0, 0, 0, 0.95);
+}
+
+.fut-card.card-ptc .card-pos {
+  color: #fae69e;
+  text-shadow: 0 0 6px rgba(212, 160, 23, 0.5), 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
+.fut-card.card-ptc .card-name {
+  color: #ffffff;
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.95), 0 0 6px rgba(212, 175, 55, 0.3);
+}
+
+.fut-card.card-ptc .card-club {
+  color: #e5cb93;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
 
 .card-top {
   position: relative;
@@ -1003,8 +1063,22 @@ input:focus, select:focus {
 }
 
 .card-shield-border.shield-ptc {
-  background: linear-gradient(145deg, #f59e0b 0%, #fde68a 25%, #d97706 60%, #b45309 85%, #78350f 100%);
-  filter: drop-shadow(0 0 10px rgba(245, 158, 11, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+  background: linear-gradient(145deg, #fce588 0%, #fff7d6 20%, #d4a017 48%, #f7d050 72%, #a87910 88%, #634604 100%);
+  filter: drop-shadow(0 0 12px rgba(212, 175, 55, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
+.card-shield-border .fut-card.card-ptc .stat-lbl {
+  color: #fae69e !important;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.95) !important;
+}
+
+.card-shield-border .fut-card.card-ptc .stat-num {
+  color: #ffffff !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95), 0 0 6px rgba(212, 175, 55, 0.35) !important;
+}
+
+.card-shield-border .fut-card.card-ptc .card-info {
+  border-bottom: 1px solid rgba(212, 175, 55, 0.35) !important;
 }
 
 .card-shield-border .fut-card {
