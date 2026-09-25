@@ -1215,6 +1215,91 @@ input:focus, select:focus {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
+/* Escudo específico para la vista de Base de Datos (más grande) */
+.card-shield-border.shield-db-size {
+  width: 200px;
+  height: 280px;
+  margin-bottom: -16px; /* Oculta ligeramente la punta bajo el badge de precio */
+}
+
+.card-shield-border.shield-db-size .card-top {
+  height: 110px !important;
+  margin-top: 8px !important;
+}
+
+.card-shield-border.shield-db-size .card-meta {
+  width: 38px !important;
+  left: 6px !important;
+  top: 8px !important;
+  gap: 3px !important;
+}
+
+.card-shield-border.shield-db-size .card-rat {
+  font-size: 26px !important;
+}
+
+.card-shield-border.shield-db-size .card-pos {
+  font-size: 13px !important;
+}
+
+.card-shield-border.shield-db-size .flag-rect {
+  width: 22px !important;
+  height: 15px !important;
+}
+
+.card-shield-border.shield-db-size .shield-flag-wrap {
+  width: 22px !important;
+  height: 24px !important;
+}
+
+.card-shield-border.shield-db-size .card-img {
+  width: 108px !important;
+  height: 108px !important;
+}
+
+.card-shield-border.shield-db-size .card-info {
+  margin: 6px 0 2px !important;
+  padding-bottom: 5px !important;
+}
+
+.card-shield-border.shield-db-size .card-name {
+  font-size: 15px !important;
+}
+
+/* Mostrar el club debajo del nombre en las fichas de Database */
+.card-shield-border.shield-db-size .card-club {
+  display: block !important;
+  font-size: 11px !important;
+  color: #fae69e;
+  opacity: 0.9;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+}
+
+.card-shield-border.shield-db-size .card-stats {
+  margin-top: 8px !important;
+  gap: 4px 16px !important;
+  padding: 0 16px !important;
+}
+
+.card-shield-border.shield-db-size .stat-num {
+  font-size: 14px !important;
+}
+
+.card-shield-border.shield-db-size .stat-lbl {
+  font-size: 12px !important;
+}
+
+/* El badge de precio se posiciona por encima de la punta */
+.card-item .card-price-badge {
+  position: relative;
+  z-index: 5;
+  width: 85%;
+}
+
 .ptc-squad-counter {
   position: absolute;
   bottom: 44px;

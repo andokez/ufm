@@ -677,19 +677,28 @@ function getFlagUrl(str) {
   if (!str) return 'https://flagcdn.com/w40/un.png';
   var clean = str.trim().toLowerCase();
 
-  var foundLeague = masterLeaguesData.find(function(l) {
-    return Object.values(l.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean.includes(l.code);
-  });
-  if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
-
+  // 1. Buscar en países por código exacto o coincidencia de nombre exacto
   var foundCountry = masterCountriesData.find(function(c) {
-    return Object.values(c.names).some(function(n) { return clean.includes(n.toLowerCase()); }) || clean === c.code;
+    if (clean === c.code.toLowerCase()) return true;
+    return Object.values(c.names).some(function(n) {
+      return clean === n.toLowerCase();
+    });
   });
   if (foundCountry) return 'https://flagcdn.com/w40/' + foundCountry.code + '.png';
 
+  // 2. Buscar en ligas por código exacto o si el nombre contiene la liga
+  var foundLeague = masterLeaguesData.find(function(l) {
+    if (clean === l.code.toLowerCase()) return true;
+    return Object.values(l.names).some(function(n) {
+      return clean.includes(n.toLowerCase());
+    });
+  });
+  if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
+
   var fallbackDict = {
     'premier league': 'gb-eng', 'laliga': 'es', 'la liga': 'es', 'serie a': 'it', 'bundesliga': 'de',
-    'ligue 1': 'fr', 'eredivisie': 'nl', 'spain': 'es', 'england': 'gb-eng', 'france': 'fr', 'germany': 'de'
+    'ligue 1': 'fr', 'eredivisie': 'nl', 'spain': 'es', 'españa': 'es', 'england': 'gb-eng', 'inglaterra': 'gb-eng',
+    'france': 'fr', 'germany': 'de', 'austria': 'at'
   };
   var code = fallbackDict[clean] || 'un';
   return 'https://flagcdn.com/w40/' + code + '.png';
@@ -1190,43 +1199,61 @@ function getFilteredData() {
   });
 }
 
-function generateFutCardHtml(p) {
+function generateFutCardHtml(p, isShield) {
   var imgUrl = p.image ? esc(p.image) : DEFAULT_AVATAR;
   var natFlag = getFlagUrl(p.country);
   var leagueFlag = getFlagUrl(p.league || p.country);
   var rClass = getRarityClass(p.rarity, p.rating);
-  var rarityText = getRarityLabel(p.rarity, p.rating);
   var cleanName = cleanPlayerName(p.name);
   var t = i18n[currentLang] || i18n.es;
 
-  return '<div class="fut-card ' + rClass + '">' +
-    '<div class="card-rarity-tag">' + esc(rarityText) + '</div>' +
-    '<div class="card-top">' +
-      '<div class="card-meta">' +
-        '<span class="card-rat">' + esc(p.rating) + '</span>' +
-        '<span class="card-pos">' + esc(displayPosition(p.position)) + '</span>' +
-        '<img class="flag-rect" title="' + esc(p.country || 'Nacionalidad') + '" src="' + natFlag + '" onerror="this.src=\'https://flagcdn.com/w40/un.png\'">' +
-        '<div class="shield-flag-wrap" title="' + esc(p.league || 'Liga') + '">' +
-          '<img src="' + leagueFlag + '" onerror="this.src=\'https://flagcdn.com/w40/un.png\'">' +
-        '</div>' +
-      '</div>' +
-      '<div class="card-img-wrap">' +
-        '<img class="card-img" src="' + imgUrl + '" onerror="this.onerror=null;this.src=\'' + DEFAULT_AVATAR + '\'">' +
-      '</div>' +
-    '</div>' +
-    '<div class="card-info">' +
-      '<div class="card-name">' + esc(cleanName) + '</div>' +
-      '<div class="card-club">' + esc(p.club || 'Sin Club') + '</div>' +
-    '</div>' +
-    '<div class="card-stats">' +
-      '<div class="stat-row"><span class="stat-num">' + (p.pac || '0') + '</span> <span class="stat-lbl">' + t.statPac + '</span></div>' +
-      '<div class="stat-row"><span class="stat-num">' + (p.dri || '0') + '</span> <span class="stat-lbl">' + t.statDri + '</span></div>' +
-      '<div class="stat-row"><span class="stat-num">' + (p.sho || '0') + '</span> <span class="stat-lbl">' + t.statSho + '</span></div>' +
-      '<div class="stat-row"><span class="stat-num">' + (p.def || '0') + '</span> <span class="stat-lbl">' + t.statDef + '</span></div>' +
-      '<div class="stat-row"><span class="stat-num">' + (p.pas || '0') + '</span> <span class="stat-lbl">' + t.statPas + '</span></div>' +
-      '<div class="stat-row"><span class="stat-num">' + (p.phy || '0') + '</span> <span class="stat-lbl">' + t.statPhy + '</span></div>' +
-    '</div>' +
-  '</div>';
+  var cardContent = `
+    <div class="fut-card ${rClass} ${isShield ? 'card-shield-shape' : ''}">
+      <div class="card-top">
+        <div class="card-meta">
+          <span class="card-rat">${esc(p.rating)}</span>
+          <span class="card-pos">${esc(displayPosition(p.position))}</span>
+          <img class="flag-rect" title="${esc(p.country || 'Nacionalidad')}" src="${natFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          <div class="shield-flag-wrap" title="${esc(p.league || 'Liga')}">
+            <img src="${leagueFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+          </div>
+        </div>
+        <div class="card-img-wrap">
+          <img class="card-img" src="${imgUrl}" onerror="this.onerror=null;this.src='${DEFAULT_AVATAR}'">
+        </div>
+      </div>
+      <div class="card-info">
+        <div class="card-name">${esc(cleanName)}</div>
+        <div class="card-club">${esc(p.club || 'Sin Club')}</div>
+      </div>
+      <div class="card-stats">
+        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${t.statPac}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">${t.statDri}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">${t.statSho}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">${t.statDef}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">${t.statPas}</span></div>
+        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">${t.statPhy}</span></div>
+      </div>
+    </div>
+  `;
+
+  if (isShield) {
+    var rawRarity = (p.rarity || 'normal').toLowerCase();
+    var shieldType = rawRarity;
+    if (rawRarity === 'normal') {
+      var rat = +p.rating || 0;
+      if (rat <= 64) shieldType = 'bronze';
+      else if (rat <= 74) shieldType = 'silver';
+      else shieldType = 'gold';
+    }
+    return `
+      <div class="card-shield-border shield-${shieldType} shield-db-size">
+        ${cardContent}
+      </div>
+    `;
+  }
+
+  return cardContent;
 }
 
 function openPlayerDetail(index) {
@@ -1251,7 +1278,7 @@ function openPlayerDetail(index) {
     return l.names.es === p.league || Object.values(l.names).includes(p.league);
   })) || p.league) : '—';
 
-  $('detailCardTarget').innerHTML = generateFutCardHtml(p);
+  $('detailCardTarget').innerHTML = generateFutCardHtml(p, true);
   $('detName').textContent = cleanName + ' (' + p.rating + ')';
   $('detSub').textContent = displayPosition(p.position) + ' · ' + getRarityLabel(p.rarity, p.rating);
   $('detClub').textContent = p.club || '—';
@@ -1356,7 +1383,7 @@ function render() {
       var dateBadgeHtml = p.price_date ? ('<span class="date-badge ' + status.colorClass + '" title="' + esc(status.title) + '">' + status.text + '</span>') : '';
 
       return '<div class="card-item" onclick="openPlayerDetail(' + origIndex + ')" oncontextmenu="openContextMenu(event, ' + origIndex + ')">' +
-        generateFutCardHtml(p) +
+        generateFutCardHtml(p, true) +
         '<div class="card-price-badge">' +
           '<span>' + priceStr + '</span>' +
           dateBadgeHtml +
