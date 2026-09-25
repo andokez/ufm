@@ -420,9 +420,9 @@
       </div>
 
       <div id="importUrlSection" style="display:none">
-        <p style="font-size:13px; color:var(--muted); margin-top:0" id="urlHelpText">Pega el enlace directo a tu archivo JSON en internet:</p>
-        <input type="url" id="importUrlInput" placeholder="https://raw.githubusercontent.com/usuario/repo/main/players.json">
-        <small style="display:block; margin-top:6px; color:var(--gold)" id="urlSavedNote">Esta URL se guardará para que puedas actualizar con el botón "Sincronizar Web".</small>
+        <p style="font-size:13px; color:var(--muted); margin-top:0" id="urlHelpText">Pega el enlace a tu archivo JSON (GitHub Gist, GitHub repo, o enlace directo):</p>
+        <input type="url" id="importUrlInput" placeholder="https://gist.github.com/andokez/22ea33695072a2f1685bd096296232e4">
+        <small style="display:block; margin-top:6px; color:var(--gold)" id="urlSavedNote">Compatible directamente con enlaces de Gist (sin necesidad de buscar el enlace Raw) y siempre descarga la versión más actualizada.</small>
       </div>
 
       <div id="importTextSection" style="display:none">
@@ -1769,46 +1769,124 @@ function processTextImport() {
   }
 }
 
+function normalizeOnlineDataUrl(inputUrl) {
+  if (!inputUrl) return '';
+  var url = inputUrl.trim();
+
+  // 1. Gist Raw con commit SHA específico (ej: https://gist.githubusercontent.com/user/id/raw/abc123456.../archivo.json)
+  // Al quitar el SHA, siempre apuntará a la versión más reciente en /raw
+  var rawGistShaMatch = url.match(/^https?:\/\/gist\.githubusercontent\.com\/([^\/]+)\/([a-f0-9]{15,45})\/raw\/[a-f0-9]{30,50}(?:\/(.+))?$/i);
+  if (rawGistShaMatch) {
+    var u = rawGistShaMatch[1];
+    var gId = rawGistShaMatch[2];
+    var fileName = rawGistShaMatch[3] ? ('/' + rawGistShaMatch[3]) : '';
+    return 'https://gist.githubusercontent.com/' + u + '/' + gId + '/raw' + fileName;
+  }
+
+  // 2. Gist URL de navegador web (ej: https://gist.github.com/andokez/22ea33695072a2f1685bd096296232e4)
+  var gistMatch = url.match(/^https?:\/\/gist\.github\.com\/(?:([^\/]+)\/)?([a-f0-9]{15,45})(?:\/.*)?$/i);
+  if (gistMatch) {
+    var user = gistMatch[1] || '';
+    var gistId = gistMatch[2];
+    return user
+      ? ('https://gist.githubusercontent.com/' + user + '/' + gistId + '/raw')
+      : ('https://gist.githubusercontent.com/' + gistId + '/raw');
+  }
+
+  // 3. GitHub normal archivo web de repositorio (ej: https://github.com/user/repo/blob/main/players.json)
+  var ghBlobMatch = url.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/blob\/([^\/]+)\/(.+)$/i);
+  if (ghBlobMatch) {
+    return 'https://raw.githubusercontent.com/' + ghBlobMatch[1] + '/' + ghBlobMatch[2] + '/' + ghBlobMatch[3] + '/' + ghBlobMatch[4];
+  }
+  var ghRawMatch = url.match(/^https?:\/\/github\.com\/([^\/]+)\/([^\/]+)\/raw\/([^\/]+)\/(.+)$/i);
+  if (ghRawMatch) {
+    return 'https://raw.githubusercontent.com/' + ghRawMatch[1] + '/' + ghRawMatch[2] + '/' + ghRawMatch[3] + '/' + ghRawMatch[4];
+  }
+
+  // 4. GitLab: blob -> raw
+  var glMatch = url.match(/^https?:\/\/gitlab\.com\/(.+)\/-\/blob\/(.+)$/i);
+  if (glMatch) {
+    return 'https://gitlab.com/' + glMatch[1] + '/-/raw/' + glMatch[2];
+  }
+
+  // 5. Pastebin: web -> raw
+  var pbMatch = url.match(/^https?:\/\/(?:www\.)?pastebin\.com\/(?:raw\/)?([a-zA-Z0-9]+)$/i);
+  if (pbMatch) {
+    return 'https://pastebin.com/raw/' + pbMatch[1];
+  }
+
+  return url;
+}
+
 function fetchFromUrl(url) {
   if (!url) {
-    alert("Por favor introduce una dirección URL válida.");
+    alert(currentLang === 'es' ? "Por favor introduce una dirección URL válida." : "Please enter a valid URL.");
     return;
   }
   
-  var targetUrl = url;
-  if (url.includes('pastebin.com')) {
-    targetUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
-  }
+  var normalizedUrl = normalizeOnlineDataUrl(url);
+  var targetUrl = normalizedUrl;
   
-  fetch(targetUrl)
+  if (normalizedUrl.includes('pastebin.com')) {
+    targetUrl = 'https://corsproxy.io/?' + encodeURIComponent(normalizedUrl);
+  }
+
+  // Añadir parámetro de tiempo para evitar caché de navegador o CDN cuando el Gist se modifique
+  var cacheBustedUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + '_t=' + Date.now();
+
+  function parseAndApply(text) {
+    var rawText = (text || '').trim();
+    if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substr(1);
+
+    try {
+      var data = JSON.parse(rawText);
+      localStorage.setItem(URL_KEY, url);
+      mergePlayerData(data);
+      return true;
+    } catch(jsonErr) {
+      try {
+        var csvData = parseCSV(rawText);
+        if (csvData.length > 0) {
+          localStorage.setItem(URL_KEY, url);
+          mergePlayerData(csvData);
+          return true;
+        }
+      } catch(csvErr) {}
+    }
+    return false;
+  }
+
+  fetch(cacheBustedUrl)
     .then(function(res) {
-      if (!res.ok) throw new Error("Error en la conexión con el servidor (HTTP " + res.status + ")");
+      if (!res.ok) throw new Error("HTTP " + res.status);
       return res.text();
     })
     .then(function(text) {
-      var rawText = (text || '').trim();
-      if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substr(1);
-
-      try {
-        var data = JSON.parse(rawText);
-        localStorage.setItem(URL_KEY, url);
-        mergePlayerData(data);
-      } catch(jsonErr) {
-        try {
-          var csvData = parseCSV(rawText);
-          if (csvData.length > 0) {
-            localStorage.setItem(URL_KEY, url);
-            mergePlayerData(csvData);
-          } else {
-            throw new Error();
-          }
-        } catch(csvErr) {
-          alert("El archivo descargado de la URL no es un JSON ni CSV válido.");
-        }
+      if (!parseAndApply(text)) {
+        throw new Error(currentLang === 'es' ? "El archivo descargado no es un JSON ni CSV válido." : "Downloaded content is not valid JSON or CSV.");
       }
     })
     .catch(function(err) {
-      alert("No se pudo cargar desde la URL: " + err.message + "\n\nAsegúrate de que el enlace sea 'Raw' directo y permita CORS.");
+      // Si la petición directa falla por CORS o red, reintentar automáticamente a través de proxy CORS
+      if (!targetUrl.includes('corsproxy.io')) {
+        var proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(cacheBustedUrl);
+        fetch(proxyUrl)
+          .then(function(res2) {
+            if (!res2.ok) throw new Error("HTTP " + res2.status);
+            return res2.text();
+          })
+          .then(function(text2) {
+            if (!parseAndApply(text2)) {
+              alert(currentLang === 'es' ? "El archivo descargado no es un JSON ni CSV válido." : "Downloaded file is not valid JSON or CSV.");
+            }
+          })
+          .catch(function(err2) {
+            alert((currentLang === 'es' ? "No se pudo cargar desde la URL: " : "Could not load from URL: ") + err.message +
+              "\n\n" + (currentLang === 'es' ? "Verifica que el enlace sea accesible." : "Please verify the link is accessible."));
+          });
+      } else {
+        alert((currentLang === 'es' ? "No se pudo cargar desde la URL: " : "Could not load from URL: ") + err.message);
+      }
     });
 }
 
