@@ -263,7 +263,6 @@ button:hover {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
 }
 
-/* Botón Primario estilo "APLICAR" de la captura */
 button.primary, .btn-apply {
   background: var(--gold-btn) !important;
   color: #120e04 !important;
@@ -280,7 +279,6 @@ button.primary:hover, .btn-apply:hover {
   box-shadow: 0 6px 18px rgba(212, 175, 55, 0.5) !important;
 }
 
-/* Botón Peligro estilo "BORRAR FILTRO" de la captura */
 button.danger, .btn-clear {
   background: var(--danger-btn) !important;
   color: #ffffff !important;
@@ -297,7 +295,6 @@ button.danger:hover, .btn-clear:hover {
   box-shadow: 0 6px 18px rgba(239, 68, 68, 0.5) !important;
 }
 
-/* Botón Secundario */
 button.secondary {
   background: #1b2017;
   border: 1.5px solid #78622c;
@@ -422,7 +419,6 @@ input:focus, select:focus {
   box-shadow: 0 14px 40px rgba(0, 0, 0, 0.9), inset 0 0 20px rgba(212, 175, 55, 0.08);
 }
 
-/* Puntas doradas en las 4 esquinas del modal */
 .modal::before, .modal::after {
   content: '';
   position: absolute;
@@ -480,7 +476,6 @@ input:focus, select:focus {
   font-weight: 600;
 }
 
-/* Botón cerrar modal estilo cuadrado rojo de la captura */
 .close-btn {
   background: #c1121f;
   border: 1.5px solid #ff7b82;
@@ -499,7 +494,6 @@ input:focus, select:focus {
   transform: scale(1.05);
 }
 
-/* Modal Detalle Jugador */
 .detail-modal {
   width: min(680px, 98%);
   z-index: 70;
@@ -550,7 +544,7 @@ input:focus, select:focus {
 }
 
 /* =========================================
-   TARJETAS FUT COMPLETAS Y MINIATURAS
+   TARJETAS FUT Y CARTAS
    ========================================= */
 .fut-card {
   width: 100%;
@@ -582,12 +576,7 @@ input:focus, select:focus {
   z-index: 3;
 }
 
-/* Colores de cartas completas */
-/* =========================================
-   FONDOS DE CARTA ESTILO SOBRES METÁLICOS
-   ========================================= */
-
-/* 1. BRONCE (Hasta 64) */
+/* 1. BRONCE */
 .fut-card.card-bronze {
   background:
     radial-gradient(ellipse 90% 70% at 50% 25%, #d18d66 0%, #995c3a 45%, #4a2815 100%),
@@ -600,7 +589,7 @@ input:focus, select:focus {
 .fut-card.card-bronze .stat-num { color: #ffffff; }
 .fut-card.card-bronze .stat-lbl { color: #f5c4a9; }
 
-/* 2. PLATA (65 a 74) */
+/* 2. PLATA */
 .fut-card.card-silver {
   background:
     radial-gradient(ellipse 90% 70% at 50% 25%, #e6edf2 0%, #9cb1c0 45%, #42515d 100%),
@@ -613,7 +602,7 @@ input:focus, select:focus {
 .fut-card.card-silver .stat-num { color: #ffffff; }
 .fut-card.card-silver .stat-lbl { color: #cbd5e1; }
 
-/* 3. ORO CLARO BRILLANTE (75 a 82) */
+/* 3. ORO CLARO BRILLANTE */
 .fut-card.card-gold-light {
   background:
     radial-gradient(ellipse 90% 70% at 50% 25%, #fae8a5 0%, #cb9f3a 45%, #6a4f13 100%),
@@ -626,7 +615,7 @@ input:focus, select:focus {
 .fut-card.card-gold-light .stat-num { color: #ffffff; }
 .fut-card.card-gold-light .stat-lbl { color: #fef9c3; }
 
-/* 4. ORO OSCURO / ORO ÚNICO (83 a 99) */
+/* 4. ORO OSCURO / ORO ÚNICO */
 .fut-card.card-gold-dark {
   background:
     radial-gradient(ellipse 95% 75% at 50% 22%, #eed37a 0%, #aa7c1e 40%, #523707 80%, #201402 100%),
@@ -639,7 +628,7 @@ input:focus, select:focus {
 .fut-card.card-gold-dark .card-pos { color: #fde047; }
 .fut-card.card-gold-dark .stat-num { color: #ffffff; }
 .fut-card.card-gold-dark .stat-lbl { color: #fae69e; }
-/* European Evolutions: Fucsia/Magenta y Azul Eléctrico con rayos de energía */
+
 .fut-card.card-euro-evo {
   background:
     radial-gradient(ellipse 90% 75% at 20% 25%, rgba(217, 70, 239, 0.75) 0%, transparent 60%),
@@ -654,7 +643,6 @@ input:focus, select:focus {
 .fut-card.card-euro-evo .stat-num { color: #ffffff; }
 .fut-card.card-euro-evo .stat-lbl { color: #bae6fd; }
 
-/* NewSeason: Grafito oscuro con pinceladas de oro y estelas doradas */
 .fut-card.card-new-season {
   background:
     radial-gradient(circle at 85% 15%, rgba(250, 230, 158, 0.45) 0%, rgba(202, 138, 4, 0.25) 30%, transparent 65%),
@@ -668,7 +656,6 @@ input:focus, select:focus {
 .fut-card.card-new-season .stat-num { color: #ffffff; }
 .fut-card.card-new-season .stat-lbl { color: #d4af37; }
 
-/* Team of the Week (TOTW): Polígonos oscuros con la X dorada brillante en el centro */
 .fut-card.card-totw {
   background:
     radial-gradient(circle at 50% 50%, rgba(250, 204, 21, 0.35) 0%, transparent 55%),
@@ -683,7 +670,6 @@ input:focus, select:focus {
 .fut-card.card-totw .stat-num { color: #ffffff; }
 .fut-card.card-totw .stat-lbl { color: #fde047; }
 
-/* Transfer Stars: Vórtice verde petróleo con rayos cian y flechas de energía */
 .fut-card.card-transfer-stars {
   background:
     radial-gradient(circle at 50% 40%, rgba(45, 212, 191, 0.4) 0%, transparent 60%),
@@ -697,7 +683,6 @@ input:focus, select:focus {
 .fut-card.card-transfer-stars .stat-num { color: #ffffff; }
 .fut-card.card-transfer-stars .stat-lbl { color: #5eead4; }
 
-/* Weekend League: Piedra volcánica oscura con magma/grietas verde esmeralda */
 .fut-card.card-weekend-league {
   background:
     radial-gradient(circle at 50% 55%, rgba(34, 197, 94, 0.55) 0%, rgba(21, 128, 61, 0.3) 40%, transparent 70%),
@@ -710,7 +695,7 @@ input:focus, select:focus {
 .fut-card.card-weekend-league .card-pos { color: #bbf7d0; }
 .fut-card.card-weekend-league .stat-num { color: #ffffff; }
 .fut-card.card-weekend-league .stat-lbl { color: #86efac; }
-/* Matchday: Cristal astillado, explosión de chispas naranja fuego y grafito oscuro */
+
 .fut-card.card-matchday {
   background:
     radial-gradient(circle at 75% 85%, rgba(249, 115, 22, 0.45) 0%, transparent 55%),
@@ -726,7 +711,6 @@ input:focus, select:focus {
 .fut-card.card-matchday .stat-num { color: #ffffff; }
 .fut-card.card-matchday .stat-lbl { color: #fdba74; }
 
-/* Player of the Month (POTM): Violeta profundo con estelas de plumas lilas */
 .fut-card.card-potm {
   background:
     radial-gradient(ellipse 90% 70% at 50% 30%, rgba(192, 132, 252, 0.35) 0%, transparent 60%),
@@ -739,24 +723,22 @@ input:focus, select:focus {
 .fut-card.card-potm .card-pos { color: #d8b4fe; }
 .fut-card.card-potm .stat-num { color: #ffffff; }
 .fut-card.card-potm .stat-lbl { color: #e9d5ff; }
+
 .fut-card.card-ptc {
   background:
-    /* Layer 1: Centro marrón clarito donde nacen los rayos, degradando a marrón chocolate oscuro en bordes y base */
     radial-gradient(ellipse 95% 75% at 50% 36%, rgba(185, 135, 82, 0.52) 0%, rgba(125, 85, 48, 0.38) 32%, rgba(42, 26, 14, 0.72) 68%, rgba(15, 9, 5, 0.96) 100%),
-    /* Layer 2: Haz suave de luz cálida diagonal */
     linear-gradient(125deg, transparent 25%, rgba(230, 195, 135, 0.16) 45%, rgba(160, 110, 65, 0.12) 55%, transparent 72%),
-    /* Layer 3: Fondo marrón predominante con rayos marrón claro y algún fino rayo clarito */
     repeating-conic-gradient(
       from 15deg at 50% 36%,
       #2c1c11 0deg 9deg,
       #4a301e 9deg 17deg,
       #7a5231 17deg 23deg,
-      #d4aa65 23deg 25.5deg,   /* rayo clarito */
+      #d4aa65 23deg 25.5deg,
       #a67546 25.5deg 32deg,
       #533620 32deg 40deg,
       #24160c 40deg 50deg,
       #664326 50deg 57deg,
-      #eed49e 57deg 59deg,     /* rayo fino clarito */
+      #eed49e 57deg 59deg,
       #8f623a 59deg 67deg,
       #3d2616 67deg 76deg,
       #1d1109 76deg 84deg,
@@ -777,10 +759,6 @@ input:focus, select:focus {
     linear-gradient(180deg, transparent 62%, rgba(15, 9, 5, 0.85) 100%);
   pointer-events: none;
   z-index: 1;
-}
-
-.fut-card.card-ptc::after {
-  display: none;
 }
 
 .fut-card.card-ptc .card-rat {
@@ -1038,10 +1016,6 @@ input:focus, select:focus {
   color: #0d0f12;
   font-family: var(--font-display);
   transform: scaleY(1.05);
-}
-
-.ptc-brush-effect {
-  display: none !important;
 }
 
 .ptc-game-footer {
@@ -1391,11 +1365,11 @@ input:focus, select:focus {
   color: rgba(255, 255, 255, 0.75) !important;
 }
 
-/* Escudo específico para la vista de Base de Datos (más grande) */
+/* Escudo específico para la vista de Base de Datos */
 .card-shield-border.shield-db-size {
   width: 200px;
   height: 280px;
-  margin-bottom: -16px; /* Oculta ligeramente la punta bajo el badge de precio */
+  margin-bottom: -16px;
 }
 
 .card-shield-border.shield-db-size .card-top {
@@ -1442,7 +1416,6 @@ input:focus, select:focus {
   font-size: 15px !important;
 }
 
-/* Mostrar el club debajo del nombre en las fichas de Database */
 .card-shield-border.shield-db-size .card-club {
   display: block !important;
   font-size: 11px !important;
@@ -1469,7 +1442,6 @@ input:focus, select:focus {
   font-size: 12px !important;
 }
 
-/* El badge de precio se posiciona por encima de la punta */
 .card-item .card-price-badge {
   position: relative;
   z-index: 5;
@@ -1518,7 +1490,6 @@ input:focus, select:focus {
   border-right: 45px solid #4a381c;
 }
 
-/* Tarjeta de Nivel de Temporada Bloqueada */
 .theme-locked-season {
   background: #000;
   border: 1.5px solid #6b5523;
@@ -1561,7 +1532,7 @@ input:focus, select:focus {
   letter-spacing: 0.5px;
 }
 
-/* Tarjeta Weekend League In-Game (Captura 1) */
+/* Tarjeta Weekend League */
 .ptc-card-wl {
   position: relative;
   background: #000;
@@ -1599,18 +1570,6 @@ input:focus, select:focus {
   align-items: center;
   z-index: 10;
   pointer-events: none;
-}
-
-.ptc-wl-timer {
-  background: rgba(250, 230, 158, 0.9);
-  color: #120e04;
-  font-size: 11px;
-  font-weight: 900;
-  padding: 2px 7px;
-  border-radius: 3px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
 }
 
 .ptc-wl-difficulty {
@@ -1714,7 +1673,7 @@ input:focus, select:focus {
 }
 
 /* =========================================
-   SUB-PTC SHIELD CARDS (ESTILO JUEGO OFICIAL)
+   SUB-PTC SHIELD CARDS
    ========================================= */
 .sub-tabs-wrap {
   display: grid;
@@ -1772,7 +1731,6 @@ input:focus, select:focus {
   z-index: 12;
 }
 
-/* Cabecera superior con Dificultad y Hexágono */
 .sub-card-top-bar {
   position: absolute;
   top: 6px;
@@ -1793,7 +1751,6 @@ input:focus, select:focus {
   text-shadow: 0 1px 3px rgba(0,0,0,0.9);
 }
 
-/* Base del sobre tipo escudo */
 .sub-shield-pack {
   position: relative;
   width: 140px;
@@ -1825,7 +1782,7 @@ input:focus, select:focus {
   z-index: 1;
 }
 
-/* 1. BRONCE (Hasta 64) */
+/* 1. BRONCE */
 .sub-shield-pack.pack-bronze {
   background: radial-gradient(circle at 50% 25%, #d18d66 0%, #875133 55%, #422414 100%);
   border: 1.5px solid #d79a78;
@@ -1835,7 +1792,7 @@ input:focus, select:focus {
 .sub-shield-pack.pack-bronze .sub-shield-sub { color: #ffcaa8; }
 .sub-shield-pack.pack-bronze .sub-shield-single-tag { border-color: rgba(215, 154, 120, 0.5); color: #ffe5d6; }
 
-/* 2. PLATA (Hasta 74) */
+/* 2. PLATA */
 .sub-shield-pack.pack-silver {
   background: radial-gradient(circle at 50% 25%, #dce5ec 0%, #8ca1af 55%, #404f5a 100%);
   border: 1.5px solid #e2e8f0;
@@ -1845,7 +1802,7 @@ input:focus, select:focus {
 .sub-shield-pack.pack-silver .sub-shield-sub { color: #cbd5e1; }
 .sub-shield-pack.pack-silver .sub-shield-single-tag { border-color: rgba(226, 232, 240, 0.5); color: #ffffff; }
 
-/* 3. DORADO (Hasta 77) */
+/* 3. DORADO */
 .sub-shield-pack.pack-gold {
   background: radial-gradient(circle at 50% 25%, #f1da8b 0%, #ba9535 55%, #5e4710 100%);
   border: 1.5px solid #fae69e;
@@ -1855,7 +1812,7 @@ input:focus, select:focus {
 .sub-shield-pack.pack-gold .sub-shield-sub { color: #fae69e; }
 .sub-shield-pack.pack-gold .sub-shield-single-tag { border-color: rgba(250, 230, 158, 0.5); color: #fff; }
 
-/* 4. ESMERALDA / PREMIUM GOLD (Hasta 79) */
+/* 4. ESMERALDA */
 .sub-shield-pack.pack-emerald {
   background: radial-gradient(circle at 50% 25%, #18987d 0%, #0d5c4b 55%, #05261f 100%);
   border: 1.5px solid #5eead4;
@@ -1865,7 +1822,7 @@ input:focus, select:focus {
 .sub-shield-pack.pack-emerald .sub-shield-sub { color: #99f6e4; }
 .sub-shield-pack.pack-emerald .sub-shield-single-tag { border-color: rgba(94, 234, 212, 0.5); color: #ccfbf1; }
 
-/* 5. PÚRPURA / ELITE GOLD (80+) */
+/* 5. PÚRPURA */
 .sub-shield-pack.pack-purple {
   background: radial-gradient(circle at 50% 25%, #6a349c 0%, #351557 60%, #170729 100%);
   border: 1.5px solid #d4af37;
@@ -1885,7 +1842,6 @@ input:focus, select:focus {
 .sub-shield-pack.pack-totw .sub-shield-sub { color: #eab308; }
 .sub-shield-pack.pack-totw .sub-shield-single-tag { border-color: rgba(250, 204, 21, 0.5); color: #fef08a; }
 
-/* Textos e iconos interiores del sobre */
 .sub-shield-rat-tag {
   position: absolute;
   top: 5px;
@@ -1954,7 +1910,6 @@ input:focus, select:focus {
   z-index: 3;
 }
 
-/* Efecto brocha dorada y footer */
 .sub-brush-counter {
   position: absolute;
   bottom: 40px;
@@ -2009,3 +1964,102 @@ input:focus, select:focus {
   font-weight: 900;
 }
 
+/* =========================================
+   AVISOS DE REQUISITOS NO CUMPLIDOS Y SLOTS FALTANTES
+   ========================================= */
+.ptc-unfulfilled-warning {
+  background: rgba(239, 68, 68, 0.12);
+  border: 1.5px solid rgba(239, 68, 68, 0.6);
+  border-radius: 6px;
+  padding: 16px 18px;
+  margin-bottom: 18px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6);
+}
+
+.ptc-unfulfilled-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.ptc-unfulfilled-header h4 {
+  margin: 0 0 4px 0;
+  color: #fca5a5;
+  font-size: 15px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ptc-unfulfilled-header p {
+  margin: 0;
+  color: #fecaca;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.ptc-unfulfilled-list {
+  margin: 10px 0 10px 24px;
+  padding: 0;
+  color: #fef2f2;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.ptc-unfulfilled-list li b {
+  color: #fca5a5;
+}
+
+.ptc-unfulfilled-tip {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed rgba(239, 68, 68, 0.4);
+  font-size: 12px;
+  color: #fae69e;
+}
+
+.ptc-unfulfilled-tip a {
+  color: #fff;
+  text-decoration: underline;
+  font-weight: 800;
+}
+
+/* Slot de requisito faltante en la cuadrícula */
+.squad-slot-missing {
+  border: 2px dashed #ef4444 !important;
+  background: rgba(239, 68, 68, 0.08) !important;
+  color: #fca5a5 !important;
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.25) !important;
+}
+
+.squad-slot-missing b {
+  color: #ef4444 !important;
+  font-size: 13px !important;
+  letter-spacing: 0.5px;
+}
+
+.squad-slot-missing .missing-badge {
+  background: #ef4444;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+  padding: 2px 6px;
+  border-radius: 3px;
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  letter-spacing: 0.5px;
+}
+
+.squad-slot-missing span {
+  font-weight: 800;
+  font-size: 12px;
+  color: #fee2e2;
+  text-align: center;
+  margin-bottom: 4px;
+}
+
+.squad-slot-missing small {
+  font-size: 11px;
+  color: #f87171;
+  text-align: center;
+}

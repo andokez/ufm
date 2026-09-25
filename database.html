@@ -122,7 +122,7 @@
       padding: 9px 15px; font-size: 13px; font-weight: 700; color: var(--text);
       cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.15s;
     }
-    .context-menu-item:hover { background: #22291b; color: var(--gold); }
+    .context-menu-item:hover { background: #22291d; color: var(--gold); }
     .context-menu-item.danger-item:hover { color: #fca5a5; background: rgba(239, 68, 68, 0.2); }
 
     @media(max-width: 1000px) {
@@ -453,6 +453,11 @@ var players = [];
 
 var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%234b5668'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
+function normalizeSimple(str) {
+  if (!str) return '';
+  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+}
+
 function getDateStatus(isoDate) {
   if (!isoDate) {
     return { text: '—', colorClass: 'empty', diffDays: Infinity, title: 'Sin fecha registrada' };
@@ -545,7 +550,7 @@ var masterLeaguesData = [
   { id: "de_3", code: "de", names: { es: "Alemania (3ª Div - 3. Liga)", en: "Germany (3rd Div - 3. Liga)", fr: "Allemagne (3ème Div - 3. Liga)", de: "Deutschland (3. Liga)", it: "Germania (3ª Div - 3. Liga)", pt: "Alemanha (3ª Div - 3. Liga)" } },
   { id: "it_1", code: "it", names: { es: "Italia (1ª Div - Serie A)", en: "Italy (1st Div - Serie A)", fr: "Italie (1ère Div - Serie A)", de: "Italien (1. Liga - Serie A)", it: "Italia (1ª Div - Serie A)", pt: "Itália (1ª Div - Serie A)" } },
   { id: "it_2", code: "it", names: { es: "Italia (2ª Div - Serie B)", en: "Italy (2nd Div - Serie B)", fr: "Italie (2ème Div - Serie B)", de: "Italien (2. Liga - Serie B)", it: "Italia (2ª Div - Serie B)", pt: "Itália (2ª Div - Serie B)" } },
-  { id: "nl_1", code: "nl", names: { es: "Holanda (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)", fr: "Pays-Bas (1ère Div - Eredivisie)", de: "Niederlande (1. Liga - Eredivisie)", it: "Paesi Bassi (1ª Div - Eredivisie)", pt: "Holanda (1ª Div - Eredivisie)" } },
+  { id: "nl_1", code: "nl", names: { es: "Países Bajos (1ª Div - Eredivisie)", en: "Netherlands (1st Div - Eredivisie)", fr: "Pays-Bas (1ère Div - Eredivisie)", de: "Niederlande (1. Liga - Eredivisie)", it: "Paesi Bassi (1ª Div - Eredivisie)", pt: "Países Baixos (1ª Div - Eredivisie)" } },
   { id: "pt_1", code: "pt", names: { es: "Portugal (1ª Div - Liga Portugal)", en: "Portugal (1st Div - Liga Portugal)", fr: "Portugal (1ère Div - Liga Portugal)", de: "Portugal (1. Liga - Liga Portugal)", it: "Portogallo (1ª Div - Liga Portugal)", pt: "Portugal (1ª Div - Liga Portugal)" } },
   { id: "es_1", code: "es", names: { es: "España (1ª Div - LaLiga)", en: "Spain (1st Div - LaLiga)", fr: "Espagne (1ère Div - LaLiga)", de: "Spanien (1. Liga - LaLiga)", it: "Spagna (1ª Div - LaLiga)", pt: "Espanha (1ª Div - LaLiga)" } },
   { id: "es_2", code: "es", names: { es: "España (2ª Div - LaLiga Hypermotion)", en: "Spain (2nd Div - Hypermotion)", fr: "Espagne (2ème Div - Hypermotion)", de: "Spanien (2. Liga - Hypermotion)", it: "Spagna (2ª Div - Hypermotion)", pt: "Espanha (2ª Div - Hypermotion)" } },
@@ -582,7 +587,7 @@ var masterCountriesData = [
   { code: "us", names: { es: "Estados Unidos", en: "USA", fr: "États-Unis", de: "USA", it: "Stati Uniti", pt: "Estados Unidos" } },
   { code: "fr", names: { es: "Francia", en: "France", fr: "France", de: "Frankreich", it: "Francia", pt: "França" } },
   { code: "gb-wls", names: { es: "Gales", en: "Wales", fr: "Pays de Galles", de: "Wales", it: "Galles", pt: "País de Gales" } },
-  { code: "nl", names: { es: "Holanda", en: "Netherlands", fr: "Pays-Bas", de: "Niederlande", it: "Paesi Bassi", pt: "Holanda" } },
+  { code: "nl", names: { es: "Países Bajos", en: "Netherlands", fr: "Pays-Bas", de: "Niederlande", it: "Paesi Bassi", pt: "Países Baixos" } },
   { code: "gb-eng", names: { es: "Inglaterra", en: "England", fr: "Angleterre", de: "England", it: "Inghilterra", pt: "Inglaterra" } },
   { code: "ie", names: { es: "Irlanda", en: "Ireland", fr: "Irlande", de: "Irland", it: "Irlanda", pt: "Irlanda" } },
   { code: "it", names: { es: "Italia", en: "Italy", fr: "Italie", de: "Italien", it: "Italia", pt: "Itália" } },
@@ -644,6 +649,39 @@ function getCountryDisplayName(cItem) {
   return cItem.names[currentLang] || cItem.names.es || cItem.names.en;
 }
 
+function getCanonicalCountry(str) {
+  if (!str) return '';
+  var raw = String(str).trim();
+  var clean = raw.toLowerCase();
+  var norm = normalizeSimple(raw);
+
+  var found = masterCountriesData.find(function(c) {
+    if (c.code.toLowerCase() === clean || c.code.toLowerCase() === norm) return true;
+    return Object.values(c.names).some(function(n) {
+      return n.toLowerCase() === clean || normalizeSimple(n) === norm;
+    });
+  });
+  if (found) return found.code;
+
+  var aliases = {
+    'holanda': 'nl', 'paises bajos': 'nl', 'países bajos': 'nl', 'netherlands': 'nl', 'nederland': 'nl', 'pays-bas': 'nl', 'paesi bassi': 'nl', 'paises baixos': 'nl',
+    'inglaterra': 'gb-eng', 'england': 'gb-eng',
+    'espana': 'es', 'españa': 'es', 'spain': 'es',
+    'estados unidos': 'us', 'usa': 'us', 'eeuu': 'us'
+  };
+  return aliases[clean] || aliases[norm] || norm;
+}
+
+function countriesMatch(c1, c2) {
+  if (!c1 || !c2) return false;
+  var code1 = getCanonicalCountry(c1);
+  var code2 = getCanonicalCountry(c2);
+  if (code1 && code2 && code1 === code2) return true;
+  var norm1 = normalizeSimple(c1);
+  var norm2 = normalizeSimple(c2);
+  return norm1 === norm2 || norm1.includes(norm2) || norm2.includes(norm1);
+}
+
 function populateFormSelects() {
   var t = i18n[currentLang] || i18n.es;
   
@@ -675,22 +713,22 @@ function populateFormSelects() {
 
 function getFlagUrl(str) {
   if (!str) return 'https://flagcdn.com/w40/un.png';
-  var clean = str.trim().toLowerCase();
+  var raw = str.trim();
+  var clean = raw.toLowerCase();
+  var norm = normalizeSimple(raw);
 
-  // 1. Buscar en países por código exacto o coincidencia de nombre exacto
   var foundCountry = masterCountriesData.find(function(c) {
-    if (clean === c.code.toLowerCase()) return true;
+    if (clean === c.code.toLowerCase() || norm === c.code.toLowerCase()) return true;
     return Object.values(c.names).some(function(n) {
-      return clean === n.toLowerCase();
+      return clean === n.toLowerCase() || norm === normalizeSimple(n);
     });
   });
   if (foundCountry) return 'https://flagcdn.com/w40/' + foundCountry.code + '.png';
 
-  // 2. Buscar en ligas por código exacto o si el nombre contiene la liga
   var foundLeague = masterLeaguesData.find(function(l) {
-    if (clean === l.code.toLowerCase()) return true;
+    if (clean === l.code.toLowerCase() || norm === l.code.toLowerCase()) return true;
     return Object.values(l.names).some(function(n) {
-      return clean.includes(n.toLowerCase());
+      return clean.includes(n.toLowerCase()) || norm.includes(normalizeSimple(n));
     });
   });
   if (foundLeague) return 'https://flagcdn.com/w40/' + foundLeague.code + '.png';
@@ -698,9 +736,9 @@ function getFlagUrl(str) {
   var fallbackDict = {
     'premier league': 'gb-eng', 'laliga': 'es', 'la liga': 'es', 'serie a': 'it', 'bundesliga': 'de',
     'ligue 1': 'fr', 'eredivisie': 'nl', 'spain': 'es', 'españa': 'es', 'england': 'gb-eng', 'inglaterra': 'gb-eng',
-    'france': 'fr', 'germany': 'de', 'austria': 'at'
+    'france': 'fr', 'germany': 'de', 'austria': 'at', 'holanda': 'nl', 'paises bajos': 'nl', 'países bajos': 'nl', 'netherlands': 'nl'
   };
-  var code = fallbackDict[clean] || 'un';
+  var code = fallbackDict[clean] || fallbackDict[norm] || 'un';
   return 'https://flagcdn.com/w40/' + code + '.png';
 }
 
@@ -791,7 +829,7 @@ var i18n = {
     thPhys: "T / P", thPrice: "Prix", thUpdated: "Mis à jour",
     statPac: "VIT", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DÉF", statPhy: "PHY",
     adv1: "Filtres Club, Nationalité et Rareté", adv2: "Fourchette Prix et Âge", adv3: "Sous-attributs Minimaux (DCE)",
-    btnAdvToggle: "⚙️ Filtres Avancés", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
+    btnAdvToggle: "⚙️ Filtros Avancés", btnSortDesc: "⬇ Desc", btnSortAsc: "⬆ Asc",
     searchPlaceholder: "Chercher joueur, club, ligue...",
     posDefault: "Position", clubDefault: "Tout Club", leagueDefault: "Toute Ligue", countryDefault: "Tout Pays",
     rarityDefault: "Toute Rareté",
@@ -1181,7 +1219,7 @@ function getFilteredData() {
       && (!rarity || p.rarity === rarity)
       && (!club || p.club === club)
       && (!league || p.league === league)
-      && (!country || p.country === country)
+      && (!country || countriesMatch(p.country, country))
       && (minPrice === -Infinity || (pr !== -1 && pr >= minPrice))
       && (maxPrice === Infinity || (pr !== -1 && pr <= maxPrice))
       && (minAge === -Infinity || (ag > 0 && ag >= minAge))
@@ -1272,7 +1310,7 @@ function openPlayerDetail(index) {
 
   var t = i18n[currentLang] || i18n.es;
   var natName = p.country ? (getCountryDisplayName(masterCountriesData.find(function(c) {
-    return c.names.es === p.country || Object.values(c.names).includes(p.country) || c.code === p.country;
+    return countriesMatch(c.names.es, p.country);
   })) || p.country) : '—';
 
   var legName = p.league ? (getLeagueDisplayName(masterLeaguesData.find(function(l) {
