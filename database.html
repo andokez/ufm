@@ -1244,7 +1244,8 @@ function generateFutCardHtml(p, isShield) {
       var rat = +p.rating || 0;
       if (rat <= 64) shieldType = 'bronze';
       else if (rat <= 74) shieldType = 'silver';
-      else shieldType = 'gold';
+      else if (rat <= 82) shieldType = 'gold-light';
+      else shieldType = 'gold-dark';
     }
     return `
       <div class="card-shield-border shield-${shieldType} shield-db-size">

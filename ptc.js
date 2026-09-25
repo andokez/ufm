@@ -676,25 +676,25 @@ var ptcList = [
   {
     id: "b_bronze_group", category: "basic", isRepeatable: false, shortTitle: "BRONCE",
     subchallenges: [
-      { name: "Bronce 1", players: 0, target: 0, isPending: true },
-      { name: "Bronce 2", players: 0, target: 0, isPending: true },
-      { name: "Bronce 3", players: 0, target: 0, isPending: true }
+      { name: "Bronce 1", players: 11, target: 50, rewardRating: 60, difficulty: "Fácil" },
+      { name: "Bronce 2", players: 11, target: 50, rewardRating: 65, difficulty: "Fácil" },
+      { name: "Bronce 3", players: 11, target: 50, rewardRating: 70, difficulty: "Fácil" }
     ]
   },
   {
     id: "b_silver_group", category: "basic", isRepeatable: false, shortTitle: "PLATA",
     subchallenges: [
-      { name: "Plata 1", players: 0, target: 0, isPending: true },
-      { name: "Plata 2", players: 0, target: 0, isPending: true },
-      { name: "Plata 3", players: 0, target: 0, isPending: true }
+      { name: "Plata 1", players: 11, target: 65, rewardRating: 71, difficulty: "Fácil" },
+      { name: "Plata 2", players: 11, target: 68, rewardRating: 73, difficulty: "Media" },
+      { name: "Plata 3", players: 11, target: 70, rewardRating: 74, difficulty: "Difícil" }
     ]
   },
   {
     id: "b_gold_group", category: "basic", isRepeatable: false, shortTitle: "ORO",
     subchallenges: [
-      { name: "Oro 1", players: 0, target: 0, isPending: true },
-      { name: "Oro 2", players: 0, target: 0, isPending: true },
-      { name: "Oro 3", players: 0, target: 0, isPending: true }
+      { name: "Oro 1", players: 11, target: 74, rewardRating: 76, difficulty: "Difícil" },
+      { name: "Oro 2", players: 11, target: 75, rewardRating: 77, difficulty: "Difícil" },
+      { name: "Oro 3", players: 11, target: 78, rewardRating: 80, difficulty: "Difícil" }
     ]
   },
   { id: "s_aficionado_1", category: "season", isRepeatable: false, subchallenges: createBlankRankSubchallenges("s_aficionado_1", 80) },
@@ -962,21 +962,34 @@ function generatePlayerFutCardHtml(p, isShield) {
   return cardContent;
 }
 
-function getGroupHexRowHtml(totalSquads, counterText, isCompleted) {
+function getGroupHexRowHtml(ptc) {
   var green = 0;
   var yellow = 0;
-  var red = totalSquads || 4;
+  var red = 0;
 
-  if (isCompleted || counterText === `${totalSquads}/${totalSquads}` || counterText === '4/4') {
-    green = totalSquads || 4;
+  if (ptc && ptc.subchallenges && ptc.subchallenges.length) {
+    ptc.subchallenges.forEach(function(sub) {
+      // 1. Si el sub-desafío tiene dificultad definida explícitamente:
+      if (sub.difficulty) {
+        var d = sub.difficulty.toLowerCase();
+        if (d === 'fácil' || d === 'facil' || d === 'easy') green++;
+        else if (d === 'media' || d === 'medio' || d === 'medium') yellow++;
+        else if (d === 'difícil' || d === 'dificil' || d === 'hard') red++;
+        else green++;
+      } 
+      // 2. Si no la tiene explícita, se deduce según la media/target:
+      else {
+        var targetVal = sub.target || sub.rewardRating || 75;
+        if (targetVal >= 83) red++;
+        else if (targetVal >= 78) yellow++;
+        else green++;
+      }
+    });
+  } else {
+    // Valor por defecto si no hay lista de sub-desafíos
+    green = 0;
     yellow = 0;
     red = 0;
-  } else if (counterText) {
-    var parts = String(counterText).split('/');
-    var done = parseInt(parts[0], 10) || 0;
-    green = done;
-    yellow = 0;
-    red = Math.max(0, (totalSquads || 4) - done);
   }
 
   return `
@@ -1110,7 +1123,7 @@ function renderPtcList() {
 
       card.innerHTML = `
         <div class="ptc-bg-side"></div>
-        ${getGroupHexRowHtml(totalSquads, counterText, false)}
+        ${getGroupHexRowHtml(ptc)}
         <div class="ptc-player-card-center">
           ${generatePlayerFutCardHtml(mockPlayer, true)}
         </div>
@@ -1215,23 +1228,38 @@ function openPtcModal(ptc) {
   var subTabsWrap = document.getElementById('subTabsWrap');
   if (ptc.subchallenges && ptc.subchallenges.length) {
     subTabsWrap.style.display = 'grid';
-    var globalReward = formatPtcReward(ptc.id);
-    var pw = packWords[currentLang] || packWords.es;
 
     subTabsWrap.innerHTML = ptc.subchallenges.map(function(sub, idx) {
-      var targetLabel = sub.isPending ? 'Pendiente' : ('⭐ ' + sub.target);
-      var subName = formatSubChallengeName(sub);
-      var subReward = getSubChallengeRewardText(sub);
-      var rewardLabel = subReward ? ('🎁 ' + subReward) : (globalReward ? ('🎁 ' + globalReward) : ('🎁 ' + pw.challengeReward));
+      // Determinar la media de referencia del sobre
+      var packRating = sub.rewardRating || (sub.target ? sub.target : (ptc.target || 80));
+      var packTag = packRating + '+';
+      var subTitle = sub.name || (getPtcTitle(ptc.id) + ' ' + (idx + 1));
+
+      // Pasamos la media, el ID y la dificultad configurada
+      var packInfo = getPackStyleInfo(packRating, ptc.id, sub.difficulty);
 
       return `
-        <button type="button" class="sub-tab-btn ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">
-          <div class="sub-tab-top">
-            <span class="sub-tab-name">${subName}</span>
-            <span class="sub-tab-target">${targetLabel}</span>
+        <div class="sub-tab-card ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">
+          <div class="sub-card-top-bar">
+            <span class="sub-card-diff-label">${packInfo.diffLabel}</span>
+            <div class="ptc-hex-icon ${packInfo.hexClass}"></div>
           </div>
-          <span class="sub-tab-reward">${rewardLabel}</span>
-        </button>
+
+          <div class="sub-shield-pack ${packInfo.cssClass}">
+            <div class="sub-shield-rat-tag">${packTag}</div>
+            <div class="sub-shield-info-btn">i</div>
+            <div class="sub-shield-title">${packInfo.mainTitle}</div>
+            <div class="sub-shield-sub">${packInfo.subTitle}</div>
+            <div class="sub-shield-single-tag"><span>%</span> 1</div>
+          </div>
+
+          <div class="sub-brush-counter">0/1</div>
+
+          <div class="sub-card-footer">
+            <span class="sub-card-footer-title" title="${subTitle}">${subTitle}</span>
+            <div class="sub-card-arrow">❯</div>
+          </div>
+        </div>
       `;
     }).join('');
   } else {
@@ -1245,9 +1273,97 @@ function openPtcModal(ptc) {
 
 function selectSubChallenge(idx) {
   activeSubIndex = idx;
-  var btns = document.querySelectorAll('.sub-tab-btn');
-  btns.forEach(function(b, i) { b.classList.toggle('active', i === idx); });
+  var cards = document.querySelectorAll('.sub-tab-card');
+  cards.forEach(function(c, i) { c.classList.toggle('active', i === idx); });
   renderModalContent();
+}
+
+function getPackStyleInfo(ratingVal, ptcId, customDifficulty) {
+  var r = parseInt(ratingVal, 10) || 80;
+
+  // Dificultad base automática
+  var diffLabel = 'Fácil';
+  var hexClass = 'ptc-hex-green';
+
+  if (r >= 83) {
+    diffLabel = 'Difícil';
+    hexClass = 'ptc-hex-red';
+  } else if (r >= 78) {
+    diffLabel = 'Media';
+    hexClass = 'ptc-hex-yellow';
+  }
+
+  // Si el sub-desafío especifica su dificultad (Fácil / Media / Difícil), la aplicamos
+  if (customDifficulty) {
+    diffLabel = customDifficulty;
+    if (customDifficulty === 'Fácil') hexClass = 'ptc-hex-green';
+    else if (customDifficulty === 'Media' || customDifficulty === 'Medio') hexClass = 'ptc-hex-yellow';
+    else if (customDifficulty === 'Difícil' || customDifficulty === 'Dificil') hexClass = 'ptc-hex-red';
+  }
+
+  // Caso especial TOTW
+  if (ptcId && ptcId.includes('totw')) {
+    return {
+      cssClass: 'pack-totw',
+      mainTitle: 'TEAM<br>OF THE WEEK',
+      subTitle: 'SOBRE INDIVIDUAL',
+      diffLabel: diffLabel,
+      hexClass: hexClass
+    };
+  }
+
+  // 1. Hasta +64: Bronce
+  if (r <= 64) {
+    return {
+      cssClass: 'pack-bronze',
+      mainTitle: 'BRONZE',
+      subTitle: 'SOBRE INDIVIDUAL',
+      diffLabel: diffLabel,
+      hexClass: hexClass
+    };
+  }
+
+  // 2. Hasta +74: Plata
+  if (r <= 74) {
+    return {
+      cssClass: 'pack-silver',
+      mainTitle: 'SILVER',
+      subTitle: 'SOBRE INDIVIDUAL',
+      diffLabel: diffLabel,
+      hexClass: hexClass
+    };
+  }
+
+  // 3. Hasta +77: Dorado
+  if (r <= 77) {
+    return {
+      cssClass: 'pack-gold',
+      mainTitle: 'GOLD',
+      subTitle: 'SOBRE INDIVIDUAL',
+      diffLabel: diffLabel,
+      hexClass: hexClass
+    };
+  }
+
+  // 4. Hasta +79: Esmeralda / Premium Gold
+  if (r <= 79) {
+    return {
+      cssClass: 'pack-emerald',
+      mainTitle: 'PREMIUM<br>GOLD',
+      subTitle: 'SOBRE INDIVIDUAL',
+      diffLabel: diffLabel,
+      hexClass: hexClass
+    };
+  }
+
+  // 5. Superiores (80+): Púrpura / Elite Gold
+  return {
+    cssClass: 'pack-purple',
+    mainTitle: 'ELITE<br>GOLD',
+    subTitle: 'SOBRE INDIVIDUAL',
+    diffLabel: diffLabel,
+    hexClass: hexClass
+  };
 }
 
 function getPlayerRole(pos) {
@@ -1717,47 +1833,34 @@ function openPlayerCardDetail(index) {
   if (!p) return;
   window._activeDetailPlayerIndex = index;
 
-  var imgUrl = p.image ? p.image : DEFAULT_AVATAR;
-  var natFlag = getFlagUrl(p.country);
-  var leagueFlag = getFlagUrl(p.league || p.country);
-  var rClass = getRarityClass(p.rarity, p.rating);
   var rarityText = getRarityLabel(p.rarity);
   var cleanName = p.name ? p.name.replace(/\s*\([^)]*\)/g, '').trim() : '';
   var status = getDateStatus(p.price_date);
   var t = i18n[currentLang] || i18n.es;
 
-  var cardHtml = `
-    <div class="fut-card ${rClass}">
-      <div class="card-rarity-tag">${rarityText}</div>
-      <div class="card-top">
-        <div class="card-meta">
-          <span class="card-rat">${p.rating}</span>
-          <span class="card-pos">${displayPosition(p.position, currentLang)}</span>
-          <img class="flag-rect" title="${p.country || 'Nacionalidad'}" src="${natFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
-          <div class="shield-flag-wrap" title="${p.league || 'Liga'}">
-            <img src="${leagueFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
-          </div>
-        </div>
-        <div class="card-img-wrap">
-          <img class="card-img" src="${imgUrl}" onerror="this.src='${DEFAULT_AVATAR}'">
-        </div>
-      </div>
-      <div class="card-info">
-        <div class="card-name">${cleanName}</div>
-        <div class="card-club">${p.club || 'Sin Club'}</div>
-      </div>
-      <div class="card-stats">
-        <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${t.statPac}</span></div>
-        <div class="stat-row"><span class="stat-num">${p.dri || '0'}</span> <span class="stat-lbl">${t.statDri}</span></div>
-        <div class="stat-row"><span class="stat-num">${p.sho || '0'}</span> <span class="stat-lbl">${t.statSho}</span></div>
-        <div class="stat-row"><span class="stat-num">${p.def || '0'}</span> <span class="stat-lbl">${t.statDef}</span></div>
-        <div class="stat-row"><span class="stat-num">${p.pas || '0'}</span> <span class="stat-lbl">${t.statPas}</span></div>
-        <div class="stat-row"><span class="stat-num">${p.phy || '0'}</span> <span class="stat-lbl">${t.statPhy}</span></div>
-      </div>
-    </div>
-  `;
+  // Creamos el clon del jugador asegurando el nombre limpio y los atributos para la carta
+  var cardPlayerData = Object.assign({}, p, {
+    name: cleanName,
+    pac: p.pac || '0',
+    sho: p.sho || '0',
+    pas: p.pas || '0',
+    dri: p.dri || '0',
+    def: p.def || '0',
+    phy: p.phy || '0'
+  });
 
-  document.getElementById('detailCardTarget').innerHTML = cardHtml;
+  // Generamos la carta en formato escudo (isShield = true)
+  var cardHtml = generatePlayerFutCardHtml(cardPlayerData, true);
+
+  // Inyectamos la carta y le aplicamos la clase de tamaño grande
+  var target = document.getElementById('detailCardTarget');
+  target.innerHTML = cardHtml;
+  var shieldElem = target.querySelector('.card-shield-border');
+  if (shieldElem) {
+    shieldElem.classList.add('shield-db-size');
+  }
+
+  // Rellenamos los datos de la columna derecha
   document.getElementById('detName').textContent = cleanName + ' (' + p.rating + ')';
   document.getElementById('detSub').textContent = displayPosition(p.position, currentLang) + ' · ' + rarityText;
   document.getElementById('detClub').textContent = p.club || '—';

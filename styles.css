@@ -583,14 +583,62 @@ input:focus, select:focus {
 }
 
 /* Colores de cartas completas */
-.fut-card.card-bronze { background: linear-gradient(135deg, #442a1d, #21130a); border-color: #8d5b3e; color: #e9d5c9; }
-.fut-card.card-bronze .card-rat { color: #f59e0b; }
-.fut-card.card-silver { background: linear-gradient(135deg, #414952, #1b2027); border-color: #94a3b8; color: #f1f5f9; }
-.fut-card.card-silver .card-rat { color: #e2e8f0; }
-.fut-card.card-gold-light { background: radial-gradient(circle at 50% 25%, #bf9d3d, #685012); border-color: #fde047; color: #fffbeb; }
-.fut-card.card-gold-light .card-rat { color: #fef08a; }
-.fut-card.card-gold-dark { background: radial-gradient(circle at 50% 20%, #7c5b0f, #231902); border-color: #eab308; color: #fef9c3; box-shadow: 0 0 14px rgba(234, 179, 8, 0.3); }
-.fut-card.card-gold-dark .card-rat { color: #ffd700; }
+/* =========================================
+   FONDOS DE CARTA ESTILO SOBRES METÁLICOS
+   ========================================= */
+
+/* 1. BRONCE (Hasta 64) */
+.fut-card.card-bronze {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 25%, #d18d66 0%, #995c3a 45%, #4a2815 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 4px, transparent 4px, transparent 8px);
+  border-color: #d79a78;
+  color: #fff1eb;
+}
+.fut-card.card-bronze .card-rat { color: #ffe4d6; text-shadow: 0 2px 6px #1a0b04; }
+.fut-card.card-bronze .card-pos { color: #ffcaa8; }
+.fut-card.card-bronze .stat-num { color: #ffffff; }
+.fut-card.card-bronze .stat-lbl { color: #f5c4a9; }
+
+/* 2. PLATA (65 a 74) */
+.fut-card.card-silver {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 25%, #e6edf2 0%, #9cb1c0 45%, #42515d 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.06) 0px, rgba(255,255,255,0.06) 4px, transparent 4px, transparent 8px);
+  border-color: #e2e8f0;
+  color: #ffffff;
+}
+.fut-card.card-silver .card-rat { color: #ffffff; text-shadow: 0 2px 6px #172026; }
+.fut-card.card-silver .card-pos { color: #e2e8f0; }
+.fut-card.card-silver .stat-num { color: #ffffff; }
+.fut-card.card-silver .stat-lbl { color: #cbd5e1; }
+
+/* 3. ORO CLARO BRILLANTE (75 a 82) */
+.fut-card.card-gold-light {
+  background:
+    radial-gradient(ellipse 90% 70% at 50% 25%, #fae8a5 0%, #cb9f3a 45%, #6a4f13 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.07) 0px, rgba(255,255,255,0.07) 4px, transparent 4px, transparent 8px);
+  border-color: #fde047;
+  color: #fffdf5;
+}
+.fut-card.card-gold-light .card-rat { color: #fffdf5; text-shadow: 0 2px 6px #2b1f04; }
+.fut-card.card-gold-light .card-pos { color: #fef08a; }
+.fut-card.card-gold-light .stat-num { color: #ffffff; }
+.fut-card.card-gold-light .stat-lbl { color: #fef9c3; }
+
+/* 4. ORO OSCURO / ORO ÚNICO (83 a 99) */
+.fut-card.card-gold-dark {
+  background:
+    radial-gradient(ellipse 95% 75% at 50% 22%, #eed37a 0%, #aa7c1e 40%, #523707 80%, #201402 100%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 4px, transparent 4px, transparent 8px);
+  border-color: #eab308;
+  color: #fffbeb;
+  box-shadow: 0 0 16px rgba(234, 179, 8, 0.35);
+}
+.fut-card.card-gold-dark .card-rat { color: #ffe699; text-shadow: 0 2px 6px #120901, 0 0 10px rgba(234, 179, 8, 0.6); }
+.fut-card.card-gold-dark .card-pos { color: #fde047; }
+.fut-card.card-gold-dark .stat-num { color: #ffffff; }
+.fut-card.card-gold-dark .stat-lbl { color: #fae69e; }
 .fut-card.card-euro-evo { background: linear-gradient(145deg, #6d157a, #0b2e8a, #0369a1); border-color: #38bdf8; }
 .fut-card.card-euro-evo .card-rat { color: #38bdf8; }
 .fut-card.card-new-season { background: linear-gradient(135deg, #2b2b2b, #111111); border-color: #d4af37; }
@@ -1049,17 +1097,24 @@ input:focus, select:focus {
 }
 
 .card-shield-border.shield-bronze {
-  background: linear-gradient(145deg, #d79a78 0%, #ffc4a8 30%, #8d5b3e 70%, #5a3c2a 100%);
+  background: linear-gradient(145deg, #f5bba0 0%, #d18d66 30%, #875133 70%, #4a2815 100%);
+  filter: drop-shadow(0 0 8px rgba(209, 141, 102, 0.35)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
 }
 
 .card-shield-border.shield-silver {
-  background: linear-gradient(145deg, #e2e8f0 0%, #ffffff 30%, #94a3b8 70%, #485461 100%);
+  background: linear-gradient(145deg, #ffffff 0%, #dce5ec 30%, #8ca1af 70%, #3e4a54 100%);
+  filter: drop-shadow(0 0 8px rgba(220, 229, 236, 0.4)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
 }
 
 .card-shield-border.shield-gold,
-.card-shield-border.shield-gold-light,
+.card-shield-border.shield-gold-light {
+  background: linear-gradient(145deg, #fffbeb 0%, #fae8a5 25%, #cb9f3a 65%, #6a4f13 100%);
+  filter: drop-shadow(0 0 10px rgba(250, 232, 165, 0.45)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
+}
+
 .card-shield-border.shield-gold-dark {
-  background: linear-gradient(145deg, #ffe494 0%, #fff7cc 30%, #ca8a04 70%, #7c5b0f 100%);
+  background: linear-gradient(145deg, #fff3c4 0%, #eed37a 25%, #aa7c1e 60%, #4a3004 100%);
+  filter: drop-shadow(0 0 12px rgba(212, 160, 23, 0.55)) drop-shadow(0 6px 16px rgba(0, 0, 0, 0.95));
 }
 
 .card-shield-border.shield-ptc {
@@ -1536,3 +1591,300 @@ input:focus, select:focus {
   align-items: center;
   gap: 3px;
 }
+
+/* =========================================
+   SUB-PTC SHIELD CARDS (ESTILO JUEGO OFICIAL)
+   ========================================= */
+.sub-tabs-wrap {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+  padding-bottom: 6px;
+}
+
+.sub-tab-card {
+  position: relative;
+  background: #000;
+  border: 1.5px solid #5a481f;
+  border-radius: 4px;
+  overflow: hidden;
+  height: 250px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  box-sizing: border-box;
+  padding: 0;
+}
+
+.sub-tab-card:hover {
+  transform: translateY(-4px);
+  border-color: #fae69e;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8), 0 0 14px rgba(212, 175, 55, 0.3);
+}
+
+.sub-tab-card.active {
+  border: 2px solid #fae69e;
+  box-shadow: 0 0 16px rgba(250, 230, 158, 0.4), 0 8px 25px rgba(0, 0, 0, 0.9);
+}
+
+.sub-tab-card.active::before {
+  content: '';
+  position: absolute;
+  top: -2px; left: -2px;
+  width: 10px; height: 10px;
+  border-top: 2px solid #fae69e;
+  border-left: 2px solid #fae69e;
+  z-index: 12;
+}
+
+.sub-tab-card.active::after {
+  content: '';
+  position: absolute;
+  bottom: -2px; right: -2px;
+  width: 10px; height: 10px;
+  border-bottom: 2px solid #fae69e;
+  border-right: 2px solid #fae69e;
+  z-index: 12;
+}
+
+/* Cabecera superior con Dificultad y Hexágono */
+.sub-card-top-bar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.sub-card-diff-label {
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9);
+}
+
+/* Base del sobre tipo escudo */
+.sub-shield-pack {
+  position: relative;
+  width: 140px;
+  height: 165px;
+  margin: 18px auto 0;
+  clip-path: polygon(0 8%, 20% 0, 80% 0, 100% 8%, 100% 90%, 50% 100%, 0 90%);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  z-index: 3;
+}
+
+.sub-shield-pack::before {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  clip-path: polygon(0 8%, 20% 0, 80% 0, 100% 8%, 100% 90%, 50% 100%, 0 90%);
+  background: repeating-linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.05) 0px,
+    rgba(255, 255, 255, 0.05) 5px,
+    transparent 5px,
+    transparent 10px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 1. BRONCE (Hasta 64) */
+.sub-shield-pack.pack-bronze {
+  background: radial-gradient(circle at 50% 25%, #d18d66 0%, #875133 55%, #422414 100%);
+  border: 1.5px solid #d79a78;
+}
+.sub-shield-pack.pack-bronze .sub-shield-rat-tag { background: #d79a78; color: #1f120a; }
+.sub-shield-pack.pack-bronze .sub-shield-title { color: #fbeee6; text-shadow: 0 2px 4px #2b1408; }
+.sub-shield-pack.pack-bronze .sub-shield-sub { color: #ffcaa8; }
+.sub-shield-pack.pack-bronze .sub-shield-single-tag { border-color: rgba(215, 154, 120, 0.5); color: #ffe5d6; }
+
+/* 2. PLATA (Hasta 74) */
+.sub-shield-pack.pack-silver {
+  background: radial-gradient(circle at 50% 25%, #dce5ec 0%, #8ca1af 55%, #404f5a 100%);
+  border: 1.5px solid #e2e8f0;
+}
+.sub-shield-pack.pack-silver .sub-shield-rat-tag { background: #f1f5f9; color: #0f172a; }
+.sub-shield-pack.pack-silver .sub-shield-title { color: #ffffff; text-shadow: 0 2px 4px #1e293b; }
+.sub-shield-pack.pack-silver .sub-shield-sub { color: #cbd5e1; }
+.sub-shield-pack.pack-silver .sub-shield-single-tag { border-color: rgba(226, 232, 240, 0.5); color: #ffffff; }
+
+/* 3. DORADO (Hasta 77) */
+.sub-shield-pack.pack-gold {
+  background: radial-gradient(circle at 50% 25%, #f1da8b 0%, #ba9535 55%, #5e4710 100%);
+  border: 1.5px solid #fae69e;
+}
+.sub-shield-pack.pack-gold .sub-shield-rat-tag { background: #fae69e; color: #1e1605; }
+.sub-shield-pack.pack-gold .sub-shield-title { color: #fffdf5; text-shadow: 0 2px 4px #332303; }
+.sub-shield-pack.pack-gold .sub-shield-sub { color: #fae69e; }
+.sub-shield-pack.pack-gold .sub-shield-single-tag { border-color: rgba(250, 230, 158, 0.5); color: #fff; }
+
+/* 4. ESMERALDA / PREMIUM GOLD (Hasta 79) */
+.sub-shield-pack.pack-emerald {
+  background: radial-gradient(circle at 50% 25%, #18987d 0%, #0d5c4b 55%, #05261f 100%);
+  border: 1.5px solid #5eead4;
+}
+.sub-shield-pack.pack-emerald .sub-shield-rat-tag { background: #5eead4; color: #042f2e; }
+.sub-shield-pack.pack-emerald .sub-shield-title { color: #f0fdfa; text-shadow: 0 2px 4px #022c22; font-size: 16px; }
+.sub-shield-pack.pack-emerald .sub-shield-sub { color: #99f6e4; }
+.sub-shield-pack.pack-emerald .sub-shield-single-tag { border-color: rgba(94, 234, 212, 0.5); color: #ccfbf1; }
+
+/* 5. PÚRPURA / ELITE GOLD (80+) */
+.sub-shield-pack.pack-purple {
+  background: radial-gradient(circle at 50% 25%, #6a349c 0%, #351557 60%, #170729 100%);
+  border: 1.5px solid #d4af37;
+}
+.sub-shield-pack.pack-purple .sub-shield-rat-tag { background: #fae69e; color: #120e04; }
+.sub-shield-pack.pack-purple .sub-shield-title { color: #f7eed7; text-shadow: 0 2px 4px #1a082b; }
+.sub-shield-pack.pack-purple .sub-shield-sub { color: #d8b4fe; }
+.sub-shield-pack.pack-purple .sub-shield-single-tag { border-color: rgba(216, 180, 254, 0.5); color: #e9d5ff; }
+
+/* 6. TOTW */
+.sub-shield-pack.pack-totw {
+  background: linear-gradient(135deg, #18181b 25%, #422006 60%, #a16207 100%);
+  border: 1.5px solid #facc15;
+}
+.sub-shield-pack.pack-totw .sub-shield-rat-tag { background: #facc15; color: #000; }
+.sub-shield-pack.pack-totw .sub-shield-title { color: #fef08a; font-size: 15px; }
+.sub-shield-pack.pack-totw .sub-shield-sub { color: #eab308; }
+.sub-shield-pack.pack-totw .sub-shield-single-tag { border-color: rgba(250, 204, 21, 0.5); color: #fef08a; }
+
+/* Textos e iconos interiores del sobre */
+.sub-shield-rat-tag {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 900;
+  padding: 1px 5px;
+  border-radius: 3px;
+  line-height: 1.1;
+  z-index: 4;
+}
+
+.sub-shield-info-btn {
+  position: absolute;
+  top: 5px;
+  right: 6px;
+  width: 14px;
+  height: 14px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
+  color: #fff;
+  font-size: 9px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 4;
+}
+
+.sub-shield-title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  margin-top: 14px;
+  text-align: center;
+  line-height: 1.05;
+  z-index: 3;
+}
+
+.sub-shield-sub {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 3px;
+  text-align: center;
+  line-height: 1.1;
+  z-index: 3;
+}
+
+.sub-shield-single-tag {
+  margin-top: 5px;
+  background: rgba(0, 0, 0, 0.7);
+  border: 1px solid;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 9px;
+  font-weight: 900;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  z-index: 3;
+}
+
+/* Efecto brocha dorada y footer */
+.sub-brush-counter {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, #9e7a2b 0%, #4a360c 65%, transparent 100%);
+  color: #fae69e;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 900;
+  padding: 3px 18px;
+  z-index: 4;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 4px #000;
+  white-space: nowrap;
+}
+
+.sub-card-footer {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 38px;
+  background: #000;
+  border-top: 1.5px solid #5a481f;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 6px 4px 10px;
+  z-index: 5;
+}
+
+.sub-card-footer-title {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fae69e;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 110px;
+}
+
+.sub-card-arrow {
+  background: var(--gold-btn);
+  color: #0b0d11;
+  width: 26px;
+  height: 26px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 900;
+}
+
