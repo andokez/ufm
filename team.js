@@ -908,22 +908,8 @@ var FORMATIONS = {
 var myTeamState = {
   formation: '433_def',
   starters: Array(11).fill(null),
-  bench: [],
-  tactics: {
-    offensiveStyle: 'balanced',
-    defensiveStyle: 'balanced',
-    width: 50,
-    depth: 55,
-    playersInBox: 5
-  },
-  roles: {
-    captain: 0,
-    penalties: 9,
-    fkShort: 6,
-    fkLong: 6,
-    cornerL: 8,
-    cornerR: 10
-  }
+  bench: []
+
 };
 
 // Asegurar carga de la base de datos real (desde localStorage o Gist de base de datos)
@@ -1324,7 +1310,7 @@ function renderSidebar() {
   if (!body) return;
 
   // Actualizar botones de pestaña
-  ['bench', 'formations', 'tactics', 'roles'].forEach(tab => {
+  ['bench', 'formations'].forEach(tab => {
     var btn = document.getElementById('tab' + tab.charAt(0).toUpperCase() + tab.slice(1));
     if (btn) btn.classList.toggle('active', activeSidebarTab === tab);
   });
@@ -1423,97 +1409,7 @@ function renderSidebar() {
     gridHtml += '</div>';
     body.innerHTML = gridHtml;
 
-  } else if (activeSidebarTab === 'tactics') {
-    title.textContent = t.tacticsTitle;
-    subTitle.textContent = 'Custom Tactics';
-
-    body.innerHTML = `
-      <div class="tactic-group">
-        <h3>${t.tacticsOffensive}</h3>
-        <div class="tactic-row">
-          <label><span>Estilo de Ataque</span> <span class="tactic-val" id="valOffStyle">Equilibrado</span></label>
-          <select onchange="document.getElementById('valOffStyle').textContent=this.value">
-            <option value="Equilibrado">Equilibrado</option>
-            <option value="Posesión">Posesión</option>
-            <option value="Pase Largo">Pase Largo</option>
-            <option value="Contraataque">Contraataque Rápido</option>
-          </select>
-        </div>
-        <div class="tactic-row">
-          <label><span>${t.tacticsWidth}</span> <span class="tactic-val" id="valWidth">50</span></label>
-          <input type="range" min="1" max="100" value="50" oninput="document.getElementById('valWidth').textContent=this.value">
-        </div>
-        <div class="tactic-row">
-          <label><span>${t.tacticsPlayersInBox}</span> <span class="tactic-val" id="valBox">5</span></label>
-          <input type="range" min="1" max="10" value="5" oninput="document.getElementById('valBox').textContent=this.value">
-        </div>
-      </div>
-
-      <div class="tactic-group">
-        <h3>${t.tacticsDefensive}</h3>
-        <div class="tactic-row">
-          <label><span>Estilo Defensivo</span> <span class="tactic-val" id="valDefStyle">Equilibrado</span></label>
-          <select onchange="document.getElementById('valDefStyle').textContent=this.value">
-            <option value="Equilibrado">Equilibrado</option>
-            <option value="Presión tras pérdida">Presión tras pérdida</option>
-            <option value="Presión constante">Presión constante</option>
-            <option value="Repliegue">Repliegue</option>
-          </select>
-        </div>
-        <div class="tactic-row">
-          <label><span>${t.tacticsDepth}</span> <span class="tactic-val" id="valDepth">55</span></label>
-          <input type="range" min="1" max="100" value="55" oninput="document.getElementById('valDepth').textContent=this.value">
-        </div>
-      </div>
-    `;
-
-  } else if (activeSidebarTab === 'roles') {
-    title.textContent = t.rolesTitle;
-    subTitle.textContent = 'Capitán y Balón Parado';
-
-    var startersOpts = myTeamState.starters.map((p, i) => {
-      if (!p) return '';
-      return `<option value="${i}">${p.name} (${p.rating})</option>`;
-    }).join('');
-
-    body.innerHTML = `
-      <div class="role-row">
-        <span class="role-title">👑 ${t.roleCaptain}</span>
-        <select class="role-select" onchange="myTeamState.roles.captain=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-      <div class="role-row">
-        <span class="role-title">🎯 ${t.rolePenalties}</span>
-        <select class="role-select" onchange="myTeamState.roles.penalties=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-      <div class="role-row">
-        <span class="role-title">⚡ ${t.roleFkShort}</span>
-        <select class="role-select" onchange="myTeamState.roles.fkShort=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-      <div class="role-row">
-        <span class="role-title">🚀 ${t.roleFkLong}</span>
-        <select class="role-select" onchange="myTeamState.roles.fkLong=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-      <div class="role-row">
-        <span class="role-title">🚩 ${t.roleCornerL}</span>
-        <select class="role-select" onchange="myTeamState.roles.cornerL=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-      <div class="role-row">
-        <span class="role-title">🚩 ${t.roleCornerR}</span>
-        <select class="role-select" onchange="myTeamState.roles.cornerR=this.value; saveTeamState();">
-          ${startersOpts}
-        </select>
-      </div>
-    `;
+  
   }
 }
 
