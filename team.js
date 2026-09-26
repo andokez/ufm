@@ -49,7 +49,12 @@ var i18nTeam = {
     detBtnChange: "Cambiar Jugador", detBtnToBench: "Mover al Banquillo", detBtnToPitch: "Poner en la Cancha",
     detBtnRemove: "Quitar", detBtnClose: "Cerrar",
     statPac: "RIT", statSho: "TIR", statPas: "PAS", statDri: "REG", statDef: "DEF", statPhy: "FIS",
-    gkDiv: "EST", gkHan: "PAR", gkKic: "SAQ", gkRef: "REF", gkSpd: "VEL", gkPos: "POS"
+    gkDiv: "EST", gkHan: "PAR", gkKic: "SAQ", gkRef: "REF", gkSpd: "VEL", gkPos: "POS",
+    pitch11Price: "Precio 11 Inicial:", pitch11Acq: "Precio Adquisición (11):",
+    stageTotalWord: "Total (11 + Banquillo):", stageTotalAcqWord: "Adquisición:",
+    benchTotalWord: "Total Banquillo:", benchAcqWord: "Adquisición Banquillo:",
+    detAcqTitle: "Precio Adquisición", savePricesBtn: "Guardar Precios",
+    pricesUpdatedMsg: "Precios del jugador actualizados"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
@@ -79,7 +84,12 @@ var i18nTeam = {
     detBtnChange: "Change Player", detBtnToBench: "Move to Bench", detBtnToPitch: "Put on Pitch",
     detBtnRemove: "Remove", detBtnClose: "Close",
     statPac: "PAC", statSho: "SHO", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
-    gkDiv: "DIV", gkHan: "HAN", gkKic: "KIC", gkRef: "REF", gkSpd: "SPD", gkPos: "POS"
+    gkDiv: "DIV", gkHan: "HAN", gkKic: "KIC", gkRef: "REF", gkSpd: "SPD", gkPos: "POS",
+    pitch11Price: "Starting 11 Value:", pitch11Acq: "Acquisition Price (11):",
+    stageTotalWord: "Total (11 + Bench):", stageTotalAcqWord: "Acquisition:",
+    benchTotalWord: "Total Bench:", benchAcqWord: "Bench Acquisition:",
+    detAcqTitle: "Acquisition Price", savePricesBtn: "Save Prices",
+    pricesUpdatedMsg: "Player prices updated"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
@@ -109,7 +119,12 @@ var i18nTeam = {
     detBtnChange: "Changer Joueur", detBtnToBench: "Mettre sur le banc", detBtnToPitch: "Mettre sur le terrain",
     detBtnRemove: "Retirer", detBtnClose: "Fermer",
     statPac: "VIT", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DÉF", statPhy: "PHY",
-    gkDiv: "PLO", gkHan: "JEU", gkKic: "DÉG", gkRef: "RÉF", gkSpd: "VIT", gkPos: "POS"
+    gkDiv: "PLO", gkHan: "JEU", gkKic: "DÉG", gkRef: "RÉF", gkSpd: "VIT", gkPos: "POS",
+    pitch11Price: "Prix 11 Titulaire :", pitch11Acq: "Prix Acquisition (11) :",
+    stageTotalWord: "Total (11 + Banc) :", stageTotalAcqWord: "Acquisition :",
+    benchTotalWord: "Total Banc :", benchAcqWord: "Acquisition Banc :",
+    detAcqTitle: "Prix d'Acquisition", savePricesBtn: "Enregistrer les prix",
+    pricesUpdatedMsg: "Prix du joueur mis à jour"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner", navTeam: "Mein Team",
@@ -139,7 +154,12 @@ var i18nTeam = {
     detBtnChange: "Spieler wechseln", detBtnToBench: "Auf die Bank", detBtnToPitch: "Auf das Feld",
     detBtnRemove: "Entfernen", detBtnClose: "Schließen",
     statPac: "TEM", statSho: "SCH", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "PHY",
-    gkDiv: "HECH", gkHan: "FANG", gkKic: "ABST", gkRef: "REFL", gkSpd: "GES", gkPos: "POS"
+    gkDiv: "HECH", gkHan: "FANG", gkKic: "ABST", gkRef: "REFL", gkSpd: "GES", gkPos: "POS",
+    pitch11Price: "Startelf-Wert:", pitch11Acq: "Einkaufspreis (11):",
+    stageTotalWord: "Gesamt (11 + Bank):", stageTotalAcqWord: "Einkauf:",
+    benchTotalWord: "Gesamte Bank:", benchAcqWord: "Bank Einkauf:",
+    detAcqTitle: "Einkaufspreis", savePricesBtn: "Preise speichern",
+    pricesUpdatedMsg: "Spielerpreise aktualisiert"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR", navTeam: "La Mia Squadra",
@@ -169,7 +189,12 @@ var i18nTeam = {
     detBtnChange: "Cambia Giocatore", detBtnToBench: "Metti in panchina", detBtnToPitch: "Metti in campo",
     detBtnRemove: "Rimuovi", detBtnClose: "Chiudi",
     statPac: "VEL", statSho: "TIR", statPas: "PAS", statDri: "DRI", statDef: "DIF", statPhy: "FIS",
-    gkDiv: "TUF", gkHan: "PRE", gkKic: "RIN", gkRef: "RIF", gkSpd: "VEL", gkPos: "POS"
+    gkDiv: "TUF", gkHan: "PRE", gkKic: "RIN", gkRef: "RIF", gkSpd: "VEL", gkPos: "POS",
+    pitch11Price: "Valore Titolari (11):", pitch11Acq: "Prezzo Acquisto (11):",
+    stageTotalWord: "Totale (11 + Panchina):", stageTotalAcqWord: "Acquisto:",
+    benchTotalWord: "Totale Panchina:", benchAcqWord: "Acquisto Panchina:",
+    detAcqTitle: "Prezzo di Acquisto", savePricesBtn: "Salva Prezzi",
+    pricesUpdatedMsg: "Prezzi del giocatore aggiornati"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME", navTeam: "A Minha Equipa",
@@ -199,7 +224,12 @@ var i18nTeam = {
     detBtnChange: "Trocar Jogador", detBtnToBench: "Enviar para o banco", detBtnToPitch: "Colocar em campo",
     detBtnRemove: "Remover", detBtnClose: "Fechar",
     statPac: "RIT", statSho: "REM", statPas: "PAS", statDri: "DRI", statDef: "DEF", statPhy: "FÍS",
-    gkDiv: "MER", gkHan: "MAN", gkKic: "PON", gkRef: "REF", gkSpd: "VEL", gkPos: "POS"
+    gkDiv: "MER", gkHan: "MAN", gkKic: "PON", gkRef: "REF", gkSpd: "VEL", gkPos: "POS",
+    pitch11Price: "Preço Titulares (11):", pitch11Acq: "Preço Aquisição (11):",
+    stageTotalWord: "Total (11 + Banco):", stageTotalAcqWord: "Aquisição:",
+    benchTotalWord: "Total Banco:", benchAcqWord: "Aquisição Banco:",
+    detAcqTitle: "Preço de Aquisição", savePricesBtn: "Salvar Preços",
+    pricesUpdatedMsg: "Preços do jogador actualizados"
   }
 };
 
@@ -273,6 +303,21 @@ function getDisplayClub(club) {
     return '';
   }
   return c;
+}
+
+function getPlayerPrice(p) {
+  if (!p) return 0;
+  var pr = parseInt(p.price, 10);
+  return (!isNaN(pr) && pr > 0) ? pr : 0;
+}
+
+function getPlayerAcqPrice(p) {
+  if (!p) return 0;
+  var val = (p.bought_price !== undefined && p.bought_price !== null && p.bought_price !== '') 
+    ? p.bought_price 
+    : (p.boughtPrice !== undefined && p.boughtPrice !== null && p.boughtPrice !== '' ? p.boughtPrice : p.acquisition_price);
+  var pr = parseInt(val, 10);
+  return (!isNaN(pr) && pr > 0) ? pr : 0;
 }
 
 // CÓDIGOS CORTO PARA MODO 2 (Química/Atributos como en Captura 2)
@@ -1128,12 +1173,11 @@ function calculateTeamChemistry() {
 // CÁLCULO DE VALORACIÓN GENERAL DE PLANTILLA (Fórmula oficial EA FC: Media ponderada de exceso)
 function calculateTeamRatings() {
   var starters = myTeamState.starters.filter(Boolean);
-  if (starters.length === 0) {
-    return { ovr: '0.0', del: '0.0', cen: '0.0', def: '0.0', cost: 0 };
-  }
+  var bench = myTeamState.bench.filter(Boolean);
 
   var formation = FORMATIONS[activeFormationId] || FORMATIONS['433_def'];
-  var sum = 0, costSum = 0;
+  var sum = 0;
+  var startersPrice = 0, startersAcqPrice = 0;
   var delSum = 0, delCount = 0;
   var cenSum = 0, cenCount = 0;
   var defSum = 0, defCount = 0;
@@ -1142,7 +1186,8 @@ function calculateTeamRatings() {
     if (!p) return;
     var rat = +p.rating || 0;
     sum += rat;
-    if (p.price) costSum += +p.price;
+    startersPrice += getPlayerPrice(p);
+    startersAcqPrice += getPlayerAcqPrice(p);
 
     var sec = formation.slots[i].sector;
     if (sec === 'DEL') { delSum += rat; delCount++; }
@@ -1150,21 +1195,35 @@ function calculateTeamRatings() {
     else { defSum += rat; defCount++; }
   });
 
-  var avg = sum / 11;
+  var benchPrice = 0, benchAcqPrice = 0;
+  bench.forEach(function(p) {
+    benchPrice += getPlayerPrice(p);
+    benchAcqPrice += getPlayerAcqPrice(p);
+  });
+
+  var totalPrice = startersPrice + benchPrice;
+  var totalAcqPrice = startersAcqPrice + benchAcqPrice;
+
+  var avg = starters.length > 0 ? (sum / 11) : 0;
   var excess = 0;
   myTeamState.starters.forEach(function(p) {
     if (!p) return;
     var rat = +p.rating || 0;
     if (rat > avg) excess += (rat - avg);
   });
-  var finalOvr = (avg + (excess / 11));
+  var finalOvr = starters.length > 0 ? (avg + (excess / 11)) : 0;
 
   return {
-    ovr: finalOvr.toFixed(1),
+    ovr: starters.length > 0 ? finalOvr.toFixed(1) : '0.0',
     del: delCount > 0 ? (delSum / delCount).toFixed(1) : '—',
     cen: cenCount > 0 ? (cenSum / cenCount).toFixed(1) : '—',
     def: defCount > 0 ? (defSum / defCount).toFixed(1) : '—',
-    cost: costSum
+    startersPrice: startersPrice,
+    startersAcqPrice: startersAcqPrice,
+    benchPrice: benchPrice,
+    benchAcqPrice: benchAcqPrice,
+    totalPrice: totalPrice,
+    totalAcqPrice: totalAcqPrice
   };
 }
 
@@ -1203,6 +1262,14 @@ function renderPitch() {
 
   var formation = FORMATIONS[activeFormationId] || FORMATIONS['433_def'];
   var chemData = calculateTeamChemistry();
+  var ratings = calculateTeamRatings();
+
+  // 1. Mostrar precio 11 inicial y precio de adquisición directamente arriba del campo
+  var p11PriceVal = document.getElementById('pitch11PriceVal');
+  if (p11PriceVal) p11PriceVal.textContent = Number(ratings.startersPrice).toLocaleString('es-ES') + ' 🪙';
+
+  var p11AcqVal = document.getElementById('pitch11AcqVal');
+  if (p11AcqVal) p11AcqVal.textContent = Number(ratings.startersAcqPrice).toLocaleString('es-ES') + ' 🪙';
 
   formation.slots.forEach(function(slot, index) {
     var p = myTeamState.starters[index];
@@ -1268,7 +1335,13 @@ function renderHud() {
   document.getElementById('hudSecDef').textContent = ratings.def;
 
   document.getElementById('txtSquadFormation').textContent = (FORMATIONS[activeFormationId] || {}).name.toUpperCase();
-  document.getElementById('txtSquadCost').textContent = Number(ratings.cost).toLocaleString('es-ES') + ' 🪙';
+
+  // 2. En la barra donde está el botón de autocompletar: mostrar suma total (alineación + banquillo)
+  var txtCost = document.getElementById('txtSquadCost');
+  if (txtCost) txtCost.textContent = Number(ratings.totalPrice).toLocaleString('es-ES') + ' 🪙';
+
+  var txtTotalAcq = document.getElementById('txtSquadTotalAcq');
+  if (txtTotalAcq) txtTotalAcq.textContent = Number(ratings.totalAcqPrice).toLocaleString('es-ES') + ' 🪙';
 
   // Desglose de química en Modo 2
   var breakdownList = document.getElementById('chemBreakdownList');
@@ -1350,11 +1423,29 @@ function renderSidebar() {
     title.textContent = t.benchTitle;
     subTitle.textContent = myTeamState.bench.length + ' ' + (currentLang === 'es' ? 'Suplentes' : 'Subs');
 
+    var ratings = calculateTeamRatings();
+
+    // 3. En el banquillo, muestra exclusivamente el total correspondiente al banquillo
+    var benchPriceStr = Number(ratings.benchPrice).toLocaleString('es-ES');
+    var benchAcqStr = Number(ratings.benchAcqPrice).toLocaleString('es-ES');
+
     var forwards = myTeamState.bench.filter(p => ['ST','CF','RW','LW','RF','LF'].includes(normalizePosition(p.position)));
     var mids = myTeamState.bench.filter(p => ['CAM','CM','CDM','LM','RM'].includes(normalizePosition(p.position)));
     var defs = myTeamState.bench.filter(p => ['CB','RB','LB','RWB','LWB','GK'].includes(normalizePosition(p.position)));
 
     var html = `
+      <!-- Cuadro exclusivo con el total correspondiente al banquillo -->
+      <div class="bench-exclusive-price-box">
+        <div class="bench-price-stat">
+          <small>${t.benchTotalWord || 'Total Banquillo:'}</small>
+          <b>${benchPriceStr} 🪙</b>
+        </div>
+        <div class="bench-price-stat stat-acq">
+          <small>${t.benchAcqWord || 'Adquisición Banquillo:'}</small>
+          <b>${benchAcqStr} 🪙</b>
+        </div>
+      </div>
+
       <div style="margin-bottom:12px;">
         <button type="button" class="btn-hud-action" style="width:100%; padding:8px; font-size:12px; font-weight:800;" onclick="openPickerForBench()">
           <span>+</span> <span>${t.addBench}</span>
@@ -1748,11 +1839,15 @@ function openPlayerDetailModal(type, index) {
   var rarityDisplay = (p.rarity || 'Normal').toUpperCase();
   document.getElementById('detSubtitle').textContent = clubStr + ' · ' + (p.league || '—') + ' · ' + rarityDisplay;
 
-  // Precio formateado
-  var priceStr = (p.price !== '' && p.price != null && !isNaN(p.price) && +p.price > 0)
-    ? Number(p.price).toLocaleString('es-ES') + ' 🪙'
-    : (t.detNoPrice || 'Sin precio registrado');
-  document.getElementById('detPlayerPrice').textContent = priceStr;
+  // Llenar inputs de Precio de Mercado y Precio de Adquisición
+  var inputPrice = document.getElementById('inputDetPrice');
+  if (inputPrice) inputPrice.value = (p.price !== undefined && p.price !== null && p.price !== '') ? p.price : '';
+
+  var inputAcqPrice = document.getElementById('inputDetAcqPrice');
+  var currentAcq = (p.bought_price !== undefined && p.bought_price !== null && p.bought_price !== '') 
+    ? p.bought_price 
+    : (p.boughtPrice !== undefined && p.boughtPrice !== null && p.boughtPrice !== '' ? p.boughtPrice : p.acquisition_price);
+  if (inputAcqPrice) inputAcqPrice.value = (currentAcq !== undefined && currentAcq !== null && currentAcq !== '') ? currentAcq : '';
 
   document.getElementById('detPosVal').textContent = displayPos(p.position);
   document.getElementById('detClubVal').textContent = getDisplayClub(p.club) || '—';
@@ -1815,6 +1910,89 @@ function openPlayerDetailModal(type, index) {
 function closePlayerDetailModal() {
   var modal = document.getElementById('playerDetailModal');
   if (modal) modal.classList.remove('open');
+}
+
+// GUARDAR PRECIO Y PRECIO DE ADQUISICIÓN DESDE LA FICHA DEL JUGADOR
+function savePlayerPricesFromDetail() {
+  if (!activeDetailTarget) return;
+  var target = activeDetailTarget;
+  var p = (target.type === 'starter' ? myTeamState.starters[target.index] : myTeamState.bench[target.index]);
+  if (!p) return;
+
+  var inputPrice = document.getElementById('inputDetPrice');
+  var inputAcqPrice = document.getElementById('inputDetAcqPrice');
+
+  var newPrice = inputPrice && inputPrice.value.trim() !== '' ? parseInt(inputPrice.value, 10) : '';
+  var newAcqPrice = inputAcqPrice && inputAcqPrice.value.trim() !== '' ? parseInt(inputAcqPrice.value, 10) : '';
+
+  if (newPrice !== '' && (isNaN(newPrice) || newPrice < 0)) newPrice = 0;
+  if (newAcqPrice !== '' && (isNaN(newAcqPrice) || newAcqPrice < 0)) newAcqPrice = 0;
+
+  // Actualizar objeto en plantilla
+  p.price = newPrice;
+  p.bought_price = newAcqPrice;
+  p.price_date = new Date().toISOString();
+
+  // Persistir en myTeamState
+  saveTeamState();
+
+  // Sincronizar también con la Base de Datos en localStorage para persistencia
+  try {
+    var candidateKeys = [DB_KEY, 'ufm27_db_v7', 'ufm27_database_v6', 'ufm27_database_v5', 'ufm27_database_v4', 'ufm_database_players_v2'];
+    var cleanPName = (p.name || '').replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+    var pRat = +p.rating || 0;
+
+    candidateKeys.forEach(function(key) {
+      var raw = localStorage.getItem(key);
+      if (!raw) return;
+      var dbList = JSON.parse(raw);
+      if (!Array.isArray(dbList) || dbList.length === 0) return;
+
+      var changed = false;
+      dbList.forEach(function(item) {
+        var match = false;
+        if (p.id && item.id && String(p.id) === String(item.id)) match = true;
+        else {
+          var cleanItem = (item.name || '').replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+          if (cleanItem === cleanPName && +item.rating === pRat) match = true;
+        }
+        if (match) {
+          item.price = newPrice;
+          item.bought_price = newAcqPrice;
+          item.price_date = p.price_date;
+          changed = true;
+        }
+      });
+      if (changed) localStorage.setItem(key, JSON.stringify(dbList));
+    });
+  } catch(e) {}
+
+  // Actualizar UI
+  renderAll();
+
+  // Re-renderizar la ficha en el modal
+  var cardContainer = document.getElementById('detCardContainer');
+  if (cardContainer) {
+    cardContainer.innerHTML = renderPlayerShieldCard(p, 3, false, true, null);
+  }
+
+  var t = i18nTeam[currentLang] || i18nTeam.es;
+  showToast(t.pricesUpdatedMsg || "Precios del jugador actualizados", "success");
+}
+
+function showToast(msg, type) {
+  var toast = document.getElementById('teamToastNotification');
+  if (!toast) return;
+  toast.className = 'team-toast-notification show ' + (type === 'error' ? 'toast-error' : (type === 'warning' ? 'toast-warning' : 'toast-success'));
+  toast.innerHTML = `
+    <div class="toast-content">
+      <span class="toast-icon">✓</span>
+      <span>${msg}</span>
+    </div>
+  `;
+  setTimeout(function() {
+    toast.classList.remove('show');
+  }, 2500);
 }
 
 function changePlayerFromDetail() {
@@ -2108,6 +2286,8 @@ function applyTranslations() {
   // Textos y etiquetas de la Ficha del Jugador (Player Detail Modal)
   setTxt('detModalTitle', t.detModalTitle || 'Ficha del Jugador');
   setTxt('lblDetPriceHeader', t.detPriceTitle || 'Precio Mercado / SBC');
+  setTxt('lblDetAcqHeader', t.detAcqTitle || 'Precio Adquisición');
+  setTxt('lblBtnSavePrices', t.savePricesBtn || 'Guardar Precios');
   setTxt('lblDetPos', t.detPos || 'POSICIÓN');
   setTxt('lblDetClub', t.detClub || 'CLUB');
   setTxt('lblDetLeague', t.detLeague || 'LIGA');
@@ -2118,6 +2298,11 @@ function applyTranslations() {
   setTxt('lblDetBtnChange', '🔄 ' + (t.detBtnChange || 'Cambiar Jugador'));
   setTxt('lblDetBtnRemove', '🗑️ ' + (t.detBtnRemove || 'Quitar'));
   setTxt('lblDetBtnClose', t.detBtnClose || 'Cerrar');
+
+  setTxt('lblPitch11Price', t.pitch11Price || 'Precio 11 Inicial:');
+  setTxt('lblPitch11Acq', t.pitch11Acq || 'Precio Adquisición (11):');
+  setTxt('lblStageTotalWord', t.stageTotalWord || 'Total (11 + Banquillo):');
+  setTxt('lblStageTotalAcqWord', t.stageTotalAcqWord || 'Adquisición:');
 }
 
 // FUNCIÓN GENERAL DE RENDERIZADO

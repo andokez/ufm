@@ -293,10 +293,54 @@
       position: relative;
       overflow: hidden;
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: center;
+      justify-content: flex-start;
       background: radial-gradient(circle at 50% 25%, #182216 0%, #0d130c 60%, #060905 100%);
       perspective: 1000px;
+      padding-top: 8px;
+    }
+
+    /* BARRA SUPERIOR DIRECTAMENTE ARRIBA DEL CAMPO DE FÚTBOL */
+    .pitch-top-price-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      z-index: 10;
+      margin-bottom: 6px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+    .pitch-price-chip {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(14, 18, 12, 0.88);
+      border: 1.5px solid rgba(197, 160, 74, 0.5);
+      border-radius: 8px;
+      padding: 5px 14px;
+      backdrop-filter: blur(6px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+    }
+    .pitch-price-chip.chip-acq {
+      border-color: rgba(94, 234, 212, 0.45);
+    }
+    .pitch-price-label {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+    }
+    .pitch-price-val {
+      font-size: 15px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: var(--gold);
+    }
+    .pitch-price-chip.chip-acq .pitch-price-val {
+      color: #5eead4;
     }
 
     /* Luces laterales doradas de estadio */
@@ -320,9 +364,9 @@
     /* La Cancha Verde con Líneas Tácticas */
     .football-pitch {
       width: 94%;
-      height: 94%;
+      height: calc(100% - 50px);
       max-width: 950px;
-      max-height: 800px;
+      max-height: 760px;
       position: relative;
       background: 
         radial-gradient(ellipse at 50% 50%, rgba(35, 78, 38, 0.92) 0%, rgba(20, 52, 24, 0.95) 70%, rgba(12, 34, 15, 0.98) 100%),
@@ -911,6 +955,37 @@
     }
 
     /* PESTAÑA BANQUILLO */
+    .bench-exclusive-price-box {
+      background: linear-gradient(135deg, rgba(245,212,122,0.12) 0%, rgba(20,24,18,0.92) 100%);
+      border: 1.5px solid rgba(197, 160, 74, 0.45);
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin-bottom: 12px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.4);
+    }
+    .bench-price-stat small {
+      display: block;
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .bench-price-stat b {
+      display: block;
+      font-size: 16px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: var(--gold);
+      margin-top: 2px;
+    }
+    .bench-price-stat.stat-acq b {
+      color: #5eead4;
+    }
+
     .bench-section {
       margin-bottom: 16px;
     }
@@ -1317,6 +1392,75 @@
       line-height: 1.2;
     }
 
+    /* EDICIÓN DE PRECIO Y PRECIO DE ADQUISICIÓN EN FICHA DETALLADA */
+    .det-price-editor-card {
+      background: linear-gradient(135deg, rgba(245,212,122,0.12) 0%, rgba(20,24,18,0.95) 100%);
+      border: 1.5px solid var(--line-gold);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.5);
+    }
+    .det-price-inputs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .det-price-field label {
+      display: block;
+      font-size: 10.5px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .det-price-field.field-acq label {
+      color: #5eead4;
+    }
+    .det-price-input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+    .det-price-input-wrapper input {
+      padding-right: 28px;
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 800;
+      color: #fff;
+      background: #11140e;
+      border: 1.5px solid #5a481f;
+    }
+    .det-price-input-wrapper input:focus {
+      border-color: var(--gold);
+    }
+    .det-price-input-wrapper .coin-symbol {
+      position: absolute;
+      right: 8px;
+      font-size: 14px;
+      pointer-events: none;
+    }
+    .btn-save-det-prices {
+      width: 100%;
+      background: var(--gold-btn) !important;
+      color: #120e04 !important;
+      font-weight: 900 !important;
+      font-size: 12px !important;
+      padding: 7px 12px !important;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      border-radius: 6px;
+      border: 1.5px solid #fae69e !important;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-save-det-prices:hover {
+      filter: brightness(1.1);
+      transform: translateY(-1px);
+    }
+
     /* Modal de Opciones de Slot Ocupado (Cambiar, Banquillo, Quitar) */
     .slot-action-popover {
       position: fixed;
@@ -1425,7 +1569,11 @@
       <div class="squad-name-badge">
         <span id="txtSquadFormation">4-3-3 DEFENSA</span>
         <span>·</span>
-        <span id="txtSquadCost">0 🪙</span>
+        <span id="lblStageTotalWord" style="color:var(--muted); font-size:11px;">Total (11 + Banquillo):</span>
+        <span id="txtSquadCost" style="color:var(--gold); font-weight:900;">0 🪙</span>
+        <span>·</span>
+        <span id="lblStageTotalAcqWord" style="color:var(--muted); font-size:11px;">Adquisición:</span>
+        <span id="txtSquadTotalAcq" style="color:#5eead4; font-weight:900;">0 🪙</span>
       </div>
     </div>
     <div class="stage-right" style="display:flex; gap:8px;">
@@ -1497,6 +1645,18 @@
     <main class="team-pitch-wrap">
       <div class="pitch-light-left"></div>
       <div class="pitch-light-right"></div>
+
+      <!-- Espacio directamente arriba del campo de fútbol: muestra precio total 11 inicial y precio de adquisición -->
+      <div class="pitch-top-price-bar" id="pitchTopPriceBar">
+        <div class="pitch-price-chip">
+          <span class="pitch-price-label" id="lblPitch11Price">Precio 11 Inicial:</span>
+          <span class="pitch-price-val" id="pitch11PriceVal">0 🪙</span>
+        </div>
+        <div class="pitch-price-chip chip-acq">
+          <span class="pitch-price-label" id="lblPitch11Acq">Precio Adquisición (11):</span>
+          <span class="pitch-price-val" id="pitch11AcqVal">0 🪙</span>
+        </div>
+      </div>
 
       <div class="football-pitch" id="pitchField">
         <!-- Líneas tácticas -->
@@ -1584,13 +1744,27 @@
           </div>
           <div id="detSubtitle" style="font-size:13px; color:var(--muted); margin-bottom:14px; font-weight:700;">-</div>
 
-          <!-- Cuadro de Precio SBC / Mercado -->
-          <div style="background:linear-gradient(135deg, rgba(245,212,122,0.15) 0%, rgba(184,134,29,0.15) 100%); border:1px solid var(--line-gold); border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
-            <div>
-              <div id="lblDetPriceHeader" style="font-size:10px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:0.5px;">Precio Mercado / SBC</div>
-              <div id="detPlayerPrice" style="font-size:20px; font-weight:900; color:#fff; font-family:var(--font-display); margin-top:2px;">-</div>
+          <!-- Cuadro editable de Precio Mercado / SBC y Precio de Adquisición -->
+          <div class="det-price-editor-card">
+            <div class="det-price-inputs-grid">
+              <div class="det-price-field">
+                <label id="lblDetPriceHeader" for="inputDetPrice">Precio Mercado / SBC</label>
+                <div class="det-price-input-wrapper">
+                  <input type="number" id="inputDetPrice" min="0" placeholder="0">
+                  <span class="coin-symbol">🪙</span>
+                </div>
+              </div>
+              <div class="det-price-field field-acq">
+                <label id="lblDetAcqHeader" for="inputDetAcqPrice">Precio Adquisición</label>
+                <div class="det-price-input-wrapper">
+                  <input type="number" id="inputDetAcqPrice" min="0" placeholder="0">
+                  <span class="coin-symbol">🪙</span>
+                </div>
+              </div>
             </div>
-            <span style="font-size:26px;">🪙</span>
+            <button type="button" class="btn-save-det-prices" onclick="savePlayerPricesFromDetail()">
+              <span id="lblBtnSavePrices">Guardar Precios</span>
+            </button>
           </div>
 
           <!-- Grid de Atributos del Jugador -->
