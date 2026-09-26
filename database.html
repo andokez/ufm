@@ -150,6 +150,7 @@
     <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
     <a class="nav-item active" href="database.html" id="lblNavDb">Base de Datos</a>
     <a class="nav-item" href="calculator.html" id="lblNavCalc">Calculadora SBC</a>
+    <a class="nav-item" href="team.html" id="lblNavTeam">Mi Equipo</a>
     
     <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
       <option value="es">Español</option>
@@ -537,6 +538,16 @@ function cleanPlayerName(name) {
   return name.replace(/\s*\([^)]*\)/g, '').trim();
 }
 
+function getDisplayClub(club) {
+  if (!club) return '';
+  var c = String(club).trim();
+  var lower = c.toLowerCase();
+  if (lower === 'sin club' || lower === 'sin equipo' || lower === 'no club' || lower === 'none' || lower === '—' || lower === '-' || lower === 'n/a' || lower === 'null' || lower === 'undefined') {
+    return '';
+  }
+  return c;
+}
+
 var masterLeaguesData = [
   { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
   { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
@@ -744,7 +755,7 @@ function getFlagUrl(str) {
 
 var i18n = {
   es: {
-    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
+    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC", navTeam: "Mi Equipo",
     pageTitle: "Base de Datos SBC", btnImport: "📥 Importar", btnAdd: "+ Jugador",
     btnSyncWeb: "🔄 Sincronizar Web",
     btnExportJSON: "Exportar JSON", btnExportCSV: "Exportar CSV",
@@ -781,7 +792,7 @@ var i18n = {
     yearsOld: "años", noPrice: "Sin precio", detModalTitle: "Detalle del Jugador"
   },
   en: {
-    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
+    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
     pageTitle: "SBC Player Database", btnImport: "📥 Import", btnAdd: "+ Player",
     btnSyncWeb: "🔄 Sync Web",
     btnExportJSON: "Export JSON", btnExportCSV: "Export CSV",
@@ -818,7 +829,7 @@ var i18n = {
     yearsOld: "years", noPrice: "No price", detModalTitle: "Player Details"
   },
   fr: {
-    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
+    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
     pageTitle: "Base de Données DCE", btnImport: "📥 Importer", btnAdd: "+ Joueur",
     btnSyncWeb: "🔄 Sync Web",
     btnExportJSON: "Exporter JSON", btnExportCSV: "Exporter CSV",
@@ -855,7 +866,7 @@ var i18n = {
     yearsOld: "ans", noPrice: "Sans prix", detModalTitle: "Détails du Joueur"
   },
   de: {
-    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
+    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner", navTeam: "Mein Team",
     pageTitle: "SBC-Spielerdatenbank", btnImport: "📥 Importieren", btnAdd: "+ Spieler",
     btnSyncWeb: "🔄 Web Sync",
     btnExportJSON: "JSON Exportieren", btnExportCSV: "CSV Exportieren",
@@ -892,7 +903,7 @@ var i18n = {
     yearsOld: "Jahre", noPrice: "Kein Preis", detModalTitle: "Spielerdetails"
   },
   it: {
-    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
+    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR", navTeam: "La Mia Squadra",
     pageTitle: "Database Giocatori SCR", btnImport: "📥 Importa", btnAdd: "+ Giocatore",
     btnSyncWeb: "🔄 Sincro Web",
     btnExportJSON: "Esporta JSON", btnExportCSV: "Esporta CSV",
@@ -929,7 +940,7 @@ var i18n = {
     yearsOld: "anni", noPrice: "Nessun prezzo", detModalTitle: "Dettagli Giocatore"
   },
   pt: {
-    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
+    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME", navTeam: "A Minha Equipa",
     pageTitle: "Base de Dados DME", btnImport: "📥 Importar", btnAdd: "+ Jogador",
     btnSyncWeb: "🔄 Sincronizar",
     btnExportJSON: "Exportar JSON", btnExportCSV: "Exportar CSV",
@@ -984,6 +995,7 @@ function applyTranslations() {
   $('lblNavHome').textContent = t.navHome;
   $('lblNavDb').textContent = t.navDb;
   $('lblNavCalc').textContent = t.navCalc;
+  if ($('lblNavTeam')) $('lblNavTeam').textContent = t.navTeam;
   $('lblPageTitle').textContent = t.pageTitle;
   $('btnImport').textContent = t.btnImport;
   $('btnAdd').textContent = t.btnAdd;
@@ -1160,7 +1172,7 @@ function clearDatabase() {
 function rebuildFilters() {
   var t = i18n[currentLang] || i18n.es;
   var ps = [...new Set(players.map(p => displayPosition(p.position)).filter(Boolean))].sort();
-  var cs = [...new Set(players.map(p => p.club).filter(Boolean))].sort();
+  var cs = [...new Set(players.map(p => getDisplayClub(p.club)).filter(Boolean))].sort();
 
   var pv = $('pos').value, cv = $('advClub').value, lv = $('advLeague').value, nv = $('advCountry').value;
 
@@ -1213,11 +1225,11 @@ function getFilteredData() {
     var dispPos = displayPosition(p.position);
     var cleanName = cleanPlayerName(p.name);
 
-    return (!q || [cleanName, p.club, p.country, p.league, dispPos, p.position].join(' ').toLowerCase().includes(q))
+    return (!q || [cleanName, getDisplayClub(p.club), p.country, p.league, dispPos, p.position].join(' ').toLowerCase().includes(q))
       && (!pos || dispPos === pos || p.position === pos)
       && (rat >= minRating && rat <= maxRating)
       && (!rarity || p.rarity === rarity)
-      && (!club || p.club === club)
+      && (!club || getDisplayClub(p.club) === club)
       && (!league || p.league === league)
       && (!country || countriesMatch(p.country, country))
       && (minPrice === -Infinity || (pr !== -1 && pr >= minPrice))
@@ -1262,7 +1274,7 @@ function generateFutCardHtml(p, isShield) {
       </div>
       <div class="card-info">
         <div class="card-name">${esc(cleanName)}</div>
-        <div class="card-club">${esc(p.club || 'Sin Club')}</div>
+        <div class="card-club">${esc(getDisplayClub(p.club))}</div>
       </div>
       <div class="card-stats">
         <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${t.statPac}</span></div>
@@ -1320,7 +1332,7 @@ function openPlayerDetail(index) {
   $('detailCardTarget').innerHTML = generateFutCardHtml(p, true);
   $('detName').textContent = cleanName + ' (' + p.rating + ')';
   $('detSub').textContent = displayPosition(p.position) + ' · ' + getRarityLabel(p.rarity, p.rating);
-  $('detClub').textContent = p.club || '—';
+  $('detClub').textContent = getDisplayClub(p.club);
   $('detLeague').textContent = legName;
   $('detCountry').textContent = natName;
   $('detAge').textContent = p.age ? (p.age + ' ' + (t.yearsOld || 'años')) : '—';
@@ -1406,7 +1418,7 @@ function render() {
         '<td>' + (p.def || '—') + '</td>' +
         '<td>' + (p.phy || '—') + '</td>' +
         '<td>' + esc(p.country || '—') + '</td>' +
-        '<td>' + esc(p.club || '—') + '</td>' +
+        '<td>' + esc(getDisplayClub(p.club)) + '</td>' +
         '<td class="col-league" title="' + esc(leagueText) + '">' + esc(leagueText) + '</td>' +
         '<td>' + esc(p.age || '—') + '</td>' +
         '<td>' + (p.height ? p.height+'cm' : '—') + ' / ' + (p.weight ? p.weight+'kg' : '—') + '</td>' +
@@ -1488,7 +1500,7 @@ function onContextEdit() {
     $('f_position').value = normalizePosition(p.position);
     $('f_rating').value = p.rating || 80;
     $('f_rarity').value = p.rarity || 'normal';
-    $('f_club').value = p.club || '';
+    $('f_club').value = getDisplayClub(p.club);
     $('f_league').value = p.league || '';
     $('f_country').value = p.country || '';
     $('f_age').value = p.age || '';

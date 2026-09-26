@@ -883,6 +883,7 @@ input:focus, select:focus {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  min-height: 14px;
 }
 
 .card-stats {

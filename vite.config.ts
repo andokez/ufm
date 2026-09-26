@@ -17,6 +17,7 @@ export default defineConfig(() => {
           main: path.resolve(__dirname, 'index.html'),
           database: path.resolve(__dirname, 'database.html'),
           calculator: path.resolve(__dirname, 'calculator.html'),
+          team: path.resolve(__dirname, 'team.html'),
         },
       },
     },

@@ -1,0 +1,2013 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFM 27 - Mi Equipo / Squad Builder</title>
+  <meta name="description" content="Plataforma de Desafíos de Creación de Plantillas (PTC), Base de Datos de Jugadores y Calculadora SBC con diseño EA FC Ultimate Team.">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Estilos específicos para la pantalla Mi Equipo (EA FC Ultimate Team) */
+    html, body {
+      height: 100%;
+      margin: 0;
+      overflow: hidden;
+      background: #090b08;
+      font-family: var(--font-main);
+      color: #fff;
+    }
+
+    .team-app {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      overflow: hidden;
+    }
+
+    /* Sub-barra superior de controles rápidos */
+    .stage-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 16px;
+      background: linear-gradient(180deg, rgba(20,24,18,0.95) 0%, rgba(12,14,11,0.95) 100%);
+      border-bottom: 1px solid rgba(197, 160, 74, 0.25);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .stage-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn-icon-gold {
+      background: linear-gradient(135deg, #2a2212 0%, #15120a 100%);
+      border: 1px solid var(--line-gold);
+      color: var(--gold);
+      width: 36px;
+      height: 36px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+    .btn-icon-gold:hover {
+      background: var(--gold);
+      color: #000;
+      box-shadow: 0 0 10px rgba(245, 212, 122, 0.4);
+    }
+
+    .squad-name-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 12px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(197, 160, 74, 0.3);
+      border-radius: 6px;
+      font-family: var(--font-display);
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    /* Layout principal: Columna HUD Izquierda + Cancha Central + Panel Derecho */
+    .team-viewport {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* COLUMNA IZQUIERDA: HUD (Química, Medias, Auto, Cambiar) */
+    .team-hud-left {
+      width: 105px;
+      background: linear-gradient(90deg, rgba(8, 10, 7, 0.95) 0%, rgba(12, 15, 10, 0.85) 100%);
+      border-right: 1px solid rgba(197, 160, 74, 0.25);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 6px;
+      gap: 10px;
+      z-index: 5;
+      flex-shrink: 0;
+      overflow-y: auto;
+    }
+
+    /* Badge Hexagonal de Química */
+    .chem-badge {
+      width: 80px;
+      height: 72px;
+      background: radial-gradient(circle at 50% 30%, #0d2824 0%, #041310 100%);
+      border: 2px solid #2dd4bf;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 15px rgba(45, 212, 191, 0.35);
+      transition: all 0.2s;
+    }
+    .chem-badge small {
+      font-size: 10px;
+      letter-spacing: 1px;
+      font-weight: 800;
+      color: #5eead4;
+      text-transform: uppercase;
+      margin-top: -2px;
+    }
+    .chem-badge .chem-num {
+      font-size: 20px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: #fff;
+      text-shadow: 0 0 8px rgba(45, 212, 191, 0.8);
+      line-height: 1.1;
+    }
+
+    /* Badge Octogonal de Media General (GRL) */
+    .ovr-badge {
+      width: 78px;
+      height: 74px;
+      background: radial-gradient(circle at 50% 25%, #2a2211 0%, #110e05 100%);
+      border: 2px solid var(--gold);
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(245, 212, 122, 0.3);
+    }
+    .ovr-badge small {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 1px;
+      margin-top: -2px;
+    }
+    .ovr-badge .ovr-num {
+      font-size: 23px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: #fff;
+      line-height: 1;
+    }
+
+    /* Badges de Sectores (DEL, CEN, DEF) */
+    .sector-badge {
+      width: 76px;
+      background: rgba(18, 22, 15, 0.85);
+      border: 1px solid rgba(197, 160, 74, 0.35);
+      border-radius: 6px;
+      padding: 3px 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    .sector-badge small {
+      font-size: 9px;
+      font-weight: 800;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+    .sector-badge span {
+      font-size: 15px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: var(--gold);
+    }
+
+    /* Botón AUTO (Auto-completar) */
+    .btn-auto-hud {
+      width: 76px;
+      padding: 6px 0;
+      background: linear-gradient(180deg, #f5d47a 0%, #b8861d 100%);
+      border: 1px solid #fae69e;
+      border-radius: 6px;
+      color: #111;
+      font-family: var(--font-display);
+      font-size: 13px;
+      font-weight: 900;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      transition: all 0.2s;
+    }
+    .btn-auto-hud:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 12px rgba(245, 212, 122, 0.6);
+    }
+
+    /* Desglose de Química en Modo 2 (Bandera, Liga, Rareza) */
+    .chem-breakdown-list {
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      margin-top: 4px;
+    }
+    .chem-breakdown-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 6px;
+      padding: 4px 2px;
+    }
+    .chem-breakdown-item img {
+      width: 22px;
+      height: 14px;
+      object-fit: cover;
+      border-radius: 2px;
+    }
+    .chem-breakdown-item .chem-nodes-pill {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #2dd4bf;
+    }
+
+    /* Botones de pie HUD: Alineaciones y Cambiar */
+    .hud-bottom-actions {
+      margin-top: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: 100%;
+      align-items: center;
+    }
+    .btn-hud-action {
+      width: 80px;
+      padding: 6px 2px;
+      background: rgba(22, 26, 18, 0.9);
+      border: 1px solid rgba(197, 160, 74, 0.35);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      text-transform: uppercase;
+      transition: all 0.2s;
+    }
+    .btn-hud-action svg, .btn-hud-action span.icon {
+      font-size: 16px;
+    }
+    .btn-hud-action:hover {
+      border-color: var(--gold);
+      background: rgba(40, 48, 30, 0.95);
+      color: var(--gold);
+    }
+    .btn-hud-action.active-mode {
+      border-color: #2dd4bf;
+      background: rgba(13, 40, 36, 0.95);
+      color: #2dd4bf;
+      box-shadow: 0 0 8px rgba(45, 212, 191, 0.4);
+    }
+
+    /* ÁREA CENTRAL: CANCHA DE FÚTBOL EN PERSPECTIVA 3D */
+    .team-pitch-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at 50% 25%, #182216 0%, #0d130c 60%, #060905 100%);
+      perspective: 1000px;
+    }
+
+    /* Luces laterales doradas de estadio */
+    .pitch-light-left, .pitch-light-right {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 120px;
+      pointer-events: none;
+      z-index: 2;
+    }
+    .pitch-light-left {
+      left: 0;
+      background: linear-gradient(90deg, rgba(245, 212, 122, 0.12) 0%, transparent 100%);
+    }
+    .pitch-light-right {
+      right: 0;
+      background: linear-gradient(-90deg, rgba(245, 212, 122, 0.12) 0%, transparent 100%);
+    }
+
+    /* La Cancha Verde con Líneas Tácticas */
+    .football-pitch {
+      width: 94%;
+      height: 94%;
+      max-width: 950px;
+      max-height: 800px;
+      position: relative;
+      background: 
+        radial-gradient(ellipse at 50% 50%, rgba(35, 78, 38, 0.92) 0%, rgba(20, 52, 24, 0.95) 70%, rgba(12, 34, 15, 0.98) 100%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.02) 0px, rgba(255,255,255,0.02) 40px, transparent 40px, transparent 80px);
+      border: 3px solid rgba(255, 255, 255, 0.28);
+      border-radius: 12px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8), inset 0 0 30px rgba(0,0,0,0.5);
+      transform: rotateX(8deg);
+      transform-origin: center bottom;
+    }
+
+    /* Líneas reglamentarias del campo */
+    .pitch-half-line {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: rgba(255, 255, 255, 0.25);
+    }
+    .pitch-center-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 130px;
+      height: 130px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .pitch-center-spot {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 6px;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.4);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Áreas de penalti (superior e inferior) */
+    .pitch-penalty-area-top {
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 320px;
+      height: 100px;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      border-top: none;
+      transform: translateX(-50%);
+    }
+    .pitch-penalty-area-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 340px;
+      height: 110px;
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-bottom: none;
+      transform: translateX(-50%);
+    }
+    .pitch-goal-area-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      width: 170px;
+      height: 48px;
+      border: 2px solid rgba(255, 255, 255, 0.22);
+      border-bottom: none;
+      transform: translateX(-50%);
+    }
+
+    /* SLOTS DE JUGADORES EN LA CANCHA (MÁS BAJITAS Y MÁS ANCHAS) */
+    .pitch-slot {
+      position: absolute;
+      width: 126px;
+      height: 128px;
+      transform: translate(-50%, -50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      z-index: 4;
+      transition: box-shadow 0.2s;
+    }
+    .pitch-slot:hover {
+      z-index: 8;
+    }
+    .pitch-slot:active {
+      cursor: grabbing;
+    }
+
+    /* Slot Vacío */
+    .slot-empty-card {
+      width: 108px;
+      height: 112px;
+      border: 2px dashed rgba(245, 212, 122, 0.45);
+      border-radius: 8px;
+      background: rgba(10, 15, 8, 0.65);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      backdrop-filter: blur(2px);
+      transition: all 0.2s;
+    }
+    .pitch-slot:hover .slot-empty-card {
+      border-color: var(--gold);
+      background: rgba(24, 32, 20, 0.85);
+      box-shadow: 0 0 15px rgba(245, 212, 122, 0.35);
+    }
+    .slot-empty-card .plus-icon {
+      font-size: 22px;
+      color: var(--gold);
+      font-weight: 300;
+    }
+    .slot-empty-card .slot-target-pos {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 12px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* CONTENEDOR INTERACTIVO Y ARRASTRE */
+    .pitch-card-interactive-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+      user-select: none;
+    }
+    .pitch-card-interactive-wrap:active {
+      cursor: grabbing;
+    }
+
+    /* ESCUDOS EA FC ORNAMENTADOS (MÁS BAJITAS Y MÁS ANCHAS - SIN CORTAR NOMBRES) */
+    .card-shield-border.shield-team-size {
+      width: 126px;
+      height: 128px;
+      padding: 2px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      transition: box-shadow 0.2s;
+    }
+    .card-shield-border.shield-team-size:hover {
+      z-index: 10;
+    }
+    .card-shield-border.shield-team-size:active {
+      cursor: grabbing;
+    }
+
+    .card-shield-border.shield-team-size .fut-card {
+      width: 100% !important;
+      height: 100% !important;
+      clip-path: polygon(0 7.5%, 20% 0, 80% 0, 100% 7.5%, 100% 90%, 50% 100%, 0 90%) !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      margin: 0 !important;
+      padding: 3px 5px 2px !important;
+      box-sizing: border-box !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-start !important;
+      overflow: hidden !important;
+    }
+
+    .card-shield-border.shield-team-size .card-top {
+      position: relative !important;
+      height: 74px !important;
+      width: 100% !important;
+      margin-top: 1px !important;
+    }
+
+    .card-shield-border.shield-team-size .card-meta {
+      position: absolute !important;
+      left: 2px !important;
+      top: 1px !important;
+      width: 26px !important;
+      gap: 1px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
+      z-index: 5 !important;
+      text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
+    }
+
+    .card-shield-border.shield-team-size .card-rat {
+      font-size: 18px !important;
+      line-height: 1 !important;
+      font-weight: 900 !important;
+    }
+
+    .card-shield-border.shield-team-size .card-pos {
+      font-size: 10.5px !important;
+      font-weight: 900 !important;
+      line-height: 1 !important;
+    }
+
+    /* Ocultar banderas en la parte frontal de las cartas */
+    .card-shield-border.shield-team-size .flag-rect,
+    .card-shield-border.shield-team-size .shield-flag-wrap {
+      display: none !important;
+    }
+
+    .card-shield-border.shield-team-size .card-img-wrap {
+      position: absolute !important;
+      inset: 0 !important;
+      display: flex !important;
+      justify-content: center !important;
+      align-items: center !important;
+      z-index: 1 !important;
+      pointer-events: none !important;
+    }
+
+    .card-shield-border.shield-team-size .card-img {
+      width: 68px !important;
+      height: 68px !important;
+      object-fit: cover !important;
+      border-radius: 50% !important;
+      margin: 0 auto !important;
+      display: block !important;
+      pointer-events: none !important;
+      user-drag: none !important;
+      -webkit-user-drag: none !important;
+    }
+
+    .card-shield-border img,
+    .bench-card-item img,
+    .pitch-slot img {
+      pointer-events: none !important;
+      user-drag: none !important;
+      -webkit-user-drag: none !important;
+    }
+
+    .card-shield-border.shield-team-size .card-info {
+      position: relative !important;
+      z-index: 3 !important;
+      text-align: center !important;
+      margin: 4px 0 0 !important;
+      padding-bottom: 0 !important;
+      border-bottom: none !important;
+    }
+
+    .card-shield-border.shield-team-size .card-name {
+      font-size: 11.5px !important;
+      font-weight: 900 !important;
+      line-height: 1.15 !important;
+      white-space: nowrap !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      text-transform: uppercase !important;
+      letter-spacing: 0.25px !important;
+      max-width: 116px !important;
+      margin: 0 auto !important;
+    }
+
+    .card-shield-border.shield-team-size .card-club {
+      display: none !important;
+    }
+
+    .card-shield-border.shield-team-size .card-stats {
+      display: none !important;
+    }
+
+    /* DRAG & DROP FLUIDO Y SIN INTERFERENCIAS */
+    body.is-dragging-active .pitch-slot,
+    body.is-dragging-active .pitch-slot:hover {
+      transform: translate(-50%, -50%) !important;
+    }
+    body.is-dragging-active .card-shield-border.shield-team-size,
+    body.is-dragging-active .card-shield-border.shield-team-size:hover {
+      transform: none !important;
+    }
+
+    .is-dragging {
+      opacity: 0.4 !important;
+      cursor: grabbing !important;
+    }
+
+    .drop-target-active {
+      box-shadow: 0 0 0 2px rgba(245, 212, 122, 0.65) !important;
+      border-radius: 8px;
+    }
+
+    .drop-target-hover {
+      box-shadow: 0 0 0 3px #2dd4bf, 0 0 22px rgba(45, 212, 191, 0.75) !important;
+      background: rgba(45, 212, 191, 0.16) !important;
+      border-radius: 8px;
+    }
+
+    .bench-drop-zone {
+      border: 2px dashed rgba(197, 160, 74, 0.35);
+      border-radius: 8px;
+      padding: 12px;
+      text-align: center;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .bench-drop-zone.drop-target-hover {
+      border-color: #2dd4bf;
+      color: #5eead4;
+      background: rgba(45, 212, 191, 0.1);
+    }
+
+    /* TRIÁNGULO DE 3 BOLITAS DE QUÍMICA EN EL BORDE DE LA CARTA (1 ARRIBA, 2 ABAJO) */
+    .pitch-card-chem-triangle {
+      position: absolute;
+      top: 3px;
+      right: 4px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.5px;
+      z-index: 6;
+      pointer-events: none;
+    }
+    .chem-tri-top {
+      display: flex;
+      justify-content: center;
+    }
+    .chem-tri-bottom {
+      display: flex;
+      gap: 2.5px;
+      justify-content: center;
+    }
+    .chem-dot-tri {
+      width: 7px;
+      height: 7px;
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      background: #111410;
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      box-sizing: border-box;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .chem-dot-tri.active {
+      background: #2dd4bf;
+      border-color: #5eead4;
+      box-shadow: 0 0 6px #2dd4bf;
+    }
+
+    /* MODO 2: ATRIBUTOS & QUÍMICA DENTRO DEL ESCUDO (BOLITAS COMPACTAS SIN ESPACIOS EXTRA) */
+    .card-shield-border.shield-team-size .pitch-card-mode2 {
+      width: 100% !important;
+      height: 100% !important;
+      clip-path: polygon(0 7.5%, 20% 0, 80% 0, 100% 7.5%, 100% 90%, 50% 100%, 0 90%) !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 6px 8px !important;
+      background: #141812 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: flex-start !important;
+      gap: 3px !important;
+      box-sizing: border-box !important;
+    }
+
+    .mode2-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      padding-bottom: 1px;
+      margin-bottom: 2px;
+    }
+    .mode2-rat {
+      font-size: 17px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      color: #fff;
+      line-height: 1;
+    }
+    .mode2-pos {
+      font-size: 10.5px;
+      font-weight: 900;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .mode2-rows-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .mode2-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 10.5px;
+      font-weight: 900;
+      color: #e5e5e5;
+      padding: 2.5px 5px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+    .mode2-row-left {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .mode2-row-left img {
+      width: 14px;
+      height: 9px;
+      object-fit: cover;
+      border-radius: 1px;
+    }
+    /* Escudito con bandera para la liga */
+    .mode2-shield-wrap {
+      width: 13px;
+      height: 14px;
+      clip-path: polygon(0 0, 100% 0, 100% 72%, 50% 100%, 0 72%);
+      background: #000;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      flex-shrink: 0;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.8));
+    }
+    .mode2-shield-wrap img {
+      width: 100% !important;
+      height: 100% !important;
+      object-fit: cover !important;
+      border-radius: 0 !important;
+      display: block !important;
+    }
+    .mode2-icon {
+      font-size: 10px;
+      line-height: 1;
+    }
+    .mode2-pips {
+      display: flex;
+      gap: 3px;
+      align-items: center;
+    }
+    .mode2-pip {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #1c221a;
+      border: 1px solid #4b5563;
+      display: inline-block;
+      transition: all 0.2s;
+    }
+    .mode2-pip.active {
+      background: #2dd4bf;
+      border-color: #5eead4;
+      box-shadow: 0 0 6px rgba(45, 212, 191, 0.85);
+    }
+
+    /* MODO 3: ESTADÍSTICAS DEL JUGADOR (SOLO NOMBRE Y STATS, SIN MEDIA NI POSICIÓN) */
+    .card-shield-border.shield-team-size .pitch-card-mode-stats {
+      width: 100% !important;
+      height: 100% !important;
+      clip-path: polygon(0 7.5%, 20% 0, 80% 0, 100% 7.5%, 100% 90%, 50% 100%, 0 90%) !important;
+      border-radius: 0 !important;
+      border: none !important;
+      box-shadow: none !important;
+      padding: 6px 6px 8px 4px !important;
+      background: #141812 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      box-sizing: border-box !important;
+    }
+    .mode-stats-name {
+      text-align: center;
+      font-size: 11.5px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: 0.35px;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0 auto 5px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      max-width: 114px;
+      transform: translateX(-1px);
+    }
+    .mode-stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 3px 5px;
+      padding: 0;
+      margin-left: -4px;
+      margin-right: 4px;
+      box-sizing: border-box;
+    }
+    .mstat-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      background: rgba(255, 255, 255, 0.07);
+      padding: 2px 4px;
+      border-radius: 3px;
+      box-sizing: border-box;
+    }
+    .mstat-num {
+      font-weight: 900;
+      font-size: 11px;
+      color: #2dd4bf;
+    }
+    .mstat-lbl {
+      font-size: 9px;
+      font-weight: 800;
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    /* Etiqueta de posición debajo del slot en la cancha */
+    .slot-pos-badge {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      margin-top: 4px;
+      padding: 1px 7px;
+      background: rgba(0, 0, 0, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: 0.5px;
+    }
+    .slot-compat-arrow {
+      font-size: 10px;
+    }
+    .slot-compat-arrow.compat-match {
+      color: #22c55e;
+      text-shadow: 0 0 5px #22c55e;
+    }
+    .slot-compat-arrow.compat-wrong {
+      color: #eab308;
+    }
+
+    /* COLUMNA DERECHA: PANEL LATERAL CON PESTAÑAS */
+    .team-sidebar-right {
+      width: 430px;
+      background: linear-gradient(180deg, #141712 0%, #0d100b 100%);
+      border-left: 1px solid rgba(197, 160, 74, 0.25);
+      display: flex;
+      flex-direction: column;
+      z-index: 6;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .sidebar-header {
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.35);
+      border-bottom: 1px solid rgba(197, 160, 74, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-header h2 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: 1px;
+      color: var(--gold);
+      text-transform: uppercase;
+    }
+
+    .sidebar-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 12px 12px;
+    }
+
+    /* PESTAÑA BANQUILLO */
+    .bench-section {
+      margin-bottom: 16px;
+    }
+    .bench-section-title {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--gold);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: var(--font-display);
+      letter-spacing: 0.5px;
+    }
+    .bench-section-title span.rating-pill {
+      background: rgba(197, 160, 74, 0.2);
+      border: 1px solid var(--line-gold);
+      border-radius: 4px;
+      padding: 1px 6px;
+      color: #fff;
+      font-size: 12px;
+    }
+
+    .bench-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      justify-items: center;
+    }
+    .bench-card-item {
+      position: relative;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .bench-card-item:hover {
+      transform: translateY(-3px);
+      z-index: 3;
+    }
+    .bench-card-item:active {
+      cursor: grabbing;
+    }
+
+    /* MENÚ CONTEXTUAL PERSONALIZADO (CLICK DERECHO) */
+    .custom-context-menu {
+      position: fixed;
+      z-index: 2000;
+      background: #141711;
+      border: 1px solid var(--line-gold);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.85), 0 0 15px rgba(245, 212, 122, 0.2);
+      min-width: 220px;
+      padding: 6px 0;
+      display: none;
+      flex-direction: column;
+      backdrop-filter: blur(8px);
+    }
+    .custom-context-menu.open {
+      display: flex;
+    }
+    .context-menu-header {
+      padding: 6px 14px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .context-menu-item {
+      padding: 8px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #eee;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s;
+      background: transparent;
+      border: none;
+      width: 100%;
+      text-align: left;
+    }
+    .context-menu-item:hover {
+      background: rgba(245, 212, 122, 0.18);
+      color: var(--gold);
+    }
+    .context-menu-item.danger {
+      color: #f87171;
+    }
+    .context-menu-item.danger:hover {
+      background: rgba(239, 68, 68, 0.18);
+      color: #fca5a5;
+    }
+    .context-menu-separator {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 4px 0;
+    }
+
+    /* PESTAÑA FORMACIONES */
+    .formations-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+    .formation-card {
+      background: #11140e;
+      border: 1.5px solid rgba(197, 160, 74, 0.25);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .formation-card:hover {
+      border-color: var(--gold);
+      background: #191e15;
+      transform: translateY(-2px);
+    }
+    .formation-card.active {
+      border-color: var(--gold);
+      background: radial-gradient(circle at 50% 30%, #292414 0%, #151810 100%);
+      box-shadow: 0 0 12px rgba(245, 212, 122, 0.4);
+    }
+    .formation-mini-pitch {
+      width: 120px;
+      height: 85px;
+      background: #1b3d22;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 6px;
+    }
+    .mini-pitch-dot {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #94a3b8;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .formation-card.active .mini-pitch-dot {
+      background: var(--gold);
+      box-shadow: 0 0 4px var(--gold);
+    }
+    .formation-card-name {
+      font-size: 12px;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+    }
+    .formation-card.active .formation-card-name {
+      color: var(--gold);
+    }
+
+    /* PESTAÑA TÁCTICAS */
+    .tactic-group {
+      background: #12160f;
+      border: 1px solid rgba(197, 160, 74, 0.2);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .tactic-group h3 {
+      margin: 0 0 10px 0;
+      font-size: 13px;
+      font-family: var(--font-display);
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .tactic-row {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+    .tactic-row label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text);
+    }
+    .tactic-row label span.tactic-val {
+      color: var(--gold);
+    }
+    .tactic-row select, .tactic-row input[type="range"] {
+      width: 100%;
+      background: #090c07;
+      border: 1px solid rgba(197, 160, 74, 0.3);
+      border-radius: 4px;
+      color: #fff;
+      padding: 6px 8px;
+      font-family: var(--font-main);
+      font-size: 12px;
+    }
+
+    /* PESTAÑA ROLES (FICHAS PARA CAPITÁN, PENALTIS, CÓRNERS Y FALTAS) */
+    .roles-intro-bar {
+      margin-bottom: 12px;
+      padding: 8px 12px;
+      background: rgba(245, 212, 122, 0.08);
+      border: 1px dashed rgba(245, 212, 122, 0.35);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--gold);
+      line-height: 1.4;
+      text-align: center;
+    }
+    .roles-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .role-slot-box {
+      background: #11140e;
+      border: 1.5px solid rgba(197, 160, 74, 0.3);
+      border-radius: 8px;
+      padding: 8px 6px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .role-slot-box:hover {
+      border-color: var(--gold);
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+    }
+    .role-slot-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      margin-bottom: 8px;
+      width: 100%;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      padding-bottom: 5px;
+    }
+    .role-badge-icon {
+      font-size: 14px;
+    }
+    .role-badge-label {
+      font-family: var(--font-display);
+      font-size: 11.5px;
+      font-weight: 800;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .role-card-slot {
+      width: 100%;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+    .role-card-slot.drop-target-hover,
+    .role-card-slot.drop-target-active {
+      background: rgba(245, 212, 122, 0.12);
+      box-shadow: 0 0 12px rgba(245, 212, 122, 0.45);
+    }
+    .role-card-slot .card-shield-border.shield-team-size {
+      width: 116px !important;
+      height: 120px !important;
+      cursor: pointer;
+    }
+    .role-card-slot .card-shield-border.shield-team-size .card-top {
+      height: 68px !important;
+    }
+    .role-card-slot .card-shield-border.shield-team-size .card-img {
+      width: 62px !important;
+      height: 62px !important;
+    }
+    .role-card-slot .card-shield-border.shield-team-size .card-name {
+      font-size: 11px !important;
+      max-width: 106px !important;
+    }
+    .role-empty-target {
+      width: 108px;
+      height: 118px;
+      border: 2px dashed rgba(245, 212, 122, 0.4);
+      border-radius: 8px;
+      background: rgba(10, 15, 8, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      padding: 6px;
+      box-sizing: border-box;
+      transition: all 0.2s;
+      cursor: pointer;
+      user-select: none;
+    }
+    .role-card-slot:hover .role-empty-target {
+      border-color: var(--gold);
+      background: rgba(245, 212, 122, 0.15);
+      transform: translateY(-2px);
+    }
+    .role-empty-plus {
+      font-size: 24px;
+      color: var(--gold);
+      line-height: 1;
+      font-weight: 300;
+    }
+    .role-empty-text {
+      font-size: 10px;
+      font-weight: 800;
+      color: #fff;
+      text-align: center;
+      line-height: 1.2;
+    }
+    .role-empty-hint {
+      font-size: 8.5px;
+      color: var(--muted);
+      text-align: center;
+    }
+    .role-unassign-btn {
+      position: absolute;
+      top: -6px;
+      right: 2px;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #ef4444;
+      color: #fff;
+      border: 1.5px solid #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 900;
+      cursor: pointer;
+      z-index: 15;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.8);
+      transition: transform 0.15s, background 0.15s;
+    }
+    .role-unassign-btn:hover {
+      background: #dc2626;
+      transform: scale(1.15);
+    }
+    .role-change-btn {
+      margin-top: 6px;
+      font-size: 9.5px;
+      font-weight: 800;
+      color: var(--gold);
+      background: rgba(245, 212, 122, 0.12);
+      border: 1px solid rgba(197, 160, 74, 0.4);
+      border-radius: 4px;
+      padding: 2px 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+    .role-change-btn:hover {
+      background: rgba(245, 212, 122, 0.25);
+    }
+
+    /* MODAL SELECTOR DE JUGADORES PARA ROLES */
+    .role-picker-box {
+      max-width: 680px !important;
+      height: auto !important;
+      max-height: 85vh !important;
+    }
+    .role-picker-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+      padding: 16px;
+      overflow-y: auto;
+      max-height: calc(85vh - 140px);
+    }
+    .role-picker-item {
+      background: #171b13;
+      border: 1.5px solid rgba(197, 160, 74, 0.3);
+      border-radius: 8px;
+      padding: 8px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .role-picker-item:hover {
+      border-color: var(--gold);
+      background: #20271b;
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.7);
+    }
+    .role-picker-item.is-current-assigned {
+      border-color: #2dd4bf;
+      background: rgba(45, 212, 191, 0.12);
+      box-shadow: 0 0 12px rgba(45, 212, 191, 0.3);
+    }
+    .role-picker-current-tag {
+      position: absolute;
+      top: 4px;
+      right: 4px;
+      background: #2dd4bf;
+      color: #0b0d11;
+      font-size: 8.5px;
+      font-weight: 900;
+      padding: 1px 4px;
+      border-radius: 3px;
+      text-transform: uppercase;
+    }
+    .role-picker-badge-assigned {
+      font-size: 9px;
+      color: var(--gold);
+      font-weight: 800;
+      margin-top: 4px;
+      text-align: center;
+    }
+
+    /* ETIQUETA PARA JUGADORES DUPLICADOS EN EL DRAWER */
+    .drawer-player-card.already-in-team {
+      opacity: 0.55;
+      border-color: rgba(255, 255, 255, 0.15) !important;
+    }
+    .drawer-player-card.already-in-team:hover {
+      opacity: 0.85;
+      border-color: #f59e0b !important;
+    }
+    .in-team-tag {
+      background: rgba(245, 158, 11, 0.25);
+      border: 1px solid #f59e0b;
+      color: #fef3c7;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 3px;
+      margin-top: 4px;
+      text-align: center;
+      display: inline-block;
+    }
+
+    /* NOTIFICACIONES TOAST FLOTANTES */
+    .team-toast-notification {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #181d14;
+      border: 1.5px solid var(--gold);
+      border-radius: 8px;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 9999;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 15px rgba(245, 212, 122, 0.35);
+      opacity: 0;
+      pointer-events: none;
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+      max-width: 90vw;
+    }
+    .team-toast-notification.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .team-toast-notification.toast-warning {
+      border-color: #f59e0b;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 15px rgba(245, 158, 11, 0.4);
+    }
+    .team-toast-notification.toast-error {
+      border-color: #ef4444;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 15px rgba(239, 68, 68, 0.4);
+    }
+    .team-toast-notification.toast-success {
+      border-color: #10b981;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.95), 0 0 15px rgba(16, 185, 129, 0.4);
+    }
+    .toast-content {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .toast-icon {
+      font-size: 20px;
+    }
+    .toast-close-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 16px;
+      margin-left: 8px;
+      padding: 2px 6px;
+    }
+    .toast-close-btn:hover {
+      color: #fff;
+    }
+
+    /* BARRA DE NAVEGACIÓN INFERIOR DE PESTAÑAS (En el panel derecho) */
+    .sidebar-tabs-nav {
+      display: flex;
+      background: #0b0e08;
+      border-top: 1px solid rgba(197, 160, 74, 0.25);
+      height: 56px;
+      flex-shrink: 0;
+    }
+    .sidebar-tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      border-top: 2px solid transparent;
+      color: var(--muted);
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      font-size: 11px;
+      font-weight: 800;
+      font-family: var(--font-main);
+      transition: all 0.2s;
+    }
+    .sidebar-tab-btn:hover {
+      color: #fff;
+    }
+    .sidebar-tab-btn.active {
+      color: var(--gold);
+      border-top-color: var(--gold);
+      background: rgba(245, 212, 122, 0.05);
+    }
+    .sidebar-tab-btn span.tab-icon {
+      font-size: 18px;
+      line-height: 1;
+    }
+
+    /* MODAL DE SELECCIÓN DE JUGADOR DE LA BASE DE DATOS */
+    .drawer-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.75);
+      z-index: 50;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .drawer-overlay.open {
+      display: flex;
+    }
+    .drawer-box {
+      width: 92%;
+      max-width: 860px;
+      height: 85vh;
+      background: #12160f;
+      border: 1.5px solid var(--line-gold);
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.9);
+    }
+    .drawer-head {
+      padding: 14px 18px;
+      background: linear-gradient(180deg, #1b2216 0%, #12160f 100%);
+      border-bottom: 1px solid rgba(197, 160, 74, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .drawer-head h3 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-size: 20px;
+      color: var(--gold);
+      letter-spacing: 0.5px;
+    }
+    .drawer-filters {
+      padding: 10px 18px;
+      background: #0d100b;
+      border-bottom: 1px solid rgba(197, 160, 74, 0.15);
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .drawer-search-input {
+      flex: 1;
+      min-width: 200px;
+      background: #171b13;
+      border: 1px solid rgba(197, 160, 74, 0.3);
+      border-radius: 6px;
+      padding: 6px 12px;
+      color: #fff;
+      font-size: 13px;
+    }
+    .drawer-pos-filters {
+      display: flex;
+      gap: 4px;
+      overflow-x: auto;
+    }
+    .drawer-filter-btn {
+      padding: 4px 8px;
+      background: #171b13;
+      border: 1px solid rgba(197, 160, 74, 0.25);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .drawer-filter-btn.active {
+      background: var(--gold);
+      color: #000;
+      border-color: var(--gold);
+    }
+    .drawer-cards-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 12px;
+    }
+    .drawer-player-card {
+      background: #171b13;
+      border: 1px solid rgba(197, 160, 74, 0.25);
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: all 0.2s;
+    }
+    .drawer-player-card:hover {
+      border-color: var(--gold);
+      background: #20271b;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+    }
+
+    /* Modal de Opciones de Slot Ocupado (Cambiar, Banquillo, Quitar) */
+    .slot-action-popover {
+      position: fixed;
+      background: #161a12;
+      border: 1px solid var(--line-gold);
+      border-radius: 8px;
+      padding: 6px;
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 60;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.8);
+      min-width: 170px;
+    }
+    .slot-action-popover.open {
+      display: flex;
+    }
+    .slot-pop-btn {
+      background: transparent;
+      border: none;
+      padding: 8px 12px;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: left;
+      cursor: pointer;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .slot-pop-btn:hover {
+      background: var(--gold);
+      color: #000;
+    }
+    .slot-pop-btn.danger:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* Responsive */
+    @media (max-width: 1100px) {
+      .team-sidebar-right {
+        width: 320px;
+      }
+      .formations-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+    @media (max-width: 900px) {
+      .team-viewport {
+        flex-direction: column;
+        overflow-y: auto;
+      }
+      .team-hud-left {
+        width: 100%;
+        flex-direction: row;
+        height: auto;
+        padding: 8px;
+        overflow-x: auto;
+      }
+      .team-pitch-wrap {
+        min-height: 520px;
+      }
+      .team-sidebar-right {
+        width: 100%;
+        height: 500px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="team-app">
+  <!-- Encabezado unificado de navegación -->
+  <header class="site-nav">
+    <a class="nav-brand" href="index.html">
+      <div class="nav-brand-icon">⚽</div>
+      <div class="nav-logo">
+        <span class="nav-logo-title">UFM 27</span>
+        <span class="nav-logo-sub">MULTIMEDIA</span>
+      </div>
+    </a>
+    <nav class="nav-links">
+      <a class="nav-item" href="index.html" id="lblNavHome">Inicio</a>
+      <a class="nav-item" href="database.html" id="lblNavDb">Base de Datos</a>
+      <a class="nav-item" href="calculator.html" id="lblNavCalc">Calculadora SBC</a>
+      <a class="nav-item active" href="team.html" id="lblNavTeam">Mi Equipo</a>
+      
+      <select class="lang-select" id="langSelect" onchange="changeLanguage(this.value)">
+        <option value="es">Español</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+        <option value="de">Deutsch</option>
+        <option value="it">Italiano</option>
+        <option value="pt">Português</option>
+      </select>
+    </nav>
+  </header>
+
+  <!-- Sub-barra de alineación activa -->
+  <div class="stage-bar">
+    <div class="stage-left">
+      <a href="index.html" class="btn-icon-gold" title="Volver al Hub">&laquo;</a>
+      <button type="button" class="btn-icon-gold" onclick="openHelpModal()" title="Ayuda y Química">?</button>
+      <div class="squad-name-badge">
+        <span id="txtSquadFormation">4-3-3 DEFENSA</span>
+        <span>·</span>
+        <span id="txtSquadCost">0 🪙</span>
+      </div>
+    </div>
+    <div class="stage-right" style="display:flex; gap:8px;">
+      <button type="button" class="btn-hud-action" style="width:auto; padding:5px 12px; flex-direction:row;" onclick="autoCompleteTeam()">
+        <span>⚡</span> <span id="lblBtnAuto">Autocompletar</span>
+      </button>
+      <button type="button" class="btn-hud-action" style="width:auto; padding:5px 12px; flex-direction:row;" onclick="clearAllStarters()">
+        <span>🗑️</span> <span id="lblBtnClearSquad">Vaciar Cancha</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Vista Principal: HUD Izquierdo + Cancha + Panel Derecho -->
+  <div class="team-viewport">
+    
+    <!-- HUD IZQUIERDO -->
+    <aside class="team-hud-left">
+      <!-- Química -->
+      <div class="chem-badge" title="Química total del equipo">
+        <small id="lblChem">QUÍ</small>
+        <div class="chem-num" id="hudChemVal">+2,7</div>
+      </div>
+
+      <!-- Media General -->
+      <div class="ovr-badge" title="Valoración General de la Plantilla (GRL)">
+        <small id="lblOvr">GRL</small>
+        <div class="ovr-num" id="hudOvrVal">86.4</div>
+      </div>
+
+      <!-- Sectores -->
+      <div class="sector-badge" title="Media delantera">
+        <small id="lblSecDel">DEL</small>
+        <span id="hudSecDel">86.3</span>
+      </div>
+      <div class="sector-badge" title="Media centrocampistas">
+        <small id="lblSecCen">CEN</small>
+        <span id="hudSecCen">87.3</span>
+      </div>
+      <div class="sector-badge" title="Media defensa y portero">
+        <small id="lblSecDef">DEF</small>
+        <span id="hudSecDef">86.0</span>
+      </div>
+
+      <!-- Botón AUTO -->
+      <button type="button" class="btn-auto-hud" onclick="autoCompleteTeam()" title="Optimizar plantilla automáticamente">
+        <span>⚡</span>
+        <span id="lblAutoWord">AUTO</span>
+      </button>
+
+      <!-- Desglose de Química visible en Modo 2 (Captura 2) -->
+      <div class="chem-breakdown-list" id="chemBreakdownList">
+        <!-- Renderizado dinámico de enlaces de nacionalidad, liga y rareza -->
+      </div>
+
+      <!-- Botones de Acción: Alineaciones y Cambiar Vista -->
+      <div class="hud-bottom-actions">
+        <button type="button" class="btn-hud-action" onclick="openSquadManagerModal()">
+          <span class="icon">👥</span>
+          <span id="lblHudSquads">Alineaciones</span>
+        </button>
+        <button type="button" class="btn-hud-action" id="btnToggleViewMode" onclick="toggleCardViewMode()">
+          <span class="icon">🔄</span>
+          <span id="lblHudToggle">Cambiar</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- CANCHA DE FÚTBOL CENTRAL -->
+    <main class="team-pitch-wrap">
+      <div class="pitch-light-left"></div>
+      <div class="pitch-light-right"></div>
+
+      <div class="football-pitch" id="pitchField">
+        <!-- Líneas tácticas -->
+        <div class="pitch-penalty-area-top"></div>
+        <div class="pitch-half-line"></div>
+        <div class="pitch-center-circle"></div>
+        <div class="pitch-center-spot"></div>
+        <div class="pitch-penalty-area-bottom"></div>
+        <div class="pitch-goal-area-bottom"></div>
+
+        <!-- 11 Slots de Jugadores posicionados dinámicamente según la formación -->
+        <div id="starterSlotsContainer"></div>
+      </div>
+    </main>
+
+    <!-- PANEL LATERAL DERECHO CON PESTAÑAS -->
+    <aside class="team-sidebar-right">
+      <div class="sidebar-header">
+        <h2 id="sidebarTabTitle">BANQUILLO</h2>
+        <span id="sidebarSubTitle" style="font-size:12px; color:var(--muted)">12 Suplentes</span>
+      </div>
+
+      <div class="sidebar-body" id="sidebarBodyContent">
+        <!-- El contenido se renderiza dinámicamente según la pestaña activa:
+             - Banquillo
+             - Formaciones
+             - Tácticas
+             - Roles
+        -->
+      </div>
+
+      <!-- Pestañas inferiores del panel derecho -->
+      <nav class="sidebar-tabs-nav">
+        <button type="button" class="sidebar-tab-btn" id="tabBench" onclick="switchSidebarTab('bench')">
+          <span class="tab-icon">🪑</span>
+          <span id="lblTabBench">Banquillo</span>
+        </button>
+        <button type="button" class="sidebar-tab-btn active" id="tabFormations" onclick="switchSidebarTab('formations')">
+          <span class="tab-icon">⚽</span>
+          <span id="lblTabFormations">Formaciones</span>
+        </button>
+        <button type="button" class="sidebar-tab-btn" id="tabTactics" onclick="switchSidebarTab('tactics')">
+          <span class="tab-icon">🎯</span>
+          <span id="lblTabTactics">Tácticas</span>
+        </button>
+        <button type="button" class="sidebar-tab-btn" id="tabRoles" onclick="switchSidebarTab('roles')">
+          <span class="tab-icon">🚩</span>
+          <span id="lblTabRoles">Roles</span>
+        </button>
+      </nav>
+    </aside>
+
+  </div>
+</div>
+
+<!-- MENÚ CONTEXTUAL AL HACER CLICK DERECHO EN UN JUGADOR -->
+<div class="custom-context-menu" id="playerContextMenu">
+  <div class="context-menu-header" id="ctxPlayerHeader">
+    <span>⚽</span> <span id="ctxPlayerName">Jugador</span>
+  </div>
+  <button type="button" class="context-menu-item" onclick="viewDetailFromContext()">
+    <span>📋</span> <span id="lblCtxDetail">Ver ficha completa y precio</span>
+  </button>
+  <button type="button" class="context-menu-item" onclick="triggerSwapFromContext()">
+    <span>🔄</span> <span id="lblCtxSwap">Cambiar jugador (Base de Datos)</span>
+  </button>
+  <button type="button" class="context-menu-item" id="ctxBtnMove" onclick="movePlayerFromContext()">
+    <span>🪑</span> <span id="lblCtxMove">Mover al banquillo</span>
+  </button>
+  <div class="context-menu-separator"></div>
+  <button type="button" class="context-menu-item danger" onclick="removePlayerFromContext()">
+    <span>🗑️</span> <span id="lblCtxRemove">Quitar de la alineación</span>
+  </button>
+</div>
+
+<!-- MODAL FICHA COMPLETA DEL JUGADOR (CLICK SIMPLE EN LA CARTA) -->
+<div class="drawer-overlay" id="playerDetailModal">
+  <div class="drawer-box" style="max-width: 680px; height: auto; max-height: 90vh;">
+    <div class="drawer-head">
+      <h3 id="detModalTitle" style="color:var(--gold); font-size:18px;">Ficha del Jugador</h3>
+      <button type="button" class="btn-icon-gold" onclick="closePlayerDetailModal()">✕</button>
+    </div>
+    <div style="padding: 20px; overflow-y: auto;">
+      <div style="display: flex; gap: 24px; align-items: flex-start; flex-wrap: wrap;">
+        <!-- Izquierda: Ficha FUT ampliada con detalles -->
+        <div id="detCardContainer" style="flex-shrink: 0; margin: 0 auto;"></div>
+
+        <!-- Derecha: Datos, Precios y Atributos -->
+        <div style="flex: 1; min-width: 260px;">
+          <div style="display:flex; justify-content:space-between; align-items:baseline; margin-bottom:4px;">
+            <h2 id="detPlayerName" style="margin:0; font-family:var(--font-display); font-size:24px; color:#fff;">-</h2>
+            <span id="detRatingBadge" style="font-family:var(--font-display); font-size:22px; color:var(--gold); font-weight:900;">-</span>
+          </div>
+          <div id="detSubtitle" style="font-size:13px; color:var(--muted); margin-bottom:14px; font-weight:700;">-</div>
+
+          <!-- Cuadro de Precio SBC / Mercado -->
+          <div style="background:linear-gradient(135deg, rgba(245,212,122,0.15) 0%, rgba(184,134,29,0.15) 100%); border:1px solid var(--line-gold); border-radius:8px; padding:10px 14px; margin-bottom:14px; display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div id="lblDetPriceHeader" style="font-size:10px; font-weight:800; color:var(--gold); text-transform:uppercase; letter-spacing:0.5px;">Precio Mercado / SBC</div>
+              <div id="detPlayerPrice" style="font-size:20px; font-weight:900; color:#fff; font-family:var(--font-display); margin-top:2px;">-</div>
+            </div>
+            <span style="font-size:26px;">🪙</span>
+          </div>
+
+          <!-- Grid de Atributos del Jugador -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px 14px; background:rgba(0,0,0,0.3); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:12px; margin-bottom:14px; font-size:12px;">
+            <div><span id="lblDetPos" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">POSICIÓN</span><b id="detPosVal" style="color:#fff;">-</b></div>
+            <div><span id="lblDetClub" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">CLUB</span><b id="detClubVal" style="color:#fff;">-</b></div>
+            <div><span id="lblDetLeague" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">LIGA</span><b id="detLeagueVal" style="color:#fff;">-</b></div>
+            <div><span id="lblDetNat" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">NACIONALIDAD</span><b id="detCountryVal" style="color:#fff; display:flex; align-items:center; gap:5px;"><img id="detCountryFlag" src="" style="width:16px; height:11px; object-fit:cover; border-radius:2px;"><span id="detCountryName">-</span></b></div>
+            <div><span id="lblDetAge" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">EDAD</span><b id="detAgeVal" style="color:#fff;">-</b></div>
+            <div><span id="lblDetRarity" style="color:var(--muted); font-size:10px; font-weight:800; display:block;">RAREZA</span><b id="detRarityVal" style="color:var(--gold);">-</b></div>
+          </div>
+
+          <!-- Desglose de Subatributos -->
+          <div style="background:rgba(0,0,0,0.4); border:1px solid rgba(255,255,255,0.08); border-radius:8px; padding:10px 12px;">
+            <div id="lblDetStatsHeader" style="font-size:11px; font-weight:900; color:var(--gold); margin-bottom:8px; letter-spacing:0.5px;">ESTADÍSTICAS DEL JUGADOR</div>
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:8px; text-align:center;">
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetPac" style="font-size:10px; color:var(--muted); font-weight:700;">RIT</div><div id="detStatPac" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetSho" style="font-size:10px; color:var(--muted); font-weight:700;">TIR</div><div id="detStatSho" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetPas" style="font-size:10px; color:var(--muted); font-weight:700;">PAS</div><div id="detStatPas" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetDri" style="font-size:10px; color:var(--muted); font-weight:700;">REG</div><div id="detStatDri" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetDef" style="font-size:10px; color:var(--muted); font-weight:700;">DEF</div><div id="detStatDef" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+              <div style="background:rgba(255,255,255,0.05); border-radius:6px; padding:6px 4px;"><div id="lblDetPhy" style="font-size:10px; color:var(--muted); font-weight:700;">FIS</div><div id="detStatPhy" style="font-size:16px; font-weight:900; color:#fff;">-</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="margin-top:20px; display:flex; gap:10px; justify-content:flex-end; border-top:1px solid rgba(255,255,255,0.1); padding-top:14px; flex-wrap:wrap;">
+        <button type="button" class="btn-hud-action" style="padding:8px 14px; width:auto; font-size:12px;" onclick="changePlayerFromDetail()">
+          <span id="lblDetBtnChange">🔄 Cambiar Jugador</span>
+        </button>
+        <button type="button" class="btn-hud-action" id="detBtnMove" style="padding:8px 14px; width:auto; font-size:12px;" onclick="movePlayerFromDetail()">
+          <span id="lblDetBtnMove">🪑 Mover al Banquillo</span>
+        </button>
+        <button type="button" class="btn-hud-action" style="padding:8px 14px; width:auto; font-size:12px; color:#ef4444; border-color:#ef4444;" onclick="removePlayerFromDetail()">
+          <span id="lblDetBtnRemove">🗑️ Quitar</span>
+        </button>
+        <button type="button" class="btn-hud-action" style="padding:8px 14px; width:auto; font-size:12px; background:rgba(255,255,255,0.1);" onclick="closePlayerDetailModal()">
+          <span id="lblDetBtnClose">Cerrar</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL / DRAWER SELECTOR DE JUGADORES DE LA BASE DE DATOS -->
+<div class="drawer-overlay" id="playerPickerModal">
+  <div class="drawer-box">
+    <div class="drawer-head">
+      <h3 id="lblPickerTitle">Seleccionar Jugador</h3>
+      <button type="button" class="btn-icon-gold" onclick="closePlayerPicker()">✕</button>
+    </div>
+    <div class="drawer-filters">
+      <input type="text" class="drawer-search-input" id="pickerSearch" placeholder="Buscar jugador, club, liga, país..." oninput="filterPickerPlayers()">
+      
+      <div class="drawer-pos-filters" id="pickerPosFilters">
+        <button type="button" class="drawer-filter-btn active" onclick="setPickerPosFilter('ALL')">TODOS</button>
+        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEL')">DEL</button>
+        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('MED')">MED</button>
+        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEF')">DEF</button>
+        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('POR')">POR</button>
+      </div>
+
+      <select class="drawer-filter-btn" id="pickerSort" onchange="filterPickerPlayers()" style="background:#171b13; color:#fff;">
+        <option value="rat-desc">Mayor Media</option>
+        <option value="rat-asc">Menor Media</option>
+        <option value="price-asc">Más Barato</option>
+        <option value="name">Alfabético</option>
+      </select>
+    </div>
+    <div class="drawer-cards-list" id="pickerCardsList">
+      <!-- Cartas disponibles renderizadas dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE AYUDA Y QUÍMICA -->
+<div class="drawer-overlay" id="helpModal">
+  <div class="drawer-box" style="max-width:540px; height:auto; max-height:85vh;">
+    <div class="drawer-head">
+      <h3 id="lblHelpTitle">Sistema de Química y Plantilla</h3>
+      <button type="button" class="btn-icon-gold" onclick="closeHelpModal()">✕</button>
+    </div>
+    <div style="padding:18px; overflow-y:auto; line-height:1.6; color:#d1d5db; font-size:13px;">
+      <h4 style="color:var(--gold); margin-top:0;">¿Cómo funciona la Química?</h4>
+      <p>Cada jugador puede conseguir hasta <b>3 puntos de química</b> (representados por los hexágonos en su ficha):</p>
+      <ul>
+        <li><b>Mismo País:</b> 2 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
+        <li><b>Misma Liga:</b> 3 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
+        <li><b>Mismo Club o Rareza/Evento:</b> 2 jugadores (+1), 4 jugadores (+2), 7 jugadores (+3).</li>
+      </ul>
+      <p>Los jugadores que juegan en su <b>posición natural</b> activan su bonificación de química (flecha verde <span style="color:#22c55e">▲▲</span>). Los jugadores fuera de posición reciben una penalización y 0 química (<span style="color:#eab308">▼</span>).</p>
+      <h4 style="color:var(--gold);">Modos de Visualización</h4>
+      <p>Pulsa el botón <b>CAMBIAR</b> en la barra izquierda para alternar entre la <b>Vista Fotográfica</b> y la <b>Vista Táctica de Atributos</b> (país, liga y evento) exactamente como en Ultimate Team.</p>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL DE GESTOR DE ALINEACIONES -->
+<div class="drawer-overlay" id="squadManagerModal">
+  <div class="drawer-box" style="max-width:500px; height:auto; max-height:85vh;">
+    <div class="drawer-head">
+      <h3 id="lblSquadManagerTitle">Gestor de Alineaciones</h3>
+      <button type="button" class="btn-icon-gold" onclick="closeSquadManagerModal()">✕</button>
+    </div>
+    <div style="padding:18px; display:flex; flex-direction:column; gap:12px;">
+      <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="saveSquadSlot()">
+        <span>💾 Guardar Plantilla Actual</span>
+      </button>
+      <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="loadDefaultScreenshotSquad()">
+        <span>⭐ Cargar Plantilla de Ejemplo (4-3-3 Defensa)</span>
+      </button>
+      <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="autoCompleteTeam(); closeSquadManagerModal();">
+        <span>⚡ Autocompletar con Base de Datos</span>
+      </button>
+      <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px; color:#ef4444; border-color:#ef4444;" onclick="clearAllStarters(); closeSquadManagerModal();">
+        <span>🗑️ Vaciar Alineación Completa</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL SELECTOR DE JUGADORES PARA ROLES -->
+<div class="drawer-overlay" id="rolePickerModal" onclick="closeRolePicker()">
+  <div class="drawer-box role-picker-box" onclick="event.stopPropagation()">
+    <div class="drawer-head">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <span id="rolePickerIcon" style="font-size:22px;">👑</span>
+        <div>
+          <h3 id="rolePickerTitle" style="margin:0; font-size:18px;">Asignar Rol</h3>
+          <span style="font-size:11px; color:var(--muted);" id="rolePickerSubtitle">Elige un jugador de tu alineación titular</span>
+        </div>
+      </div>
+      <button type="button" class="btn-icon-gold" onclick="closeRolePicker()">✕</button>
+    </div>
+    <div class="role-picker-grid" id="rolePickerGrid">
+      <!-- Jugadores titulares renderizados dinámicamente -->
+    </div>
+    <div style="padding:12px 18px; border-top:1px solid rgba(197,160,74,0.25); display:flex; justify-content:space-between; align-items:center; background:#0c0f0a;">
+      <button type="button" class="btn-hud-action" style="padding:6px 14px; width:auto; font-size:12px; color:#f87171; border-color:#f87171;" id="btnRoleUnassignModal" onclick="unassignActiveRoleFromModal()">
+        <span>🗑️ Dejar hueco vacío</span>
+      </button>
+      <button type="button" class="btn-hud-action" style="padding:6px 14px; width:auto; font-size:12px;" onclick="closeRolePicker()">
+        <span>Cerrar</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- CONTENEDOR TOAST FLOTANTE -->
+<div id="teamToastNotification" class="team-toast-notification"></div>
+
+<script src="team.js"></script>
+</body>
+</html>

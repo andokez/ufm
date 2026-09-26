@@ -38,6 +38,16 @@ function displayPosition(p, lang) {
   return dict[standard] || standard;
 }
 
+function getDisplayClub(club) {
+  if (!club) return '';
+  var c = String(club).trim();
+  var lower = c.toLowerCase();
+  if (lower === 'sin club' || lower === 'sin equipo' || lower === 'no club' || lower === 'none' || lower === '—' || lower === '-' || lower === 'n/a' || lower === 'null' || lower === 'undefined') {
+    return '';
+  }
+  return c;
+}
+
 var masterLeaguesData = [
   { id: "be_1", code: "be", names: { es: "Bélgica (1ª Div)", en: "Belgium (1st Div)", fr: "Belgique (1ère Div)", de: "Belgien (1. Liga)", it: "Belgio (1ª Div)", pt: "Bélgica (1ª Div)" } },
   { id: "eng_1", code: "gb-eng", names: { es: "Inglaterra (1ª Div - Premier)", en: "England (1st Div - Premier)", fr: "Angleterre (1ère Div - Premier)", de: "England (1. Liga - Premier)", it: "Inghilterra (1ª Div - Premier)", pt: "Inglaterra (1ª Div - Premier)" } },
@@ -223,7 +233,7 @@ function getDateStatus(isoDate) {
 
 var i18n = {
   es: {
-    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC",
+    navHome: "Inicio", navDb: "Base de Datos", navCalc: "Calculadora SBC", navTeam: "Mi Equipo",
     heroTitle: "Desafíos de Creación de Plantillas (PTC)",
     heroSubtitle: "Explora los desafíos activos y obtén la solución más barata con precios de la base de datos o de la calculadora.",
     statPlayers: "Jugadores en BD", statActive: "PTCs Activos",
@@ -268,7 +278,7 @@ var i18n = {
     labelFullSquad: "Plantilla completa ({n} jugadores con precio)"
   },
   en: {
-    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator",
+    navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
     heroTitle: "Squad Building Challenges (PTC)",
     heroSubtitle: "Explore active challenges and get the cheapest squad solution using database or calculator manual prices.",
     statPlayers: "Players in DB", statActive: "Active PTCs",
@@ -313,7 +323,7 @@ var i18n = {
     labelFullSquad: "Full squad ({n} priced players)"
   },
   fr: {
-    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE",
+    navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
     heroTitle: "Défis de Création d'Équipe (DCE)",
     heroSubtitle: "Découvrez les défis actifs et obtenez la solution la moins chère avec votre base de données ou la calculatrice.",
     statPlayers: "Joueurs en BD", statActive: "DCE Actifs",
@@ -358,7 +368,7 @@ var i18n = {
     labelFullSquad: "Équipe complète ({n} joueurs avec prix)"
   },
   de: {
-    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner",
+    navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner", navTeam: "Mein Team",
     heroTitle: "Squad Building Challenges (PTC)",
     heroSubtitle: "Finde die günstigste SBC-Kombination mit Datenbank- oder manuellen Rechnerpreisen.",
     statPlayers: "Spieler in DB", statActive: "Aktive PTCs",
@@ -403,7 +413,7 @@ var i18n = {
     labelFullSquad: "Vollständiges Team ({n} bepreiste Spieler)"
   },
   it: {
-    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR",
+    navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR", navTeam: "La Mia Squadra",
     heroTitle: "Sfide Creazione Rosa (PTC)",
     heroSubtitle: "Trova la combinazione più economica usando i prezzi del database o del calcolatore manuale.",
     statPlayers: "Giocatori in BD", statActive: "PTC Attivi",
@@ -448,7 +458,7 @@ var i18n = {
     labelFullSquad: "Rosa completa ({n} giocatori con prezzo)"
   },
   pt: {
-    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME",
+    navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME", navTeam: "A Minha Equipa",
     heroTitle: "Desafios de Montagem de Elenco (DME)",
     heroSubtitle: "Encontre a solução mais barata para os desafios usando preços da base de dados ou da calculadora.",
     statPlayers: "Jogadores na BD", statActive: "DMEs Ativos",
@@ -611,7 +621,8 @@ var ptcRewards = {
     country: 'Francia', league: 'España (1ª Div - LaLiga)', club: 'Real Madrid',
     stats: { pac: 95, dri: 90, sho: 90, def: 39, pas: 71, phy: 85 },
     image: 'https://cdn-img.staticzz.com/img/jogadores/new/45/08/394508_kylian_mbappe_20260217195145.png'
-  },s_legend_1: {
+  },
+  s_legend_1: {
     type: 'player', name: 'Raphinha', pos: 'LM', rating: 92,
     rarity: 'ptc',
     country: 'Brasil', league: 'España (1ª Div - LaLiga)', club: 'FC Barcelona',
@@ -921,7 +932,7 @@ function generatePlayerFutCardHtml(p, isShield) {
       </div>
       <div class="card-info">
         <div class="card-name">${p.name}</div>
-        <div class="card-club">${p.club || 'Sin Club'}</div>
+        <div class="card-club">${getDisplayClub(p.club)}</div>
       </div>
       <div class="card-stats">
         <div class="stat-row"><span class="stat-num">${p.pac || '0'}</span> <span class="stat-lbl">${s1}</span></div>
@@ -1794,7 +1805,7 @@ function renderModalContent() {
             </div>
             <img class="mini-card-img" src="${img}" onerror="this.src='${DEFAULT_AVATAR}'">
             <div class="mini-card-name">${chosen.name}</div>
-            <div class="mini-card-club">${chosen.club || 'Sin Club'}</div>
+            <div class="mini-card-club">${getDisplayClub(chosen.club)}</div>
             <div class="mini-card-price">${Number(chosen.price).toLocaleString('es-ES')} 🪙</div>
           </div>
         `;
@@ -1846,7 +1857,7 @@ function renderModalContent() {
           </div>
           <img class="mini-card-img" src="${img}" onerror="this.src='${DEFAULT_AVATAR}'">
           <div class="mini-card-name">${chosen.name}</div>
-          <div class="mini-card-club">${chosen.club || 'Sin Club'}</div>
+          <div class="mini-card-club">${getDisplayClub(chosen.club)}</div>
           <div class="mini-card-price">${Number(chosen.price).toLocaleString('es-ES')} 🪙</div>
         </div>
       `;
@@ -1886,7 +1897,7 @@ function openPlayerCardDetail(index) {
 
   document.getElementById('detName').textContent = cleanName + ' (' + p.rating + ')';
   document.getElementById('detSub').textContent = displayPosition(p.position, currentLang) + ' · ' + rarityText;
-  document.getElementById('detClub').textContent = p.club || '—';
+  document.getElementById('detClub').textContent = getDisplayClub(p.club);
   document.getElementById('detLeague').textContent = getLocalizedLeagueName(p.league, currentLang) || '—';
   document.getElementById('detCountry').textContent = getLocalizedCountryName(p.country, currentLang) || '—';
   document.getElementById('detAge').textContent = p.age ? (p.age + ' ' + (t.yearsOld || 'años')) : '—';
@@ -2048,6 +2059,7 @@ function applyTranslations() {
   document.getElementById('lblNavHome').textContent = t.navHome;
   document.getElementById('lblNavDb').textContent = t.navDb;
   document.getElementById('lblNavCalc').textContent = t.navCalc;
+  if (document.getElementById('lblNavTeam')) document.getElementById('lblNavTeam').textContent = t.navTeam;
 
   document.getElementById('lblHeroTitle').textContent = t.heroTitle;
   document.getElementById('lblHeroSubtitle').textContent = t.heroSubtitle;
