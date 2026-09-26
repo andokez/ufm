@@ -12,6 +12,7 @@ var activeFormationId = '433_def';
 var activeSlotIndex = -1; // Slot seleccionado para cambio
 var pickerTargetType = 'starter'; // 'starter' o 'bench'
 var pickerPosFilter = 'ALL';
+var pickerExactPosFilter = 'ALL';
 
 // Variables para Drag and Drop y Menús Interactivos
 var draggedData = null; // { type: 'starter'|'bench', index: number }
@@ -69,7 +70,9 @@ var i18nTeam = {
     squadManagerTitle: "Gestor de Alineaciones",
     squadSave: "💾 Guardar Plantilla Actual",
     squadAuto: "⚡ Autocompletar con Base de Datos",
-    squadClear: "🗑️ Vaciar Alineación Completa"
+    squadClear: "🗑️ Vaciar Alineación Completa",
+    pickerExactPosLabel: "Posición Exacta:",
+    pickerExactPosAll: "Todas"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
@@ -119,7 +122,9 @@ var i18nTeam = {
     squadManagerTitle: "Squad Manager",
     squadSave: "💾 Save Current Squad",
     squadAuto: "⚡ Auto Build with Database",
-    squadClear: "🗑️ Clear Full Squad"
+    squadClear: "🗑️ Clear Full Squad",
+    pickerExactPosLabel: "Exact Position:",
+    pickerExactPosAll: "All"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
@@ -169,7 +174,9 @@ var i18nTeam = {
     squadManagerTitle: "Gestionnaire d'Équipe",
     squadSave: "💾 Enregistrer l'équipe actuelle",
     squadAuto: "⚡ Auto Remplir depuis la base",
-    squadClear: "🗑️ Vider toute l'équipe"
+    squadClear: "🗑️ Vider toute l'équipe",
+    pickerExactPosLabel: "Poste Exact :",
+    pickerExactPosAll: "Tous"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner", navTeam: "Mein Team",
@@ -219,7 +226,9 @@ var i18nTeam = {
     squadManagerTitle: "Aufstellungs-Manager",
     squadSave: "💾 Aktuelles Team speichern",
     squadAuto: "⚡ Automatisch aus Datenbank füllen",
-    squadClear: "🗑️ Gesamtes Team leeren"
+    squadClear: "🗑️ Gesamtes Team leeren",
+    pickerExactPosLabel: "Exakte Position:",
+    pickerExactPosAll: "Alle"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR", navTeam: "La Mia Squadra",
@@ -269,7 +278,9 @@ var i18nTeam = {
     squadManagerTitle: "Gestione Formazioni",
     squadSave: "💾 Salva squadra attuale",
     squadAuto: "⚡ Completa automaticamente da database",
-    squadClear: "🗑️ Svuota squadra completa"
+    squadClear: "🗑️ Svuota squadra completa",
+    pickerExactPosLabel: "Ruolo Esatto:",
+    pickerExactPosAll: "Tutti"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME", navTeam: "A Minha Equipa",
@@ -319,7 +330,9 @@ var i18nTeam = {
     squadManagerTitle: "Gestor de Escalações",
     squadSave: "💾 Salvar equipa atual",
     squadAuto: "⚡ Preenchimento automático da base",
-    squadClear: "🗑️ Limpar equipa completa"
+    squadClear: "🗑️ Limpar equipa completa",
+    pickerExactPosLabel: "Posição Exata:",
+    pickerExactPosAll: "Todas"
   }
 };
 
@@ -2178,7 +2191,11 @@ function openPickerForSlot(slotIndex) {
   else if (norm === 'GK') pickerPosFilter = 'POR';
   else pickerPosFilter = 'ALL';
 
+  // Por defecto, preseleccionar la posición exacta del slot para comodidad inmediata
+  pickerExactPosFilter = norm;
+
   updatePickerPosButtons();
+  renderPickerExactPosButtons();
   document.getElementById('playerPickerModal').classList.add('open');
   filterPickerPlayers();
 }
@@ -2187,7 +2204,9 @@ function openPickerForBench(benchIndex) {
   pickerTargetType = 'bench';
   activeSlotIndex = (benchIndex !== undefined && benchIndex !== null) ? benchIndex : -1;
   pickerPosFilter = 'ALL';
+  pickerExactPosFilter = 'ALL';
   updatePickerPosButtons();
+  renderPickerExactPosButtons();
   document.getElementById('playerPickerModal').classList.add('open');
   filterPickerPlayers();
 }
@@ -2205,8 +2224,65 @@ function updatePickerPosButtons() {
 
 function setPickerPosFilter(pos) {
   pickerPosFilter = pos;
+  pickerExactPosFilter = 'ALL';
   updatePickerPosButtons();
+  renderPickerExactPosButtons();
   filterPickerPlayers();
+}
+
+function setPickerExactPosFilter(exactPos) {
+  pickerExactPosFilter = exactPos;
+  updatePickerExactPosButtons();
+  filterPickerPlayers();
+}
+
+function updatePickerExactPosButtons() {
+  var btns = document.querySelectorAll('#pickerExactPosFilters .drawer-exact-btn');
+  btns.forEach(btn => {
+    var stdPos = btn.getAttribute('data-std-pos') || 'ALL';
+    btn.classList.toggle('active', stdPos === pickerExactPosFilter);
+  });
+}
+
+function renderPickerExactPosButtons() {
+  var container = document.getElementById('pickerExactPosFilters');
+  if (!container) return;
+
+  var t = i18nTeam[currentLang] || i18nTeam.es;
+  var dict = posTranslations[currentLang] || posTranslations.es;
+  var allPositions = [];
+
+  if (pickerPosFilter === 'DEL') {
+    allPositions = ['ST','CF','RW','LW'];
+  } else if (pickerPosFilter === 'MED') {
+    allPositions = ['CAM','CM','CDM','LM','RM'];
+  } else if (pickerPosFilter === 'DEF') {
+    allPositions = ['CB','RB','LB','RWB','LWB'];
+  } else if (pickerPosFilter === 'POR') {
+    allPositions = ['GK'];
+  } else {
+    // ALL: mostrar todas las posiciones principales ordenadas de ataque a portería
+    allPositions = ['ST','CF','RW','LW','CAM','CM','CDM','LM','RM','CB','RB','LB','RWB','LWB','GK'];
+  }
+
+  // Si la posición exacta elegida previamente no está en la lista actual, restablecer a 'ALL'
+  if (pickerExactPosFilter !== 'ALL' && !allPositions.includes(pickerExactPosFilter)) {
+    pickerExactPosFilter = 'ALL';
+  }
+
+  var html = `
+    <button type="button" class="drawer-exact-btn ${pickerExactPosFilter === 'ALL' ? 'active' : ''}" data-std-pos="ALL" onclick="setPickerExactPosFilter('ALL')">
+      ${t.pickerExactPosAll || 'Todas'}
+    </button>
+  `;
+
+  html += allPositions.map(pos => {
+    var label = dict[pos] || pos;
+    var isActive = (pickerExactPosFilter === pos) ? 'active' : '';
+    return `<button type="button" class="drawer-exact-btn ${isActive}" data-std-pos="${pos}" onclick="setPickerExactPosFilter('${pos}')">${label}</button>`;
+  }).join('');
+
+  container.innerHTML = html;
 }
 
 function filterPickerPlayers() {
@@ -2216,10 +2292,21 @@ function filterPickerPlayers() {
 
   var filtered = allPlayers.filter(p => {
     var normP = normalizePosition(p.position);
+
+    // Filtro por categoría de posición
     if (pickerPosFilter === 'DEL' && !['ST','CF','RW','LW','RF','LF'].includes(normP)) return false;
     if (pickerPosFilter === 'MED' && !['CAM','CM','CDM','LM','RM'].includes(normP)) return false;
     if (pickerPosFilter === 'DEF' && !['CB','RB','LB','RWB','LWB'].includes(normP)) return false;
     if (pickerPosFilter === 'POR' && normP !== 'GK') return false;
+
+    // Filtro por posición exacta (ST, CB, LB, RB, CDM, CM, CAM, etc.)
+    if (pickerExactPosFilter && pickerExactPosFilter !== 'ALL') {
+      if (pickerExactPosFilter === 'ST' && !['ST','CF'].includes(normP)) return false;
+      else if (pickerExactPosFilter === 'CF' && !['CF','ST'].includes(normP)) return false;
+      else if (pickerExactPosFilter === 'RW' && !['RW','RF'].includes(normP)) return false;
+      else if (pickerExactPosFilter === 'LW' && !['LW','LF'].includes(normP)) return false;
+      else if (pickerExactPosFilter !== normP) return false;
+    }
 
     if (q) {
       var matchStr = [p.name, p.club, p.league, p.country, p.position].join(' ').toLowerCase();
@@ -2430,6 +2517,10 @@ function applyTranslations() {
   setTxt('lblSquadSave', t.squadSave || '💾 Guardar Plantilla Actual');
   setTxt('lblSquadAuto', t.squadAuto || '⚡ Autocompletar con Base de Datos');
   setTxt('lblSquadClear', t.squadClear || '🗑️ Vaciar Alineación Completa');
+
+  // Traducción de la fila de posición exacta del selector
+  setTxt('lblPickerExactPos', t.pickerExactPosLabel || 'Posición Exacta:');
+  renderPickerExactPosButtons();
 }
 
 // FUNCIÓN GENERAL DE RENDERIZADO

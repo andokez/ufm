@@ -1323,9 +1323,15 @@
       background: #0d100b;
       border-bottom: 1px solid rgba(197, 160, 74, 0.15);
       display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .drawer-filters-row {
+      display: flex;
       flex-wrap: wrap;
       gap: 8px;
       align-items: center;
+      width: 100%;
     }
     .drawer-search-input {
       flex: 1;
@@ -1341,6 +1347,8 @@
       display: flex;
       gap: 4px;
       overflow-x: auto;
+      flex-wrap: wrap;
+      align-items: center;
     }
     .drawer-filter-btn {
       padding: 4px 8px;
@@ -1351,11 +1359,57 @@
       font-size: 11px;
       font-weight: 800;
       cursor: pointer;
+      transition: all 0.15s;
+    }
+    .drawer-filter-btn:hover {
+      border-color: var(--gold);
+      color: #fff;
     }
     .drawer-filter-btn.active {
       background: var(--gold);
       color: #000;
       border-color: var(--gold);
+    }
+    .drawer-exact-pos-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding-top: 4px;
+      border-top: 1px dashed rgba(197, 160, 74, 0.18);
+      overflow-x: auto;
+      width: 100%;
+    }
+    .drawer-exact-lbl {
+      font-size: 10px;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      white-space: nowrap;
+      margin-right: 2px;
+    }
+    .drawer-exact-btn {
+      padding: 2px 7px;
+      background: #12160e;
+      border: 1px solid rgba(197, 160, 74, 0.3);
+      border-radius: 4px;
+      color: #cbd5e1;
+      font-size: 10px;
+      font-weight: 800;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+    .drawer-exact-btn:hover {
+      border-color: var(--gold);
+      color: #fff;
+    }
+    .drawer-exact-btn.active {
+      background: var(--gold);
+      color: #0d100b;
+      border-color: var(--gold);
+      font-weight: 900;
+      box-shadow: 0 0 8px rgba(245, 212, 122, 0.4);
     }
     .drawer-cards-list {
       flex: 1;
@@ -1820,22 +1874,32 @@
       <button type="button" class="btn-icon-gold" onclick="closePlayerPicker()">✕</button>
     </div>
     <div class="drawer-filters">
-      <input type="text" class="drawer-search-input" id="pickerSearch" placeholder="Buscar jugador, club, liga, país..." oninput="filterPickerPlayers()">
-      
-      <div class="drawer-pos-filters" id="pickerPosFilters">
-        <button type="button" class="drawer-filter-btn active" onclick="setPickerPosFilter('ALL')">TODOS</button>
-        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEL')">DEL</button>
-        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('MED')">MED</button>
-        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEF')">DEF</button>
-        <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('POR')">POR</button>
+      <div class="drawer-filters-row">
+        <input type="text" class="drawer-search-input" id="pickerSearch" placeholder="Buscar jugador, club, liga, país..." oninput="filterPickerPlayers()">
+        
+        <div class="drawer-pos-filters" id="pickerPosFilters">
+          <button type="button" class="drawer-filter-btn active" onclick="setPickerPosFilter('ALL')">TODOS</button>
+          <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEL')">DEL</button>
+          <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('MED')">MED</button>
+          <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEF')">DEF</button>
+          <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('POR')">POR</button>
+        </div>
+
+        <select class="drawer-filter-btn" id="pickerSort" onchange="filterPickerPlayers()" style="background:#171b13; color:#fff;">
+          <option value="rat-desc">Mayor Media</option>
+          <option value="rat-asc">Menor Media</option>
+          <option value="price-asc">Más Barato</option>
+          <option value="name">Alfabético</option>
+        </select>
       </div>
 
-      <select class="drawer-filter-btn" id="pickerSort" onchange="filterPickerPlayers()" style="background:#171b13; color:#fff;">
-        <option value="rat-desc">Mayor Media</option>
-        <option value="rat-asc">Menor Media</option>
-        <option value="price-asc">Más Barato</option>
-        <option value="name">Alfabético</option>
-      </select>
+      <!-- Barra de Posición Exacta (DFC, LI, LD, CAD, MCD, MC, MCO, DC, etc.) -->
+      <div class="drawer-exact-pos-row" id="pickerExactPosRow">
+        <span class="drawer-exact-lbl" id="lblPickerExactPos">Posición Exacta:</span>
+        <div class="drawer-pos-filters" id="pickerExactPosFilters">
+          <!-- Renderizado dinámicamente según idioma y filtro -->
+        </div>
+      </div>
     </div>
     <div class="drawer-cards-list" id="pickerCardsList">
       <!-- Cartas disponibles renderizadas dinámicamente -->
