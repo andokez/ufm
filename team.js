@@ -1326,17 +1326,8 @@ function calculateTeamRatings() {
   var totalPrice = startersPrice + benchPrice;
   var totalAcqPrice = startersAcqPrice + benchAcqPrice;
 
-  var avg = starters.length > 0 ? (sum / 11) : 0;
-  var excess = 0;
-  myTeamState.starters.forEach(function(p, i) {
-    if (!p) return;
-    var baseRat = +p.rating || 0;
-    var targetSlot = formation.slots[i];
-    var isExact = normalizePosition(p.position) === normalizePosition(targetSlot.pos);
-    var rat = isExact ? baseRat : Math.round(baseRat / 2);
-    if (rat > avg) excess += (rat - avg);
-  });
-  var finalOvr = starters.length > 0 ? (avg + (excess / 11)) : 0;
+  // Media aritmética exacta de la alineación titular (sumar las 11 medias y dividir entre 11)
+  var finalOvr = starters.length > 0 ? (sum / 11) : 0;
 
   return {
     ovr: starters.length > 0 ? finalOvr.toFixed(1) : '0.0',

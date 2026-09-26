@@ -500,11 +500,15 @@ function getDateStatus(isoDate) {
   };
 }
 
-function getPlayerKey(name, pos, rarity) {
+function getPlayerKey(name, pos, rarity, rating, id) {
+  if (id && String(id).trim() !== '') {
+    return String(id).trim().toLowerCase();
+  }
   var cleanN = cleanPlayerName(name);
   var normP = normalizePosition(pos);
   var normR = (rarity || 'normal').toLowerCase();
-  return cleanN.toLowerCase() + '_' + normP.toLowerCase() + '_' + normR;
+  var rat = rating != null ? String(rating) : '';
+  return cleanN.toLowerCase() + '_' + normP.toLowerCase() + '_' + normR + '_' + rat;
 }
 
 (function loadInitialData() {
@@ -1679,7 +1683,7 @@ function mergePlayerData(incomingList) {
   var baseList = (mode === 'replace') ? [] : players;
   
   var map = new Map(baseList.map(function(p) { 
-    return [getPlayerKey(p.name, p.position, p.rarity), p]; 
+    return [getPlayerKey(p.name, p.position, p.rarity, p.rating, p.id), p]; 
   }));
   var count = 0;
 
@@ -1687,7 +1691,7 @@ function mergePlayerData(incomingList) {
     if (p && p.name) {
       var normPos = normalizePosition(p.position);
       var pRarity = p.rarity || 'normal';
-      var key = getPlayerKey(p.name, normPos, pRarity);
+      var key = getPlayerKey(p.name, normPos, pRarity, p.rating, p.id);
       
       var existing = map.get(key);
       var assignedId = (existing && existing.id) ? existing.id : (p.id || ('p-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5)));
