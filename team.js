@@ -226,6 +226,37 @@ function normalizePosition(p) {
   var up = String(p).trim().toUpperCase();
   return reversePosLookup[up] || up;
 }
+// Obtiene una clave única de la persona física (independiente de su versión/rareza)
+function getPersonId(p) {
+  if (!p) return '';
+  var cleanName = (p.name || '').replace(/\s*\([^)]*\)/g, '').trim().toLowerCase();
+  var nat = (p.country || '').trim().toLowerCase();
+  // Combina nombre limpio + país para diferenciar a jugadores con igual apellido
+  return cleanName + '_' + nat;
+}
+
+// Comprueba si esa misma persona ya está en el campo o en el banquillo
+function isPersonAlreadyInTeam(player, excludeType, excludeIndex) {
+  if (!player) return false;
+  var targetKey = getPersonId(player);
+  if (!targetKey) return false;
+
+  // Revisar titulares
+  for (var i = 0; i < myTeamState.starters.length; i++) {
+    if (excludeType === 'starter' && excludeIndex === i) continue;
+    var s = myTeamState.starters[i];
+    if (s && getPersonId(s) === targetKey) return true;
+  }
+
+  // Revisar banquillo
+  for (var j = 0; j < myTeamState.bench.length; j++) {
+    if (excludeType === 'bench' && excludeIndex === j) continue;
+    var b = myTeamState.bench[j];
+    if (b && getPersonId(b) === targetKey) return true;
+  }
+
+  return false;
+}
 
 function displayPos(p) {
   if (!p) return '—';
@@ -1647,7 +1678,7 @@ function triggerSwapFromContext() {
   if (target.type === 'starter') {
     openPickerForSlot(target.index);
   } else {
-    openPickerForBench();
+    openPickerForBench(target.index);
   }
 }
 
@@ -1793,7 +1824,7 @@ function changePlayerFromDetail() {
   if (target.type === 'starter') {
     openPickerForSlot(target.index);
   } else {
-    openPickerForBench();
+    openPickerForBench(target.index);
   }
 }
 
@@ -1861,8 +1892,9 @@ function openPickerForSlot(slotIndex) {
   filterPickerPlayers();
 }
 
-function openPickerForBench() {
+function openPickerForBench(benchIndex) {
   pickerTargetType = 'bench';
+  activeSlotIndex = (benchIndex !== undefined && benchIndex !== null) ? benchIndex : -1;
   pickerPosFilter = 'ALL';
   updatePickerPosButtons();
   document.getElementById('playerPickerModal').classList.add('open');
@@ -1917,9 +1949,13 @@ function filterPickerPlayers() {
   container.innerHTML = filtered.slice(0, 48).map(p => {
     var flag = getFlagUrl(p.country);
     var priceStr = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : 'Sin precio';
+    var inTeam = isPersonAlreadyInTeam(p, pickerTargetType, activeSlotIndex);
+    var dupClass = inTeam ? 'already-in-team' : '';
+    var dupBadge = inTeam ? `<span class="in-team-tag">${currentLang === 'es' ? 'EN EQUIPO' : 'IN SQUAD'}</span>` : '';
 
     return `
-      <div class="drawer-player-card" onclick="assignPickedPlayer('${p.id || p.name}')">
+      <div class="drawer-player-card ${dupClass}" onclick="assignPickedPlayer('${p.id || p.name}')">
+        ${dupBadge}
         <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:4px;">
           <b style="color:var(--gold); font-family:var(--font-display); font-size:16px;">${p.rating}</b>
           <span style="font-size:11px; font-weight:800; color:#fff;">${displayPos(p.position)}</span>
@@ -1940,9 +1976,22 @@ function assignPickedPlayer(pIdOrName) {
   var player = allPlayers.find(x => (x.id && x.id === pIdOrName) || x.name === pIdOrName);
   if (!player) return;
 
+  // Excluye el slot que estás reemplazando para permitir sustituir una versión por otra del mismo jugador
+  var isDup = isPersonAlreadyInTeam(player, pickerTargetType, activeSlotIndex);
+  if (isDup) {
+    alert(currentLang === 'es' 
+      ? '¡Ya tienes una versión de ' + player.name + ' en otra posición de la plantilla o banquillo!'
+      : 'You already have a version of ' + player.name + ' in another position of your squad or bench!');
+    return;
+  }
+
   if (pickerTargetType === 'starter' && activeSlotIndex >= 0) {
     myTeamState.starters[activeSlotIndex] = Object.assign({}, player);
+  } else if (pickerTargetType === 'bench' && activeSlotIndex >= 0 && activeSlotIndex < myTeamState.bench.length) {
+    // Si se eligió sustituir a un suplente existente, lo reemplaza en su misma posición
+    myTeamState.bench[activeSlotIndex] = Object.assign({}, player);
   } else {
+    // Si se pulsó el botón general "+ Añadir Suplente"
     myTeamState.bench.push(Object.assign({}, player));
   }
 
@@ -1966,7 +2015,7 @@ function autoCompleteTeam() {
       compatible.sort((a,b) => (+b.rating || 0) - (+a.rating || 0));
 
       // Asignar uno que no esté ya en los titulares
-      var chosen = compatible.find(p => !myTeamState.starters.some(s => s && (s.id === p.id || s.name === p.name)));
+      var chosen = compatible.find(p => !isPersonAlreadyInTeam(p, 'starter', idx));
       if (chosen) {
         myTeamState.starters[idx] = Object.assign({}, chosen);
       }
