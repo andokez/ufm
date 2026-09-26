@@ -54,7 +54,22 @@ var i18nTeam = {
     stageTotalWord: "Total (11 + Banquillo):", stageTotalAcqWord: "Adquisición:",
     benchTotalWord: "Total Banquillo:", benchAcqWord: "Adquisición Banquillo:",
     detAcqTitle: "Precio Adquisición", savePricesBtn: "Guardar Precios",
-    pricesUpdatedMsg: "Precios del jugador actualizados"
+    pricesUpdatedMsg: "Precios del jugador actualizados",
+    helpTitle: "Sistema de Química y Plantilla",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">¿Cómo funciona la Química?</h4>
+<p>Cada jugador puede conseguir hasta <b>3 puntos de química</b> (representados por los rombos en su ficha):</p>
+<ul>
+  <li><b>Mismo País:</b> 2 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
+  <li><b>Misma Liga:</b> 3 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
+  <li><b>Mismo Club o Rareza Especial / Evento:</b> 2 jugadores (+1), 4 jugadores (+2), 7 jugadores (+3). <i>(Nota: la rareza normal no suma para la química).</i></li>
+</ul>
+<p>Los jugadores que juegan en su <b>posición exacta</b> activan su bonificación de química con flecha verde (<span style="color:#22c55e">▲</span>). Los jugadores fuera de posición tienen flecha roja (<span style="color:#ef4444">▼</span>), reciben 0 de química y su valoración (media) se reduce a la mitad.</p>
+<h4 style="color:var(--gold);">Modos de Visualización</h4>
+<p>Pulsa el botón <b>CAMBIAR</b> en la barra izquierda para alternar entre la <b>Vista Fotográfica</b>, la <b>Vista Táctica de Atributos</b> (país, liga y evento) y la <b>Vista de Estadísticas</b> como en Ultimate Team.</p>`,
+    squadManagerTitle: "Gestor de Alineaciones",
+    squadSave: "💾 Guardar Plantilla Actual",
+    squadAuto: "⚡ Autocompletar con Base de Datos",
+    squadClear: "🗑️ Vaciar Alineación Completa"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
@@ -89,7 +104,22 @@ var i18nTeam = {
     stageTotalWord: "Total (11 + Bench):", stageTotalAcqWord: "Acquisition:",
     benchTotalWord: "Total Bench:", benchAcqWord: "Bench Acquisition:",
     detAcqTitle: "Acquisition Price", savePricesBtn: "Save Prices",
-    pricesUpdatedMsg: "Player prices updated"
+    pricesUpdatedMsg: "Player prices updated",
+    helpTitle: "Chemistry & Squad System",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">How does Chemistry work?</h4>
+<p>Each player can earn up to <b>3 chemistry points</b> (represented by the diamonds on their card):</p>
+<ul>
+  <li><b>Same Nation:</b> 2 players (+1), 5 players (+2), 8 players (+3).</li>
+  <li><b>Same League:</b> 3 players (+1), 5 players (+2), 8 players (+3).</li>
+  <li><b>Same Club or Special Rarity / Event:</b> 2 players (+1), 4 players (+2), 7 players (+3). <i>(Note: normal rarity does not add chemistry).</i></li>
+</ul>
+<p>Players placed in their <b>exact position</b> activate their chemistry bonus with a green arrow (<span style="color:#22c55e">▲</span>). Players out of position get a red arrow (<span style="color:#ef4444">▼</span>), receive 0 chemistry, and their overall rating is reduced to half.</p>
+<h4 style="color:var(--gold);">View Modes</h4>
+<p>Click the <b>TOGGLE</b> button on the left sidebar to switch between <b>Photo View</b>, <b>Tactical Chemistry View</b> (nation, league, event), and <b>Player Stats View</b> just like Ultimate Team.</p>`,
+    squadManagerTitle: "Squad Manager",
+    squadSave: "💾 Save Current Squad",
+    squadAuto: "⚡ Auto Build with Database",
+    squadClear: "🗑️ Clear Full Squad"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
@@ -124,7 +154,22 @@ var i18nTeam = {
     stageTotalWord: "Total (11 + Banc) :", stageTotalAcqWord: "Acquisition :",
     benchTotalWord: "Total Banc :", benchAcqWord: "Acquisition Banc :",
     detAcqTitle: "Prix d'Acquisition", savePricesBtn: "Enregistrer les prix",
-    pricesUpdatedMsg: "Prix du joueur mis à jour"
+    pricesUpdatedMsg: "Prix du joueur mis à jour",
+    helpTitle: "Système de Collectif et Équipe",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">Comment fonctionne le Collectif ?</h4>
+<p>Chaque joueur peut obtenir jusqu'à <b>3 points de collectif</b> (représentés par les losanges sur sa carte) :</p>
+<ul>
+  <li><b>Même Pays :</b> 2 joueurs (+1), 5 joueurs (+2), 8 joueurs (+3).</li>
+  <li><b>Même Ligue :</b> 3 joueurs (+1), 5 joueurs (+2), 8 joueurs (+3).</li>
+  <li><b>Même Club ou Rareté Spéciale / Événement :</b> 2 joueurs (+1), 4 joueurs (+2), 7 joueurs (+3). <i>(Remarque : la rareté normale n'ajoute pas de collectif).</i></li>
+</ul>
+<p>Les joueurs à leur <b>poste exact</b> activent leur bonus de collectif avec une flèche verte (<span style="color:#22c55e">▲</span>). Les joueurs hors de leur poste ont une flèche rouge (<span style="color:#ef4444">▼</span>), reçoivent 0 de collectif et leur note générale est réduite de moitié.</p>
+<h4 style="color:var(--gold);">Modes d'Affichage</h4>
+<p>Cliquez sur le bouton <b>CHANGER</b> dans le panneau gauche pour basculer entre la <b>Vue Photo</b>, la <b>Vue Tactique de Collectif</b> (pays, ligue, événement) et la <b>Vue Statistiques</b> comme dans Ultimate Team.</p>`,
+    squadManagerTitle: "Gestionnaire d'Équipe",
+    squadSave: "💾 Enregistrer l'équipe actuelle",
+    squadAuto: "⚡ Auto Remplir depuis la base",
+    squadClear: "🗑️ Vider toute l'équipe"
   },
   de: {
     navHome: "Startseite", navDb: "Datenbank", navCalc: "SBC-Rechner", navTeam: "Mein Team",
@@ -159,7 +204,22 @@ var i18nTeam = {
     stageTotalWord: "Gesamt (11 + Bank):", stageTotalAcqWord: "Einkauf:",
     benchTotalWord: "Gesamte Bank:", benchAcqWord: "Bank Einkauf:",
     detAcqTitle: "Einkaufspreis", savePricesBtn: "Preise speichern",
-    pricesUpdatedMsg: "Spielerpreise aktualisiert"
+    pricesUpdatedMsg: "Spielerpreise aktualisiert",
+    helpTitle: "Chemie- und Teamsystem",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">Wie funktioniert die Chemie?</h4>
+<p>Jeder Spieler kann bis zu <b>3 Chemie-Punkte</b> erhalten (dargestellt durch die Rauten auf seiner Karte):</p>
+<ul>
+  <li><b>Gleiche Nation:</b> 2 Spieler (+1), 5 Spieler (+2), 8 Spieler (+3).</li>
+  <li><b>Gleiche Liga:</b> 3 Spieler (+1), 5 Spieler (+2), 8 Spieler (+3).</li>
+  <li><b>Gleicher Verein oder Spezielle Seltenheit / Event:</b> 2 Spieler (+1), 4 Spieler (+2), 7 Spieler (+3). <i>(Hinweis: Normale Seltenheit gibt keine Chemie).</i></li>
+</ul>
+<p>Spieler auf ihrer <b>exakten Position</b> aktivieren ihren Chemiebonus mit einem grünen Pfeil (<span style="color:#22c55e">▲</span>). Spieler außerhalb ihrer Position erhalten einen roten Pfeil (<span style="color:#ef4444">▼</span>), bekommen 0 Chemie und ihre Gesamtwertung wird halbiert.</p>
+<h4 style="color:var(--gold);">Ansichtsmodi</h4>
+<p>Klicken Sie auf <b>ANSICHT</b> in der linken Leiste, um zwischen <b>Fotoansicht</b>, <b>Taktischer Chemieansicht</b> (Nation, Liga, Event) und <b>Statistikansicht</b> wie in Ultimate Team zu wechseln.</p>`,
+    squadManagerTitle: "Aufstellungs-Manager",
+    squadSave: "💾 Aktuelles Team speichern",
+    squadAuto: "⚡ Automatisch aus Datenbank füllen",
+    squadClear: "🗑️ Gesamtes Team leeren"
   },
   it: {
     navHome: "Home", navDb: "Database", navCalc: "Calcolatore SCR", navTeam: "La Mia Squadra",
@@ -194,7 +254,22 @@ var i18nTeam = {
     stageTotalWord: "Totale (11 + Panchina):", stageTotalAcqWord: "Acquisto:",
     benchTotalWord: "Totale Panchina:", benchAcqWord: "Acquisto Panchina:",
     detAcqTitle: "Prezzo di Acquisto", savePricesBtn: "Salva Prezzi",
-    pricesUpdatedMsg: "Prezzi del giocatore aggiornati"
+    pricesUpdatedMsg: "Prezzi del giocatore aggiornati",
+    helpTitle: "Sistema Intesa e Squadra",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">Come funziona l'Intesa?</h4>
+<p>Ogni giocatore può ottenere fino a <b>3 punti intesa</b> (rappresentati dai rombi sulla sua carta):</p>
+<ul>
+  <li><b>Stessa Nazione:</b> 2 giocatori (+1), 5 giocatori (+2), 8 giocatori (+3).</li>
+  <li><b>Stesso Campionato:</b> 3 giocatori (+1), 5 giocatori (+2), 8 giocatori (+3).</li>
+  <li><b>Stesso Club o Rarità Speciale / Evento:</b> 2 giocatori (+1), 4 giocatori (+2), 7 giocatori (+3). <i>(Nota: la rarità normale non dà intesa).</i></li>
+</ul>
+<p>I giocatori nel loro <b>ruolo esatto</b> attivano il bonus intesa con una freccia verde (<span style="color:#22c55e">▲</span>). I giocatori fuori ruolo hanno una freccia rossa (<span style="color:#ef4444">▼</span>), ricevono 0 intesa e la loro valutazione generale viene dimezzata.</p>
+<h4 style="color:var(--gold);">Modalità di Visualizzazione</h4>
+<p>Premi il pulsante <b>CAMBIA</b> nella barra a sinistra per alternare tra <b>Vista Foto</b>, <b>Vista Tattica Intesa</b> (nazione, campionato, evento) e <b>Vista Statistiche</b> come in Ultimate Team.</p>`,
+    squadManagerTitle: "Gestione Formazioni",
+    squadSave: "💾 Salva squadra attuale",
+    squadAuto: "⚡ Completa automaticamente da database",
+    squadClear: "🗑️ Svuota squadra completa"
   },
   pt: {
     navHome: "Início", navDb: "Base de Dados", navCalc: "Calculadora DME", navTeam: "A Minha Equipa",
@@ -229,7 +304,22 @@ var i18nTeam = {
     stageTotalWord: "Total (11 + Banco):", stageTotalAcqWord: "Aquisição:",
     benchTotalWord: "Total Banco:", benchAcqWord: "Aquisição Banco:",
     detAcqTitle: "Preço de Aquisição", savePricesBtn: "Salvar Preços",
-    pricesUpdatedMsg: "Preços do jogador actualizados"
+    pricesUpdatedMsg: "Preços do jogador actualizados",
+    helpTitle: "Sistema de Entrosamento e Equipa",
+    helpBodyHtml: `<h4 style="color:var(--gold); margin-top:0;">Como funciona o Entrosamento?</h4>
+<p>Cada jogador pode obter até <b>3 pontos de entrosamento</b> (representados pelos losangos na sua carta):</p>
+<ul>
+  <li><b>Mesmo País:</b> 2 jogadores (+1), 5 jogadores (+2), 8 jogadores (+3).</li>
+  <li><b>Mesma Liga:</b> 3 jogadores (+1), 5 jogadores (+2), 8 jogadores (+3).</li>
+  <li><b>Mesmo Clube ou Raridade Especial / Evento:</b> 2 jogadores (+1), 4 jogadores (+2), 7 jogadores (+3). <i>(Nota: a raridade normal não adiciona entrosamento).</i></li>
+</ul>
+<p>Os jogadores na sua <b>posição exata</b> ativam o seu bónus com seta verde (<span style="color:#22c55e">▲</span>). Os jogadores fora de posição recebem seta vermelha (<span style="color:#ef4444">▼</span>), 0 de entrosamento e a sua classificação é reduzida para metade.</p>
+<h4 style="color:var(--gold);">Modos de Visualização</h4>
+<p>Carregue no botão <b>ALTERNAR</b> na barra lateral esquerda para alternar entre <b>Vista Foto</b>, <b>Vista Tática de Entrosamento</b> (país, liga, evento) e <b>Vista de Estatísticas</b> como no Ultimate Team.</p>`,
+    squadManagerTitle: "Gestor de Escalações",
+    squadSave: "💾 Salvar equipa atual",
+    squadAuto: "⚡ Preenchimento automático da base",
+    squadClear: "🗑️ Limpar equipa completa"
   }
 };
 
@@ -377,7 +467,7 @@ function getLeagueCode(league) {
 }
 
 function getRarityCode(rarity) {
-  if (!rarity) return 'GOLD';
+  if (!rarity || !isSpecialRarityType(rarity)) return '';
   var r = String(rarity).toLowerCase();
   if (r.includes('euro')) return 'EURO';
   if (r.includes('totw')) return 'WEEK';
@@ -385,16 +475,14 @@ function getRarityCode(rarity) {
   if (r.includes('ptc')) return 'PTC';
   if (r.includes('season')) return 'NWS';
   if (r.includes('potm')) return 'POTM';
-  if (r.includes('silver')) return 'SILV';
-  if (r.includes('bronze')) return 'BRNZ';
-  return 'GOLD';
+  return r.substring(0, 4).toUpperCase();
 }
 
 var DEFAULT_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='124' height='124' viewBox='0 0 24 24' fill='%23ffffff'><path d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'/></svg>";
 
 function getShieldType(rarity, rating) {
   var r = (rarity || 'normal').toLowerCase();
-  if (r === 'normal') {
+  if (r === 'normal' || !isSpecialRarityType(r)) {
     var rat = +rating || 0;
     if (rat <= 64) return 'bronze';
     if (rat <= 74) return 'silver';
@@ -407,7 +495,7 @@ function getShieldType(rarity, rating) {
 function getRarityClass(rarity, rating) {
   var r = (rarity || 'normal').toLowerCase();
   var rat = +rating || 0;
-  if (r === 'normal') {
+  if (r === 'normal' || !isSpecialRarityType(r)) {
     if (rat <= 64) return 'card-bronze';
     if (rat <= 74) return 'card-silver';
     if (rat <= 82) return 'card-gold-light';
@@ -427,21 +515,21 @@ function getRarityClass(rarity, rating) {
 function isSpecialRarityType(rarity) {
   if (!rarity) return false;
   var r = String(rarity).trim().toLowerCase();
-  var normalList = ['normal', 'oro', 'gold', 'plata', 'silver', 'bronce', 'bronze', 'oro común', 'oro unico', 'oro único', 'oro standard'];
+  var normalList = ['normal', 'oro', 'gold', 'plata', 'silver', 'bronce', 'bronze', 'oro común', 'oro comun', 'oro coman', 'oro unico', 'oro único', 'oro standard', 'standard'];
   return !normalList.includes(r);
 }
 
 function getPlayerCategoryChem(p, slotPos) {
   if (!p) return { countryPts: 0, leaguePts: 0, rarityPts: 0, total: 0 };
-  var chemData = calculateTeamChemistry();
-  var isCompatible = slotPos ? isPosCompatible(p.position, slotPos) : true;
-  if (!isCompatible) {
+  var isExact = slotPos ? (normalizePosition(p.position) === normalizePosition(slotPos)) : true;
+  if (!isExact) {
     return { countryPts: 0, leaguePts: 0, rarityPts: 0, total: 0 };
   }
+  var chemData = calculateTeamChemistry();
   var cCode = getCountryCode(p.country);
   var lCode = getLeagueCode(p.league);
-  var rCode = getRarityCode(p.rarity);
   var isSpecial = isSpecialRarityType(p.rarity);
+  var rCode = isSpecial ? getRarityCode(p.rarity) : '';
 
   var cCnt = chemData.countryCounts[cCode] || 0;
   var cPts = 0;
@@ -456,12 +544,12 @@ function getPlayerCategoryChem(p, slotPos) {
   else if (lCnt >= 3) lPts = 1;
 
   var rPts = 0;
-  if (isSpecial) {
+  // La rareza normal NO cuenta para subir química, solo eventos/rareza especial
+  if (isSpecial && rCode) {
     var rCnt = chemData.rarityCounts[rCode] || 0;
     if (rCnt >= 7) rPts = 3;
     else if (rCnt >= 4) rPts = 2;
     else if (rCnt >= 2) rPts = 1;
-    if (rPts === 0 && rCnt >= 1) rPts = 1;
   }
 
   return {
@@ -481,6 +569,13 @@ function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos) {
   var t = i18nTeam[currentLang] || i18nTeam.es;
   var sizeClass = isDetailModal ? 'shield-db-size' : 'shield-team-size';
   var isGK = normalizePosition(p.position) === 'GK';
+
+  // Si está en el campo (slotPos presente), verificar si está en su posición exacta
+  var isExact = (!slotPos || isBench || isDetailModal) ? true : (normalizePosition(p.position) === normalizePosition(slotPos));
+  var baseRating = +p.rating || 0;
+  // Penalización a la media por estar en otra posición: le baja la media a la mitad
+  var effectiveRating = isExact ? baseRating : Math.round(baseRating / 2);
+  var ratStyle = isExact ? '' : 'style="color:#ef4444;" title="Penalización por posición: ' + baseRating + ' ➔ ' + effectiveRating + '"';
 
   // 1. MODAL DETALLE: Carta completa ampliada con banderas y estadísticas
   if (isDetailModal) {
@@ -555,7 +650,7 @@ function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos) {
         <div class="fut-card ${rClass} card-shield-shape">
           <div class="card-top">
             <div class="card-meta">
-              <span class="card-rat">${p.rating}</span>
+              <span class="card-rat" ${ratStyle}>${effectiveRating}</span>
               <span class="card-pos">${displayPos(p.position)}</span>
             </div>
             <div class="card-img-wrap">
@@ -597,7 +692,7 @@ function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos) {
       <div class="card-shield-border shield-${shieldType} ${sizeClass}">
         <div class="pitch-card-mode2">
           <div class="mode2-header">
-            <span class="mode2-rat">${p.rating}</span>
+            <span class="mode2-rat" ${ratStyle}>${effectiveRating}</span>
             <span class="mode2-pos">${displayPos(p.position)}</span>
           </div>
           <div class="mode2-rows-wrap">
@@ -1085,7 +1180,8 @@ function getAllDbPlayers() {
 // Cada jugador puede tener hasta 3 puntos (Hexágonos/Rayos).
 // Bonificación por País: >=2 -> 1, >=5 -> 2, >=8 -> 3
 // Bonificación por Liga: >=3 -> 1, >=5 -> 2, >=8 -> 3
-// Bonificación por Club/Rareza: >=2 -> 1, >=4 -> 2, >=7 -> 3
+// Bonificación por Club o Evento/Rareza Especial: >=2 -> 1, >=4 -> 2, >=7 -> 3
+// (IMPORTANTE: La rareza normal NO cuenta para la química)
 function calculateTeamChemistry() {
   var starters = myTeamState.starters;
   var formation = FORMATIONS[activeFormationId] || FORMATIONS['433_def'];
@@ -1095,17 +1191,24 @@ function calculateTeamChemistry() {
   var clubCounts = {};
   var rarityCounts = {};
 
-  starters.forEach(function(p) {
+  starters.forEach(function(p, i) {
     if (!p) return;
+    var targetSlot = formation.slots[i];
+    // En química solo contribuyen jugadores colocados en su posición exacta
+    var isExactPosition = normalizePosition(p.position) === normalizePosition(targetSlot.pos);
+    if (!isExactPosition) return;
+
     var cCode = getCountryCode(p.country);
     var lCode = getLeagueCode(p.league);
     var club = getDisplayClub(p.club);
-    var rCode = getRarityCode(p.rarity);
+    var isSpecial = isSpecialRarityType(p.rarity);
+    var rCode = isSpecial ? getRarityCode(p.rarity) : '';
 
     if (cCode) countryCounts[cCode] = (countryCounts[cCode] || 0) + 1;
     if (lCode) leagueCounts[lCode] = (leagueCounts[lCode] || 0) + 1;
     if (club) clubCounts[club] = (clubCounts[club] || 0) + 1;
-    if (rCode) rarityCounts[rCode] = (rarityCounts[rCode] || 0) + 1;
+    // Solo rarezas especiales/eventos suman química (normal nunca)
+    if (isSpecial && rCode) rarityCounts[rCode] = (rarityCounts[rCode] || 0) + 1;
   });
 
   var playerChemPoints = Array(11).fill(0);
@@ -1116,10 +1219,10 @@ function calculateTeamChemistry() {
     if (!p) return;
     occupiedCount++;
     var targetSlot = formation.slots[i];
-    var isPositionMatch = isPosCompatible(p.position, targetSlot.pos);
+    var isExactPosition = normalizePosition(p.position) === normalizePosition(targetSlot.pos);
 
-    if (!isPositionMatch) {
-      // Fuera de posición: 0 de química
+    if (!isExactPosition) {
+      // Fuera de su posición exacta: 0 de química
       playerChemPoints[i] = 0;
       return;
     }
@@ -1128,7 +1231,8 @@ function calculateTeamChemistry() {
     var cCode = getCountryCode(p.country);
     var lCode = getLeagueCode(p.league);
     var club = getDisplayClub(p.club);
-    var rCode = getRarityCode(p.rarity);
+    var isSpecial = isSpecialRarityType(p.rarity);
+    var rCode = isSpecial ? getRarityCode(p.rarity) : '';
 
     // Puntos por País
     var cCnt = countryCounts[cCode] || 0;
@@ -1142,9 +1246,9 @@ function calculateTeamChemistry() {
     else if (lCnt >= 5) pts += 2;
     else if (lCnt >= 3) pts += 1;
 
-    // Puntos por Club o Rareza
+    // Puntos por Club o Rareza Especial (¡la rareza normal NO cuenta!)
     var clCnt = club ? (clubCounts[club] || 0) : 0;
-    var rCnt = rarityCounts[rCode] || 0;
+    var rCnt = (isSpecial && rCode) ? (rarityCounts[rCode] || 0) : 0;
     var maxCR = Math.max(clCnt, rCnt);
     if (maxCR >= 7) pts += 3;
     else if (maxCR >= 4) pts += 2;
@@ -1184,12 +1288,17 @@ function calculateTeamRatings() {
 
   myTeamState.starters.forEach(function(p, i) {
     if (!p) return;
-    var rat = +p.rating || 0;
+    var baseRat = +p.rating || 0;
+    var targetSlot = formation.slots[i];
+    var isExact = normalizePosition(p.position) === normalizePosition(targetSlot.pos);
+    // Penalización por estar fuera de posición: la media baja a la mitad
+    var rat = isExact ? baseRat : Math.round(baseRat / 2);
+
     sum += rat;
     startersPrice += getPlayerPrice(p);
     startersAcqPrice += getPlayerAcqPrice(p);
 
-    var sec = formation.slots[i].sector;
+    var sec = targetSlot.sector;
     if (sec === 'DEL') { delSum += rat; delCount++; }
     else if (sec === 'CEN') { cenSum += rat; cenCount++; }
     else { defSum += rat; defCount++; }
@@ -1206,9 +1315,12 @@ function calculateTeamRatings() {
 
   var avg = starters.length > 0 ? (sum / 11) : 0;
   var excess = 0;
-  myTeamState.starters.forEach(function(p) {
+  myTeamState.starters.forEach(function(p, i) {
     if (!p) return;
-    var rat = +p.rating || 0;
+    var baseRat = +p.rating || 0;
+    var targetSlot = formation.slots[i];
+    var isExact = normalizePosition(p.position) === normalizePosition(targetSlot.pos);
+    var rat = isExact ? baseRat : Math.round(baseRat / 2);
     if (rat > avg) excess += (rat - avg);
   });
   var finalOvr = starters.length > 0 ? (avg + (excess / 11)) : 0;
@@ -1293,9 +1405,10 @@ function renderPitch() {
     } else {
       // Slot Ocupado
       var pts = chemData.playerChem[index] || 0;
-      var isMatch = normalizePosition(p.position) === normalizePosition(slot.pos);
-      var arrowIcon = isMatch ? '▲▲' : (isPosCompatible(p.position, slot.pos) ? '▲' : '▼');
-      var arrowClass = isMatch ? 'compat-match' : (isPosCompatible(p.position, slot.pos) ? 'compat-match' : 'compat-wrong');
+      var isExact = normalizePosition(p.position) === normalizePosition(slot.pos);
+      // Solo 1 flecha: verde hacia arriba si está en su posición exacta, roja hacia abajo si no lo está
+      var arrowIcon = isExact ? '▲' : '▼';
+      var arrowClass = isExact ? 'compat-match' : 'compat-wrong';
 
       var cardHtml = renderPlayerShieldCard(p, pts, false, false, slot.pos);
 
@@ -2202,6 +2315,7 @@ function autoCompleteTeam() {
 
 // MODAL DE AYUDA
 function openHelpModal() {
+  applyTranslations();
   document.getElementById('helpModal').classList.add('open');
 }
 function closeHelpModal() {
@@ -2303,6 +2417,19 @@ function applyTranslations() {
   setTxt('lblPitch11Acq', t.pitch11Acq || 'Precio Adquisición (11):');
   setTxt('lblStageTotalWord', t.stageTotalWord || 'Total (11 + Banquillo):');
   setTxt('lblStageTotalAcqWord', t.stageTotalAcqWord || 'Adquisición:');
+
+  // Traducción dinámica de la ayuda '?'
+  setTxt('lblHelpTitle', t.helpTitle || 'Sistema de Química y Plantilla');
+  var helpBody = document.getElementById('helpModalBody');
+  if (helpBody && t.helpBodyHtml) {
+    helpBody.innerHTML = t.helpBodyHtml;
+  }
+
+  // Traducción del gestor de alineaciones
+  setTxt('lblSquadManagerTitle', t.squadManagerTitle || 'Gestor de Alineaciones');
+  setTxt('lblSquadSave', t.squadSave || '💾 Guardar Plantilla Actual');
+  setTxt('lblSquadAuto', t.squadAuto || '⚡ Autocompletar con Base de Datos');
+  setTxt('lblSquadClear', t.squadClear || '🗑️ Vaciar Alineación Completa');
 }
 
 // FUNCIÓN GENERAL DE RENDERIZADO

@@ -915,7 +915,8 @@
       text-shadow: 0 0 5px #22c55e;
     }
     .slot-compat-arrow.compat-wrong {
-      color: #eab308;
+      color: #ef4444;
+      text-shadow: 0 0 5px #ef4444;
     }
 
     /* COLUMNA DERECHA: PANEL LATERAL CON PESTAÑAS */
@@ -1849,17 +1850,17 @@
       <h3 id="lblHelpTitle">Sistema de Química y Plantilla</h3>
       <button type="button" class="btn-icon-gold" onclick="closeHelpModal()">✕</button>
     </div>
-    <div style="padding:18px; overflow-y:auto; line-height:1.6; color:#d1d5db; font-size:13px;">
+    <div id="helpModalBody" style="padding:18px; overflow-y:auto; line-height:1.6; color:#d1d5db; font-size:13px;">
       <h4 style="color:var(--gold); margin-top:0;">¿Cómo funciona la Química?</h4>
       <p>Cada jugador puede conseguir hasta <b>3 puntos de química</b> (representados por los hexágonos en su ficha):</p>
       <ul>
         <li><b>Mismo País:</b> 2 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
         <li><b>Misma Liga:</b> 3 jugadores (+1), 5 jugadores (+2), 8 jugadores (+3).</li>
-        <li><b>Mismo Club o Rareza/Evento:</b> 2 jugadores (+1), 4 jugadores (+2), 7 jugadores (+3).</li>
+        <li><b>Mismo Club o Rareza Especial / Evento:</b> 2 jugadores (+1), 4 jugadores (+2), 7 jugadores (+3). <i>(La rareza normal no suma para la química).</i></li>
       </ul>
-      <p>Los jugadores que juegan en su <b>posición natural</b> activan su bonificación de química (flecha verde <span style="color:#22c55e">▲▲</span>). Los jugadores fuera de posición reciben una penalización y 0 química (<span style="color:#eab308">▼</span>).</p>
+      <p>Los jugadores que juegan en su <b>posición exacta</b> activan su bonificación de química con flecha verde (<span style="color:#22c55e">▲</span>). Los jugadores fuera de posición tienen flecha roja (<span style="color:#ef4444">▼</span>), reciben 0 química y su valoración (media) se reduce a la mitad.</p>
       <h4 style="color:var(--gold);">Modos de Visualización</h4>
-      <p>Pulsa el botón <b>CAMBIAR</b> en la barra izquierda para alternar entre la <b>Vista Fotográfica</b> y la <b>Vista Táctica de Atributos</b> (país, liga y evento) exactamente como en Ultimate Team.</p>
+      <p>Pulsa el botón <b>CAMBIAR</b> en la barra izquierda para alternar entre la <b>Vista Fotográfica</b>, la <b>Vista Táctica de Atributos</b> (país, liga y evento) y la <b>Vista de Estadísticas</b> como en Ultimate Team.</p>
     </div>
   </div>
 </div>
@@ -1873,16 +1874,13 @@
     </div>
     <div style="padding:18px; display:flex; flex-direction:column; gap:12px;">
       <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="saveSquadSlot()">
-        <span>💾 Guardar Plantilla Actual</span>
-      </button>
-      <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="loadDefaultScreenshotSquad()">
-        <span>⭐ Cargar Plantilla de Ejemplo (4-3-3 Defensa)</span>
+        <span id="lblSquadSave">💾 Guardar Plantilla Actual</span>
       </button>
       <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px;" onclick="autoCompleteTeam(); closeSquadManagerModal();">
-        <span>⚡ Autocompletar con Base de Datos</span>
+        <span id="lblSquadAuto">⚡ Autocompletar con Base de Datos</span>
       </button>
       <button type="button" class="btn-hud-action" style="width:100%; padding:10px; font-size:13px; color:#ef4444; border-color:#ef4444;" onclick="clearAllStarters(); closeSquadManagerModal();">
-        <span>🗑️ Vaciar Alineación Completa</span>
+        <span id="lblSquadClear">🗑️ Vaciar Alineación Completa</span>
       </button>
     </div>
   </div>
