@@ -1286,25 +1286,35 @@
       overflow-y: auto;
       padding: 16px;
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(auto-fill, minmax(134px, 1fr));
+      gap: 16px 12px;
+      justify-items: center;
     }
     .drawer-player-card {
-      background: #171b13;
-      border: 1px solid rgba(197, 160, 74, 0.25);
-      border-radius: 8px;
-      padding: 8px;
+      background: transparent;
+      border: none;
+      padding: 0;
       cursor: pointer;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.2s;
+      transition: transform 0.15s ease, filter 0.15s ease;
+      position: relative;
     }
     .drawer-player-card:hover {
-      border-color: var(--gold);
-      background: #20271b;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.6);
+      transform: translateY(-4px);
+      filter: brightness(1.1);
+    }
+    .drawer-card-price {
+      margin-top: 5px;
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--gold);
+      background: rgba(17, 20, 14, 0.85);
+      border: 1px solid rgba(197, 160, 74, 0.35);
+      border-radius: 4px;
+      padding: 2px 7px;
+      line-height: 1.2;
     }
 
     /* Modal de Opciones de Slot Ocupado (Cambiar, Banquillo, Quitar) */

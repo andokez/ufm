@@ -1947,25 +1947,21 @@ function filterPickerPlayers() {
   if (!container) return;
 
   container.innerHTML = filtered.slice(0, 48).map(p => {
-    var flag = getFlagUrl(p.country);
-    var priceStr = p.price ? Number(p.price).toLocaleString('es-ES') + ' 🪙' : 'Sin precio';
     var inTeam = isPersonAlreadyInTeam(p, pickerTargetType, activeSlotIndex);
     var dupClass = inTeam ? 'already-in-team' : '';
-    var dupBadge = inTeam ? `<span class="in-team-tag">${currentLang === 'es' ? 'EN EQUIPO' : 'IN SQUAD'}</span>` : '';
+    var dupBadge = inTeam ? `<div class="in-team-tag">${currentLang === 'es' ? 'EN EQUIPO' : 'IN SQUAD'}</div>` : '';
+    var priceStr = (p.price !== '' && p.price != null && !isNaN(p.price) && +p.price > 0)
+      ? Number(p.price).toLocaleString('es-ES') + ' 🪙'
+      : (i18nTeam[currentLang] || i18nTeam.es).noPrice || 'Sin precio';
+
+    // Genera el escudo idéntico al del campo (vista frontal foto)
+    var shieldHtml = renderPlayerShieldCard(p, 0, true, false, null);
 
     return `
-      <div class="drawer-player-card ${dupClass}" onclick="assignPickedPlayer('${p.id || p.name}')">
+      <div class="drawer-player-card ${dupClass}" onclick="assignPickedPlayer('${p.id || p.name}')" title="${p.name} (${p.rating} · ${displayPos(p.position)})">
         ${dupBadge}
-        <div style="display:flex; justify-content:space-between; width:100%; align-items:center; margin-bottom:4px;">
-          <b style="color:var(--gold); font-family:var(--font-display); font-size:16px;">${p.rating}</b>
-          <span style="font-size:11px; font-weight:800; color:#fff;">${displayPos(p.position)}</span>
-        </div>
-        <img src="${flag}" style="width:24px; height:16px; object-fit:cover; border-radius:2px; margin-bottom:6px;">
-        <div style="font-size:12px; font-weight:900; color:#fff; text-align:center; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; width:100%;">
-          ${p.name}
-        </div>
-        <div style="font-size:10px; color:var(--muted); margin-top:2px;">${getDisplayClub(p.club)}</div>
-        <div style="font-size:10px; color:var(--gold); margin-top:6px; font-weight:800;">${priceStr}</div>
+        ${shieldHtml}
+        <div class="drawer-card-price">${priceStr}</div>
       </div>
     `;
   }).join('');
