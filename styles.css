@@ -2064,3 +2064,32 @@ input:focus, select:focus {
   color: #f87171;
   text-align: center;
 }
+
+/* Insignia de precio en la miniatura del sub-PTC */
+.sub-card-top-bar {
+  position: absolute;
+  top: 6px;
+  left: 8px;
+  right: 8px;
+  display: flex;
+  justify-content: space-between !important; /* Insignia a la izquierda, hexágono a la derecha */
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.sub-card-cost-badge {
+  background: rgba(10, 14, 10, 0.9);
+  border: 1px solid #8e7330;
+  backdrop-filter: blur(4px);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 900;
+  color: var(--gold);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.85);
+  pointer-events: none;
+  line-height: 1.2;
+  white-space: nowrap;
+}

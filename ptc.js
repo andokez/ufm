@@ -1379,6 +1379,54 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
   };
 }
 
+// Calcula el coste estimado de un sub-desafío de forma segura y rápida
+function getSubChallengeCost(sub, db, defaultPrices) {
+  try {
+    if (!sub || sub.isPending || !sub.target || !sub.players) return null;
+    var filterRarity = sub.requiredRarity || null;
+    var pPrices = filterRarity ? getActivePrices(filterRarity) : defaultPrices;
+    
+    // Si no hay precios cargados para calcular
+    if (!pPrices || Object.keys(pPrices).length === 0) return null;
+
+    // Usar resolución SBC matemática directa (ultra rápida y sin bloqueo de memoria)
+    var sol = solveSbc(sub.players, sub.target, pPrices);
+    if (sol && sol.cost > 0) {
+      return sol.cost;
+    }
+  } catch (err) {
+    console.warn("Error calculando coste de sub-desafío:", err);
+  }
+  return null;
+}
+
+// Calcula el coste total de un PTC sumando sus sub-PTCs
+function getPtcTotalCost(ptc, db, defaultPrices) {
+  try {
+    if (!ptc) return null;
+
+    if (ptc.subchallenges && ptc.subchallenges.length > 0) {
+      var totalCost = 0;
+      var hasValidCost = false;
+
+      for (var i = 0; i < ptc.subchallenges.length; i++) {
+        var sub = ptc.subchallenges[i];
+        var cost = getSubChallengeCost(sub, db, defaultPrices);
+        if (cost !== null) {
+          totalCost += cost;
+          hasValidCost = true;
+        }
+      }
+      return hasValidCost ? totalCost : null;
+    }
+
+    return getSubChallengeCost(ptc, db, defaultPrices);
+  } catch (err) {
+    console.warn("Error calculando coste total de PTC:", err);
+    return null;
+  }
+}
+
 function renderPtcList() {
   var t = i18n[currentLang] || i18n.es;
   var db = getDatabasePlayers();
@@ -1392,196 +1440,211 @@ function renderPtcList() {
   grid.innerHTML = '';
 
   filtered.forEach(function(ptc) {
-    var card = document.createElement('div');
-    card.onclick = function() { openPtcModal(ptc); };
+    try {
+      var card = document.createElement('div');
+      card.onclick = function() { openPtcModal(ptc); };
 
-    if (ptc.isRepeatable && ptc.bigRating) {
-      card.className = 'ptc-card-game ' + (ptc.theme || '');
-      var repeatTitle = (currentLang === 'es' ? 'REPETIBLE #' : 'REPEATABLE #') + ptc.repeatNum;
-      var pPrices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
-      var sSol = null;
-      if (priceSource === 'db' && db && db.length > 0) {
-        var dbFiltered = ptc.requiredRarity ? db.filter(function(p) { return p.rarity === ptc.requiredRarity; }) : db;
-        sSol = solveSquadWithRequirements(dbFiltered, ptc, pPrices);
-      } else {
-        sSol = solveSbc(ptc.players, ptc.target, pPrices);
-      }
-      var costBadgeText = sSol && sSol.cost ? (Number(sSol.cost).toLocaleString('es-ES') + ' 🪙') : '—';
+      // 1. REPETIBLES
+      if (ptc.isRepeatable && ptc.bigRating) {
+        card.className = 'ptc-card-game ' + (ptc.theme || '');
+        var repeatTitle = (currentLang === 'es' ? 'REPETIBLE #' : 'REPEATABLE #') + ptc.repeatNum;
+        var rCost = getPtcTotalCost(ptc, db, defaultPrices);
+        var costBadgeText = rCost ? (Number(rCost).toLocaleString('es-ES') + ' 🪙') : '—';
 
-      card.innerHTML = `
-        <div class="ptc-bg-side"></div>
-        <div class="ptc-card-cost-badge">${costBadgeText}</div>
-        <svg class="ptc-badge-icon" viewBox="0 0 24 24" fill="none" stroke="#fae69e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
-        </svg>
-        <div class="ptc-shield-plate">
-          <span class="ptc-rating-val">${ptc.bigRating}</span>
-        </div>
-        <div class="ptc-game-footer">
-          <span class="ptc-game-title">${repeatTitle}</span>
-          <div class="ptc-game-arrow-btn">❯</div>
-        </div>
-      `;
-      grid.appendChild(card);
-      return;
-    }
-
-    var rewardData = ptcRewards[ptc.id];
-
-    if (rewardData && (rewardData.type === 'wl' || ptc.id === 's_wl_1' || ptc.id === 's_wl_2')) {
-      card.className = 'ptc-card-wl';
-      var minR = ptc.id === 's_wl_2' ? 84 : 81;
-      var diffLabel = ptc.id === 's_wl_2' ? (currentLang === 'es' ? 'Media' : 'Medium') : (currentLang === 'es' ? 'Fácil' : 'Easy');
-      var hexColorClass = ptc.id === 's_wl_2' ? 'ptc-hex-yellow' : 'ptc-hex-green';
-      var wlTitle = getPtcTitle(ptc.id);
-
-      card.innerHTML = `
-        <div class="ptc-bg-side"></div>
-        <div class="ptc-wl-header-bar">
-          <div></div>
-          <div class="ptc-wl-difficulty">
-            <span class="ptc-hex-icon ${hexColorClass}"></span>
-            <span>${diffLabel}</span>
+        card.innerHTML = `
+          <div class="ptc-bg-side"></div>
+          <div class="ptc-card-cost-badge">${costBadgeText}</div>
+          <svg class="ptc-badge-icon" viewBox="0 0 24 24" fill="none" stroke="#fae69e" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+          </svg>
+          <div class="ptc-shield-plate">
+            <span class="ptc-rating-val">${ptc.bigRating}</span>
           </div>
-        </div>
-        <div class="ptc-wl-plate">
-          <div class="ptc-wl-rat-tag">${minR}+</div>
-          <div class="ptc-wl-info-icon">i</div>
-          <div class="ptc-wl-title">WEEKEND<br>LEAGUE</div>
-          <div class="ptc-wl-sub">ELECCIÓN DE DRAFT</div>
-          <div class="ptc-wl-draft-badge"><span>%</span> 1/3</div>
-        </div>
-        <div class="ptc-squad-counter">0/1</div>
-        <div class="ptc-game-footer">
-          <span class="ptc-game-title">${wlTitle}</span>
-          <div class="ptc-game-arrow-btn">❯</div>
-        </div>
-      `;
-      grid.appendChild(card);
-      return;
-    }
-
-    if (rewardData && rewardData.type === 'player') {
-      var groupTheme = 'theme-group-season';
-      if (ptc.id === 'b_bronze_group') groupTheme = 'theme-group-bronze';
-      else if (ptc.id === 'b_silver_group') groupTheme = 'theme-group-silver';
-      else if (ptc.id === 'b_gold_group') groupTheme = 'theme-group-gold';
-
-      card.className = 'ptc-card-player-group ' + groupTheme;
-      var totalSquads = ptc.subchallenges ? ptc.subchallenges.length : 4;
-      var counterText = `0/${totalSquads}`;
-      var footerTitle = getPtcTitle(ptc.id);
-      if (groupShortTitles[ptc.id]) {
-        var se = groupShortTitles[ptc.id];
-        footerTitle = se[currentLang] || se.es || se.en;
+          <div class="ptc-game-footer">
+            <span class="ptc-game-title">${repeatTitle}</span>
+            <div class="ptc-game-arrow-btn">❯</div>
+          </div>
+        `;
+        grid.appendChild(card);
+        return;
       }
 
-      var cardRarity = rewardData.rarity || 'ptc';
-      var mockPlayer = {
-        name: rewardData.name,
-        rating: rewardData.rating,
-        position: rewardData.pos,
-        rarity: cardRarity,
-        country: rewardData.country,
-        league: rewardData.league,
-        club: rewardData.club,
-        image: rewardData.image,
-        pac: rewardData.stats ? rewardData.stats.pac : 70,
-        sho: rewardData.stats ? rewardData.stats.sho : 70,
-        pas: rewardData.stats ? rewardData.stats.pas : 70,
-        dri: rewardData.stats ? rewardData.stats.dri : 70,
-        def: rewardData.stats ? rewardData.stats.def : 70,
-        phy: rewardData.stats ? rewardData.stats.phy : 70,
-        gkLabels: rewardData.gkLabels
-      };
+      var rewardData = ptcRewards[ptc.id];
+
+      // 2. WEEKEND LEAGUE
+      if (rewardData && (rewardData.type === 'wl' || ptc.id === 's_wl_1' || ptc.id === 's_wl_2')) {
+        card.className = 'ptc-card-wl';
+        var minR = ptc.id === 's_wl_2' ? 84 : 81;
+        var diffLabel = ptc.id === 's_wl_2' ? (currentLang === 'es' ? 'Media' : 'Medium') : (currentLang === 'es' ? 'Fácil' : 'Easy');
+        var hexColorClass = ptc.id === 's_wl_2' ? 'ptc-hex-yellow' : 'ptc-hex-green';
+        var wlTitle = getPtcTitle(ptc.id);
+
+        var wlCost = getPtcTotalCost(ptc, db, defaultPrices);
+        var costBadgeText = wlCost ? (Number(wlCost).toLocaleString('es-ES') + ' 🪙') : '—';
+
+        card.innerHTML = `
+          <div class="ptc-bg-side"></div>
+          <div class="ptc-card-cost-badge">${costBadgeText}</div>
+          <div class="ptc-wl-header-bar">
+            <div></div>
+            <div class="ptc-wl-difficulty">
+              <span class="ptc-hex-icon ${hexColorClass}"></span>
+              <span>${diffLabel}</span>
+            </div>
+          </div>
+          <div class="ptc-wl-plate">
+            <div class="ptc-wl-rat-tag">${minR}+</div>
+            <div class="ptc-wl-info-icon">i</div>
+            <div class="ptc-wl-title">WEEKEND<br>LEAGUE</div>
+            <div class="ptc-wl-sub">ELECCIÓN DE DRAFT</div>
+            <div class="ptc-wl-draft-badge"><span>%</span> 1/3</div>
+          </div>
+          <div class="ptc-squad-counter">0/1</div>
+          <div class="ptc-game-footer">
+            <span class="ptc-game-title">${wlTitle}</span>
+            <div class="ptc-game-arrow-btn">❯</div>
+          </div>
+        `;
+        grid.appendChild(card);
+        return;
+      }
+
+      // 3. GRUPOS DE JUGADORES (BRONCE, PLATA, ORO, AFICIONADO...)
+      if (rewardData && rewardData.type === 'player') {
+        var groupTheme = 'theme-group-season';
+        if (ptc.id === 'b_bronze_group') groupTheme = 'theme-group-bronze';
+        else if (ptc.id === 'b_silver_group') groupTheme = 'theme-group-silver';
+        else if (ptc.id === 'b_gold_group') groupTheme = 'theme-group-gold';
+
+        card.className = 'ptc-card-player-group ' + groupTheme;
+        var totalSquads = ptc.subchallenges ? ptc.subchallenges.length : 4;
+        var counterText = `0/${totalSquads}`;
+        var footerTitle = getPtcTitle(ptc.id);
+        if (groupShortTitles[ptc.id]) {
+          var se = groupShortTitles[ptc.id];
+          footerTitle = se[currentLang] || se.es || se.en;
+        }
+
+        var totalCost = getPtcTotalCost(ptc, db, defaultPrices);
+        var costBadgeText = totalCost ? (Number(totalCost).toLocaleString('es-ES') + ' 🪙') : '—';
+
+        var cardRarity = rewardData.rarity || 'ptc';
+        var mockPlayer = {
+          name: rewardData.name,
+          rating: rewardData.rating,
+          position: rewardData.pos,
+          rarity: cardRarity,
+          country: rewardData.country,
+          league: rewardData.league,
+          club: rewardData.club,
+          image: rewardData.image,
+          pac: rewardData.stats ? rewardData.stats.pac : 70,
+          sho: rewardData.stats ? rewardData.stats.sho : 70,
+          pas: rewardData.stats ? rewardData.stats.pas : 70,
+          dri: rewardData.stats ? rewardData.stats.dri : 70,
+          def: rewardData.stats ? rewardData.stats.def : 70,
+          phy: rewardData.stats ? rewardData.stats.phy : 70,
+          gkLabels: rewardData.gkLabels
+        };
+
+        card.innerHTML = `
+          <div class="ptc-bg-side"></div>
+          <div class="ptc-card-cost-badge">${costBadgeText}</div>
+          ${getGroupHexRowHtml(ptc)}
+          <div class="ptc-player-card-center">
+            ${generatePlayerFutCardHtml(mockPlayer, true)}
+          </div>
+          <div class="ptc-squad-counter">${counterText}</div>
+          <div class="ptc-game-footer">
+            <span class="ptc-game-title">${footerTitle}</span>
+            <div class="ptc-game-arrow-btn">❯</div>
+          </div>
+        `;
+        grid.appendChild(card);
+        return;
+      }
+
+      // 4. TEMPORADA BLOQUEADA
+      if (ptc.category === 'season') {
+        card.className = 'ptc-card-game theme-locked-season';
+        var lockedTitle = getPtcTitle(ptc.id);
+        var totalSquads = ptc.subchallenges ? ptc.subchallenges.length : 4;
+        var lockedLabel = (t.lockedLabel || '🔒 BLOQUEADO');
+
+        var seasonCost = getPtcTotalCost(ptc, db, defaultPrices);
+        var costBadgeHtml = seasonCost ? `<div class="ptc-card-cost-badge">${Number(seasonCost).toLocaleString('es-ES')} 🪙</div>` : '';
+
+        card.innerHTML = `
+          <div class="ptc-bg-side"></div>
+          ${costBadgeHtml}
+          <div class="ptc-card-locked-badge">${lockedLabel}</div>
+          <div class="ptc-shield-plate">
+            <span class="ptc-locked-icon">🔒</span>
+          </div>
+          <div class="ptc-squad-counter">0/${totalSquads}</div>
+          <div class="ptc-game-footer">
+            <span class="ptc-game-title">${lockedTitle}</span>
+            <div class="ptc-game-arrow-btn">❯</div>
+          </div>
+        `;
+        grid.appendChild(card);
+        return;
+      }
+
+      // 5. TARJETA ESTÁNDAR
+      card.className = 'ptc-card card';
+      var badgeInfo = getPtcBadgeInfo(ptc);
+      var localizedTitle = getPtcTitle(ptc.id);
+      var rewardFormatted = formatPtcReward(ptc.id);
+      var rewardHtml = rewardFormatted ? `<div class="ptc-reward"><span>🎁</span> <b>${rewardFormatted}</b></div>` : '';
+
+      var stdCost = getPtcTotalCost(ptc, db, defaultPrices);
+      var costText = stdCost ? (Number(stdCost).toLocaleString('es-ES') + ' 🪙') : '—';
+
+      var reqHtml = '';
+      if (ptc.subchallenges && ptc.subchallenges.length) {
+        var targets = ptc.subchallenges.map(function(s) { return s.isPending ? '—' : s.target; }).join(', ');
+        reqHtml = `
+          <div class="ptc-req-item"><span>${t.reqSquads}</span> <b>${ptc.subchallenges.length}</b></div>
+          <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${targets}</b></div>
+        `;
+      } else {
+        reqHtml = `
+          <div class="ptc-req-item"><span>${t.reqPlayers}</span> <b>${ptc.players}</b></div>
+          <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${ptc.target}</b></div>
+        `;
+      }
 
       card.innerHTML = `
-        <div class="ptc-bg-side"></div>
-        ${getGroupHexRowHtml(ptc)}
-        <div class="ptc-player-card-center">
-          ${generatePlayerFutCardHtml(mockPlayer, true)}
-        </div>
-        <div class="ptc-squad-counter">${counterText}</div>
-        <div class="ptc-game-footer">
-          <span class="ptc-game-title">${footerTitle}</span>
-          <div class="ptc-game-arrow-btn">❯</div>
-        </div>
-      `;
-      grid.appendChild(card);
-      return;
-    }
-
-    if (ptc.category === 'season') {
-      card.className = 'ptc-card-game theme-locked-season';
-      var lockedTitle = getPtcTitle(ptc.id);
-      var totalSquads = ptc.subchallenges ? ptc.subchallenges.length : 4;
-      var lockedLabel = (t.lockedLabel || '🔒 BLOQUEADO');
-
-      card.innerHTML = `
-        <div class="ptc-bg-side"></div>
-        <div class="ptc-card-locked-badge">${lockedLabel}</div>
-        <div class="ptc-shield-plate">
-          <span class="ptc-locked-icon">🔒</span>
-        </div>
-        <div class="ptc-squad-counter">0/${totalSquads}</div>
-        <div class="ptc-game-footer">
-          <span class="ptc-game-title">${lockedTitle}</span>
-          <div class="ptc-game-arrow-btn">❯</div>
-        </div>
-      `;
-      grid.appendChild(card);
-      return;
-    }
-
-    card.className = 'ptc-card card';
-    var badgeInfo = getPtcBadgeInfo(ptc);
-    var localizedTitle = getPtcTitle(ptc.id);
-    var rewardFormatted = formatPtcReward(ptc.id);
-    var rewardHtml = rewardFormatted ? `<div class="ptc-reward"><span>🎁</span> <b>${rewardFormatted}</b></div>` : '';
-
-    var reqHtml = '';
-    var costText = '—';
-    var prices = ptc.requiredRarity ? getActivePrices(ptc.requiredRarity) : defaultPrices;
-
-    if (ptc.subchallenges && ptc.subchallenges.length) {
-      var targets = ptc.subchallenges.map(function(s) { return s.isPending ? '—' : s.target; }).join(', ');
-      reqHtml = `
-        <div class="ptc-req-item"><span>${t.reqSquads}</span> <b>${ptc.subchallenges.length}</b></div>
-        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${targets}</b></div>
-      `;
-    } else {
-      reqHtml = `
-        <div class="ptc-req-item"><span>${t.reqPlayers}</span> <b>${ptc.players}</b></div>
-        <div class="ptc-req-item"><span>${t.reqTarget}</span> <b>⭐ ${ptc.target}</b></div>
-      `;
-      var sol = solveSbc(ptc.players, ptc.target, prices);
-      if (sol) costText = Number(sol.cost).toLocaleString('es-ES') + ' 🪙';
-    }
-
-    card.innerHTML = `
-      <div>
-        <div class="ptc-header">
-          <h3 class="ptc-title">${localizedTitle}</h3>
-          <span class="ptc-badge-type ${badgeInfo.className}">${badgeInfo.label}</span>
-        </div>
-        ${rewardHtml}
-        <div class="ptc-reqs">${reqHtml}</div>
-      </div>
-      <div class="ptc-footer">
         <div>
-          <small style="color:var(--muted); font-size:10px; display:block">${t.estCost}</small>
-          <span class="ptc-cost">${costText}</span>
+          <div class="ptc-header">
+            <h3 class="ptc-title">${localizedTitle}</h3>
+            <span class="ptc-badge-type ${badgeInfo.className}">${badgeInfo.label}</span>
+          </div>
+          ${rewardHtml}
+          <div class="ptc-reqs">${reqHtml}</div>
         </div>
-        <span class="ptc-action">${t.viewSolution}</span>
-      </div>
-    `;
-    grid.appendChild(card);
+        <div class="ptc-footer">
+          <div>
+            <small style="color:var(--muted); font-size:10px; display:block">${t.estCost}</small>
+            <span class="ptc-cost">${costText}</span>
+          </div>
+          <span class="ptc-action">${t.viewSolution}</span>
+        </div>
+      `;
+      grid.appendChild(card);
+    } catch (e) {
+      console.error("Error al renderizar tarjeta PTC:", ptc.id, e);
+    }
   });
 }
 
 function openPtcModal(ptc) {
   activeModalPtc = ptc;
   activeSubIndex = 0;
+
+  var db = getDatabasePlayers();
+  var defaultPrices = getActivePrices(null);
 
   var subTabsWrap = document.getElementById('subTabsWrap');
   if (ptc.subchallenges && ptc.subchallenges.length) {
@@ -1592,11 +1655,18 @@ function openPtcModal(ptc) {
       var subTitle = sub.name || (getPtcTitle(ptc.id) + ' ' + (idx + 1));
       var packInfo = getPackStyleInfo(packRating, ptc.id, sub.difficulty);
 
+      // Calcular el precio del sub-PTC individual
+      var subCost = getSubChallengeCost(sub, db, defaultPrices);
+      var subCostHtml = subCost ? `<div class="sub-card-cost-badge">${Number(subCost).toLocaleString('es-ES')} 🪙</div>` : '';
+
       return `
         <div class="sub-tab-card ${idx === 0 ? 'active' : ''}" onclick="selectSubChallenge(${idx})">
           <div class="sub-card-top-bar">
-            <span class="sub-card-diff-label">${packInfo.diffLabel}</span>
-            <div class="ptc-hex-icon ${packInfo.hexClass}"></div>
+            ${subCostHtml}
+            <div style="display:flex; align-items:center; gap:5px;">
+              <span class="sub-card-diff-label">${packInfo.diffLabel}</span>
+              <div class="ptc-hex-icon ${packInfo.hexClass}"></div>
+            </div>
           </div>
           <div class="sub-shield-pack ${packInfo.cssClass}">
             <div class="sub-shield-rat-tag">${packTag}</div>
