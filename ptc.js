@@ -1019,7 +1019,8 @@ function solveOptimalSquad(pool, k, targetSum) {
       return {
         cost: cheapestCost,
         sum: cheapestSum,
-        players: cheapestK.sort(function(a, b) { return (+b.rating) - (+a.rating); })
+        players: cheapestK.sort(function(a, b) { return (+b.rating) - (+a.rating); }),
+        targetMet: true
       };
     }
   }
@@ -1073,18 +1074,26 @@ function solveOptimalSquad(pool, k, targetSum) {
   }
 
   var bestCost = -1, bestS = -1;
-  for (var s = targetSum; s <= maxSum; s++) {
-    var costAtS = dpCost[actualK * stride + s];
-    if (costAtS !== -1) {
-      if (bestCost === -1 || costAtS < bestCost || (costAtS === bestCost && s < bestS)) {
-        bestCost = costAtS;
-        bestS = s;
+  var targetMet = true;
+
+  // 1. Buscar combinación que alcance o supere targetSum (dentro del rango válido)
+  if (targetSum <= maxSum) {
+    for (var s = targetSum; s <= maxSum; s++) {
+      var costAtS = dpCost[actualK * stride + s];
+      if (costAtS !== -1) {
+        if (bestCost === -1 || costAtS < bestCost || (costAtS === bestCost && s < bestS)) {
+          bestCost = costAtS;
+          bestS = s;
+        }
       }
     }
   }
 
+  // 2. Si no se puede alcanzar targetSum, buscar la mayor suma alcanzable posible sin desbordar el array
   if (bestCost === -1) {
-    for (var s = targetSum - 1; s >= 0; s--) {
+    targetMet = false;
+    var maxSearch = Math.min(maxSum, targetSum - 1);
+    for (var s = maxSearch; s >= 0; s--) {
       var costBelow = dpCost[actualK * stride + s];
       if (costBelow !== -1) {
         bestCost = costBelow;
@@ -1094,19 +1103,22 @@ function solveOptimalSquad(pool, k, targetSum) {
     }
   }
 
-  if (bestCost === -1) return null;
+  if (bestCost === -1 || bestS < 0) return null;
 
   var chosen = [];
   var currS = bestS;
   for (var c = actualK; c >= 1; c--) {
     var stateIdx = c * stride + currS;
     var chosenPIdx = dpPlayer[stateIdx];
+    if (chosenPIdx < 0 || chosenPIdx >= pruned.length || !pruned[chosenPIdx]) {
+      return null;
+    }
     chosen.push(pruned[chosenPIdx]);
     currS = dpParentS[stateIdx];
   }
 
   chosen.sort(function(a, b) { return (+b.rating) - (+a.rating); });
-  return { cost: bestCost, sum: bestS, players: chosen };
+  return { cost: bestCost, sum: bestS, players: chosen, targetMet: targetMet };
 }
 
 function formatMissingReqLabel(m, lang) {
@@ -1142,6 +1154,9 @@ function formatMissingReqLabel(m, lang) {
   if (m.type === 'minPhy') {
     return (t.statPhy || 'FIS') + ' ≥ ' + m.cond;
   }
+  if (m.type === 'targetRating') {
+    return (t.reqTarget || 'Media requerida:') + ' ⭐ ' + m.required;
+  }
   if (m.type === 'fullSquad') {
     return (t.labelFullSquad || 'Plantilla completa ({n} jugadores con precio)').replace('{n}', m.cond);
   }
@@ -1168,14 +1183,20 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
   if (!reqs) {
     if (priceSource === 'db' && candidates.length >= n) {
       var opt = solveOptimalSquad(candidates, n, minTotalSum);
-      if (opt && opt.players.length === n) {
+      if (opt && opt.players.length === n && opt.targetMet) {
         var slots = opt.players.map(function(p) { return { rating: +p.rating, player: p }; });
         slots.sort(function(a, b) { return b.rating - a.rating; });
         return { isComplete: true, cost: opt.cost, sumRating: opt.sum, slots: slots, missingReqs: [] };
       }
     }
     var rawSol = solveSbc(n, target, prices);
-    if (!rawSol) return null;
+    if (!rawSol) {
+      var emptySlots = [];
+      for (var i = 0; i < n; i++) {
+        emptySlots.push({ rating: target, player: null, isMissingReq: false, isUnfilled: true, missingData: null });
+      }
+      return { isComplete: false, cost: 0, sumRating: 0, slots: emptySlots, missingReqs: [{ type: 'fullSquad', cond: n, required: n, found: candidates.length, missing: n }] };
+    }
     var rawSlots = [];
     rawSol.counts.forEach(function(count, rating) {
       for (var i = 0; i < count; i++) rawSlots.push({ rating: rating, player: null });
@@ -1184,13 +1205,13 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     return { isComplete: true, cost: rawSol.cost, sumRating: rawSol.bestSum, slots: rawSlots, missingReqs: [] };
   }
 
-  // Desafío CON requisitos especiales obligatorios:
+  // PTC CON REQUISITOS OBLIGATORIOS:
   var usedUids = new Set();
   var selectedPlayers = [];
   var missingReqs = [];
   var missingSlotsList = [];
 
-  // 1. Exact Positions
+  // 1. Posiciones Exactas
   if (reqs.exactPositions && Array.isArray(reqs.exactPositions)) {
     reqs.exactPositions.forEach(function(ep) {
       var needed = ep.count;
@@ -1222,47 +1243,17 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     });
   }
 
-  // 2. Otros requisitos
+  // 2. Agrupación de condiciones
   var conditionGroups = [];
-  if (reqs.minLeague) {
-    conditionGroups.push({
-      type: 'league', cond: reqs.minLeague.name, count: reqs.minLeague.count
-    });
-  }
-  if (reqs.minCountry) {
-    conditionGroups.push({
-      type: 'country', cond: reqs.minCountry.name, count: reqs.minCountry.count
-    });
-  }
-  if (reqs.minRole) {
-    conditionGroups.push({
-      type: 'role', cond: reqs.minRole.role, count: reqs.minRole.count
-    });
-  }
-  if (reqs.minAge && reqs.minAgeCount) {
-    conditionGroups.push({
-      type: 'minAge', cond: reqs.minAge, count: reqs.minAgeCount
-    });
-  }
-  if (reqs.maxAge && reqs.maxAgeCount) {
-    conditionGroups.push({
-      type: 'maxAge', cond: reqs.maxAge, count: reqs.maxAgeCount
-    });
-  }
-  if (reqs.maxWeight && reqs.maxWeightCount) {
-    conditionGroups.push({
-      type: 'maxWeight', cond: reqs.maxWeight, count: reqs.maxWeightCount
-    });
-  }
-  if (reqs.minDri && reqs.minDriCount) {
-    conditionGroups.push({ type: 'minDri', cond: reqs.minDri, count: reqs.minDriCount });
-  }
-  if (reqs.minSho && reqs.minShoCount) {
-    conditionGroups.push({ type: 'minSho', cond: reqs.minSho, count: reqs.minShoCount });
-  }
-  if (reqs.minPhy && reqs.minPhyCount) {
-    conditionGroups.push({ type: 'minPhy', cond: reqs.minPhy, count: reqs.minPhyCount });
-  }
+  if (reqs.minLeague) conditionGroups.push({ type: 'league', cond: reqs.minLeague.name, count: reqs.minLeague.count });
+  if (reqs.minCountry) conditionGroups.push({ type: 'country', cond: reqs.minCountry.name, count: reqs.minCountry.count });
+  if (reqs.minRole) conditionGroups.push({ type: 'role', cond: reqs.minRole.role, count: reqs.minRole.count });
+  if (reqs.minAge && reqs.minAgeCount) conditionGroups.push({ type: 'minAge', cond: reqs.minAge, count: reqs.minAgeCount });
+  if (reqs.maxAge && reqs.maxAgeCount) conditionGroups.push({ type: 'maxAge', cond: reqs.maxAge, count: reqs.maxAgeCount });
+  if (reqs.maxWeight && reqs.maxWeightCount) conditionGroups.push({ type: 'maxWeight', cond: reqs.maxWeight, count: reqs.maxWeightCount });
+  if (reqs.minDri && reqs.minDriCount) conditionGroups.push({ type: 'minDri', cond: reqs.minDri, count: reqs.minDriCount });
+  if (reqs.minSho && reqs.minShoCount) conditionGroups.push({ type: 'minSho', cond: reqs.minSho, count: reqs.minShoCount });
+  if (reqs.minPhy && reqs.minPhyCount) conditionGroups.push({ type: 'minPhy', cond: reqs.minPhy, count: reqs.minPhyCount });
 
   conditionGroups.forEach(function(cg) {
     var alreadyCovered = 0;
@@ -1307,30 +1298,33 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     }
   });
 
-  // SI FALTAN REQUISITOS OBLIGATORIOS:
-  // ¡NO RELLENAR CON JUGADORES RANDOM!
+  // SI FALTA CUALQUIER REQUISITO ESPECÍFICO (ej. peso en 2.3):
   if (missingReqs.length > 0) {
     var slots = [];
-    selectedPlayers.forEach(function(p) {
-      slots.push({ rating: +p.rating, player: p, isMissingReq: false });
-    });
+    // 1. Mostrar obligatoriamente todas las casillas faltantes para que no se corten
     missingSlotsList.forEach(function(ms) {
       slots.push({ rating: '—', player: null, isMissingReq: true, missingData: ms });
     });
+    // 2. Colocar los jugadores válidos encontrados hasta completar los slots restantes
+    selectedPlayers.forEach(function(p) {
+      if (slots.length < n) {
+        slots.push({ rating: +p.rating, player: p, isMissingReq: false });
+      }
+    });
+    // 3. Rellenar huecos restantes si hiciera falta hasta n
     while (slots.length < n) {
-      slots.push({ rating: target, player: null, isMissingReq: false, isUnfilled: true });
+      slots.push({ rating: target, player: null, isMissingReq: false, isUnfilled: true, missingData: null });
     }
-    slots = slots.slice(0, n);
     return {
       isComplete: false,
       cost: 0,
       sumRating: 0,
-      slots: slots,
+      slots: slots.slice(0, n),
       missingReqs: missingReqs
     };
   }
 
-  // SI SE CUMPLEN TODOS LOS REQUISITOS:
+  // SI TODOS LOS REQUISITOS ESPECÍFICOS SE CUMPLIERON:
   var remainingSlots = n - selectedPlayers.length;
   var currentSum = selectedPlayers.reduce(function(acc, p) { return acc + (+p.rating); }, 0);
   var currentCost = selectedPlayers.reduce(function(acc, p) { return acc + (+p.price); }, 0);
@@ -1344,26 +1338,50 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     var remainingCandidates = candidates.filter(function(p) { return !usedUids.has(p._uid); });
     var remOptimal = solveOptimalSquad(remainingCandidates, remainingSlots, neededSum);
 
-    if (remOptimal && remOptimal.players.length === remainingSlots) {
+    if (remOptimal && remOptimal.players && remOptimal.players.length === remainingSlots) {
       remOptimal.players.forEach(function(p) {
         slots.push({ rating: +p.rating, player: p, isMissingReq: false });
       });
       currentCost += remOptimal.cost;
       currentSum += remOptimal.sum;
+
+      // Si las cartas disponibles no alcanzan la media exigida (como en 2.4):
+      if (currentSum < minTotalSum || !remOptimal.targetMet) {
+        var achievedAvg = (currentSum / n).toFixed(1);
+        missingReqs.push({
+          type: 'targetRating',
+          required: target,
+          found: achievedAvg,
+          missing: target
+        });
+
+        slots.sort(function(a, b) { return b.rating - a.rating; });
+        return {
+          isComplete: false,
+          cost: currentCost,
+          sumRating: currentSum,
+          slots: slots.slice(0, n),
+          missingReqs: missingReqs
+        };
+      }
     } else {
-      var missingCount = remainingSlots - (remOptimal ? remOptimal.players.length : 0);
       missingReqs.push({
         type: 'fullSquad',
         cond: n,
         required: n,
         found: candidates.length,
-        missing: missingCount
+        missing: remainingSlots
       });
+
+      while (slots.length < n) {
+        slots.push({ rating: target, player: null, isMissingReq: false, isUnfilled: true, missingData: null });
+      }
+
       return {
         isComplete: false,
         cost: 0,
         sumRating: 0,
-        slots: slots,
+        slots: slots.slice(0, n),
         missingReqs: missingReqs
       };
     }
@@ -1374,7 +1392,7 @@ function solveSquadWithRequirements(dbCandidates, targetPtc, prices) {
     isComplete: true,
     cost: currentCost,
     sumRating: currentSum,
-    slots: slots,
+    slots: slots.slice(0, n),
     missingReqs: []
   };
 }
@@ -1829,6 +1847,9 @@ function renderModalContent() {
 
     var missingListItems = solution.missingReqs.map(function(m) {
       var label = formatMissingReqLabel(m, currentLang);
+      if (m.type === 'targetRating') {
+        return `<li><b>${label}:</b> Los jugadores actuales con precio en la BD solo alcanzan media <b>⭐ ${m.found}</b>. Se necesitan jugadores con precio de mayor media en la BD para alcanzar el requisito.</li>`;
+      }
       var pattern = t.unfulfilledItemPattern || "Se requieren {required} jugador(es) con precio en la BD (encontrados: {found}). Faltan {missing}.";
       var detail = pattern
         .replace('{required}', m.required)
@@ -1879,7 +1900,7 @@ function renderModalContent() {
             <div class="mini-card-price">${Number(chosen.price).toLocaleString('es-ES')} 🪙</div>
           </div>
         `;
-      } else if (item.isMissingReq) {
+      } else if (item.isMissingReq && item.missingData) {
         var missingName = formatMissingReqLabel(item.missingData, currentLang);
         slot.innerHTML = `
           <div class="squad-slot-empty squad-slot-missing">
