@@ -250,9 +250,56 @@
       margin-top: auto;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
       width: 100%;
       align-items: center;
+    }
+
+    /* Fila de mini-botones de plantillas (1, 2, 3, 4) */
+    .squad-slots-row {
+      display: flex;
+      gap: 4px;
+      justify-content: center;
+      width: 80px;
+    }
+    .squad-slot-mini-btn {
+      flex: 1;
+      height: 24px;
+      padding: 0;
+      background: #11140e;
+      border: 1px solid rgba(197, 160, 74, 0.35);
+      border-radius: 4px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 900;
+      font-family: var(--font-display);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .squad-slot-mini-btn:hover {
+      border-color: var(--gold);
+      color: #fff;
+      background: #1d2317;
+    }
+    .squad-slot-mini-btn.active {
+      background: var(--gold-btn);
+      color: #120e04;
+      border-color: #fae69e;
+      box-shadow: 0 0 8px rgba(245, 212, 122, 0.5);
+    }
+
+    /* Número de química destacado en otro color */
+    .chem-count-num {
+      color: var(--gold) !important;
+      font-weight: 900;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 1px 4px;
+      border-radius: 3px;
+      border: 1px solid rgba(245, 212, 122, 0.3);
+      text-shadow: 0 0 6px rgba(245, 212, 122, 0.4);
     }
     .btn-hud-action {
       width: 80px;
@@ -1683,12 +1730,20 @@
         <!-- Renderizado dinámico de enlaces de nacionalidad, liga y rareza -->
       </div>
 
-      <!-- Botones de Acción: Alineaciones y Cambiar Vista -->
+      <!-- Botones de Acción: Alineaciones, Selector 1 2 3 4 y Cambiar Vista -->
       <div class="hud-bottom-actions">
         <button type="button" class="btn-hud-action" onclick="openSquadManagerModal()">
           <span class="icon">👥</span>
           <span id="lblHudSquads">Alineaciones</span>
         </button>
+
+        <div class="squad-slots-row" id="squadSlotsRow" title="Cambiar Plantilla (1, 2, 3, 4)">
+          <button type="button" class="squad-slot-mini-btn active" id="btnSquadSlot1" onclick="switchSquadSlot(1)">1</button>
+          <button type="button" class="squad-slot-mini-btn" id="btnSquadSlot2" onclick="switchSquadSlot(2)">2</button>
+          <button type="button" class="squad-slot-mini-btn" id="btnSquadSlot3" onclick="switchSquadSlot(3)">3</button>
+          <button type="button" class="squad-slot-mini-btn" id="btnSquadSlot4" onclick="switchSquadSlot(4)">4</button>
+        </div>
+
         <button type="button" class="btn-hud-action" id="btnToggleViewMode" onclick="toggleCardViewMode()">
           <span class="icon">🔄</span>
           <span id="lblHudToggle">Cambiar</span>
@@ -1874,6 +1929,7 @@
       <button type="button" class="btn-icon-gold" onclick="closePlayerPicker()">✕</button>
     </div>
     <div class="drawer-filters">
+      <!-- Fila 1: Búsqueda y Filtro de Sectores -->
       <div class="drawer-filters-row">
         <input type="text" class="drawer-search-input" id="pickerSearch" placeholder="Buscar jugador, club, liga, país..." oninput="filterPickerPlayers()">
         
@@ -1884,13 +1940,24 @@
           <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('DEF')">DEF</button>
           <button type="button" class="drawer-filter-btn" onclick="setPickerPosFilter('POR')">POR</button>
         </div>
+      </div>
 
-        <select class="drawer-filter-btn" id="pickerSort" onchange="filterPickerPlayers()" style="background:#171b13; color:#fff;">
+      <!-- Fila 2: Ordenar + Botón Química + Botón Cambiar Vista juntos -->
+      <div class="drawer-filters-row" style="padding-top: 2px;">
+        <select class="drawer-filter-btn" id="pickerSort" onchange="filterPickerPlayers()" style="background:#171b13; color:#fff; width: auto; min-width: 130px; flex-shrink: 0;">
           <option value="rat-desc">Mayor Media</option>
           <option value="rat-asc">Menor Media</option>
           <option value="price-asc">Más Barato</option>
           <option value="name">Alfabético</option>
         </select>
+
+        <button type="button" class="drawer-filter-btn" id="btnPickerBestChem" onclick="togglePickerBestChem()" title="Ordenar primero los que más química aportan" style="white-space: nowrap; flex-shrink: 0;">
+          <span style="font-size:12px;">⚗️</span> <span id="lblPickerBestChem">Mejor Química: OFF</span>
+        </button>
+
+        <button type="button" class="drawer-filter-btn" id="btnPickerToggleView" onclick="togglePickerCardViewMode()" title="Cambiar vista de las cartas en el selector" style="white-space: nowrap; flex-shrink: 0;">
+          <span style="font-size:12px;">🔄</span> <span id="lblPickerToggleView">Vista: Foto</span>
+        </button>
       </div>
 
       <!-- Barra de Posición Exacta (DFC, LI, LD, CAD, MCD, MC, MCO, DC, etc.) -->

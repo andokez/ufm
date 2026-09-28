@@ -5,6 +5,7 @@
 
 var DB_KEY = 'ufm27_database_v3';
 var TEAM_KEY = 'ufm27_my_team_v1';
+var activeSquadSlot = parseInt(localStorage.getItem('ufm_active_squad_slot') || '1', 10);
 var currentLang = localStorage.getItem('ufm_lang') || 'es';
 var currentViewMode = 'front'; // 'front' (Modo 1), 'chemistry' (Modo 2), 'stats' (Modo 3)
 var activeSidebarTab = 'formations'; // 'bench', 'formations', 'tactics', 'roles'
@@ -13,6 +14,7 @@ var activeSlotIndex = -1; // Slot seleccionado para cambio
 var pickerTargetType = 'starter'; // 'starter' o 'bench'
 var pickerPosFilter = 'ALL';
 var pickerExactPosFilter = 'ALL';
+var pickerBestChemActive = false;
 
 // Variables para Drag and Drop y Menús Interactivos
 var draggedData = null; // { type: 'starter'|'bench', index: number }
@@ -72,7 +74,9 @@ var i18nTeam = {
     squadAuto: "⚡ Autocompletar con Base de Datos",
     squadClear: "🗑️ Vaciar Alineación Completa",
     pickerExactPosLabel: "Posición Exacta:",
-    pickerExactPosAll: "Todas"
+    pickerExactPosAll: "Todas",
+    pickerBestChemOn: "Mejor Química: ON",
+    pickerBestChemOff: "Mejor Química: OFF"
   },
   en: {
     navHome: "Home", navDb: "Database", navCalc: "SBC Calculator", navTeam: "My Team",
@@ -124,7 +128,9 @@ var i18nTeam = {
     squadAuto: "⚡ Auto Build with Database",
     squadClear: "🗑️ Clear Full Squad",
     pickerExactPosLabel: "Exact Position:",
-    pickerExactPosAll: "All"
+    pickerExactPosAll: "All",
+    pickerBestChemOn: "Best Chem: ON",
+    pickerBestChemOff: "Best Chem: OFF"
   },
   fr: {
     navHome: "Accueil", navDb: "Base de Données", navCalc: "Calculateur DCE", navTeam: "Mon Équipe",
@@ -428,6 +434,10 @@ function getCountryCode(country) {
   if (!country) return 'GEN';
   var c = String(country).toLowerCase();
   if (c.includes('países bajos') || c.includes('holanda') || c.includes('netherland')) return 'NL';
+  if (c.includes('uzbekist') || c.includes('uzbekistán') || c.includes('uzbekistan')) return 'UZ';
+  if (c.includes('gales') || c.includes('wales')) return 'WLS';
+  if (c.includes('ecuador')) return 'EC';
+  if (c.includes('hungría') || c.includes('hungria') || c.includes('hungary')) return 'HU';
   if (c.includes('brasil') || c.includes('brazil')) return 'BR';
   if (c.includes('inglaterra') || c.includes('england')) return 'EN';
   if (c.includes('españa') || c.includes('spain')) return 'ES';
@@ -443,6 +453,7 @@ function getCountryCode(country) {
   if (c.includes('irlanda del norte') || c.includes('northern ireland')) return 'NIR';
   if (c.includes('turquía') || c.includes('turkey')) return 'TUR';
   if (c.includes('uruguay')) return 'UY';
+  if (c.includes('hungría') || c.includes('hungria') || c.includes('hungary')) return 'HU';
   if (c.includes('colombia')) return 'CO';
   if (c.includes('polonia') || c.includes('poland')) return 'PL';
   if (c.includes('rumanía') || c.includes('rumania') || c.includes('romania')) return 'RO';
@@ -532,48 +543,56 @@ function isSpecialRarityType(rarity) {
   return !normalList.includes(r);
 }
 
-function getPlayerCategoryChem(p, slotPos) {
+function getPlayerCategoryChem(p, slotPos, simulatedCounts) {
   if (!p) return { countryPts: 0, leaguePts: 0, rarityPts: 0, total: 0 };
   var isExact = slotPos ? (normalizePosition(p.position) === normalizePosition(slotPos)) : true;
   if (!isExact) {
     return { countryPts: 0, leaguePts: 0, rarityPts: 0, total: 0 };
   }
-  var chemData = calculateTeamChemistry();
+  
+  // Si nos pasan conteos simulados a futuro los usa, si no, usa el estado actual de la cancha
+  var counts = simulatedCounts || calculateTeamChemistry();
+  var countryCounts = counts.countryCounts || {};
+  var leagueCounts = counts.leagueCounts || {};
+  var clubCounts = counts.clubCounts || {};
+  var rarityCounts = counts.rarityCounts || {};
+
   var cCode = getCountryCode(p.country);
   var lCode = getLeagueCode(p.league);
+  var club = getDisplayClub(p.club);
   var isSpecial = isSpecialRarityType(p.rarity);
   var rCode = isSpecial ? getRarityCode(p.rarity) : '';
 
-  var cCnt = chemData.countryCounts[cCode] || 0;
+  var cCnt = countryCounts[cCode] || 0;
   var cPts = 0;
   if (cCnt >= 8) cPts = 3;
   else if (cCnt >= 5) cPts = 2;
   else if (cCnt >= 2) cPts = 1;
 
-  var lCnt = chemData.leagueCounts[lCode] || 0;
+  var lCnt = leagueCounts[lCode] || 0;
   var lPts = 0;
   if (lCnt >= 8) lPts = 3;
   else if (lCnt >= 5) lPts = 2;
   else if (lCnt >= 3) lPts = 1;
 
+  var clCnt = club ? (clubCounts[club] || 0) : 0;
+  var rCnt = (isSpecial && rCode) ? (rarityCounts[rCode] || 0) : 0;
+  var maxCR = Math.max(clCnt, rCnt);
   var rPts = 0;
-  // La rareza normal NO cuenta para subir química, solo eventos/rareza especial
-  if (isSpecial && rCode) {
-    var rCnt = chemData.rarityCounts[rCode] || 0;
-    if (rCnt >= 7) rPts = 3;
-    else if (rCnt >= 4) rPts = 2;
-    else if (rCnt >= 2) rPts = 1;
-  }
+  if (maxCR >= 7) rPts = 3;
+  else if (maxCR >= 4) rPts = 2;
+  else if (maxCR >= 2) rPts = 1;
 
   return {
     countryPts: cPts,
     leaguePts: lPts,
     rarityPts: rPts,
-    total: Math.min(3, cPts + lPts + rPts)
+    total: Math.min(3, cPts + lPts + rPts),
+    rawTotal: cPts + lPts + rPts
   };
 }
 
-function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos) {
+function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos, simulatedCounts) {
   if (!p) return '';
   var shieldType = getShieldType(p.rarity, p.rating);
   var rClass = getRarityClass(p.rarity, p.rating);
@@ -679,7 +698,7 @@ function renderPlayerShieldCard(p, chemPts, isBench, isDetailModal, slotPos) {
     `;
   } else if (mode === 'chemistry') {
     // VISTA TRASERA 1: País, Liga y Rareza (si no es normal) con 3 bolitas cada uno, compactos y sin huecos
-    var catChem = getPlayerCategoryChem(p, slotPos);
+    var catChem = getPlayerCategoryChem(p, slotPos, simulatedCounts);
     var cCode = getCountryCode(p.country);
     var lCode = getLeagueCode(p.league);
     var rCode = getRarityCode(p.rarity);
@@ -770,20 +789,34 @@ function getFlagUrl(country) {
   var map = {
     'nl':'nl', 'br':'br', 'en':'gb-eng', 'es':'es', 'ar':'ar', 'it':'it', 'fr':'fr', 'de':'de',
     'pt':'pt', 'hr':'hr', 'be':'be', 'dz':'dz', 'se':'se', 'nir':'gb-nir', 'tur':'tr', 'uy':'uy',
-    'co':'co', 'pl':'pl', 'ro':'ro', 'ch':'ch', 'no':'no', 'kr':'kr', 'sct':'gb-sct', 'au':'au',
+    'hu':'hu', 'co':'co', 'pl':'pl', 'ro':'ro', 'ch':'ch', 'no':'no', 'kr':'kr', 'sct':'gb-sct', 'au':'au',
     'dk':'dk', 'ie':'ie', 'at':'at', 'us':'us', 'mx':'mx', 'ma':'ma', 'jp':'jp', 'ng':'ng',
-    'sn':'sn', 'rs':'rs', 'sa':'sa'
+    'sn':'sn', 'rs':'rs', 'sa':'sa', 'wls':'gb-wls', 'uz':'uz', 'ec':'ec', 'py':'py', 'cl':'cl',
+    'pe':'pe', 've':'ve', 'cz':'cz', 'sk':'sk', 'fi':'fi', 'gr':'gr', 'is':'is', 'ua':'ua',
+    'gh':'gh', 'ci':'ci', 'cm':'cm', 'eg':'eg', 'za':'za', 'ca':'ca', 'cr':'cr', 'nz':'nz'
   };
-  var fCode = map[code] || (code.length === 2 ? code : 'un');
-  return 'https://flagcdn.com/w40/' + fCode + '.png';
+  var fCode = map[code] || (code.length === 2 ? code : null);
+  if (!fCode) {
+    var rawClean = String(country).trim().toLowerCase();
+    if (rawClean.length === 2) fCode = rawClean;
+  }
+  return 'https://flagcdn.com/w40/' + (fCode || 'un') + '.png';
 }
 
 function getLeagueFlagUrl(league, country) {
   if (!league && !country) return 'https://flagcdn.com/w40/un.png';
   var raw = String(league || country).toLowerCase();
 
-  // Diccionario completo de ligas y divisiones
-  if (raw.includes('premier') || raw.includes('championship') || raw.includes('league one') || raw.includes('league two') || raw.includes('inglaterra') || raw.includes('england')) return 'https://flagcdn.com/w40/gb-eng.png';
+  // Diccionario completo de ligas y divisiones (incluyendo códigos cortos ENG1, SPA1, etc.)
+  if (raw.includes('premier') || raw.includes('championship') || raw.includes('league one') || raw.includes('league two') || raw.includes('inglaterra') || raw.includes('england') || raw === 'eng1' || raw === 'eng2') return 'https://flagcdn.com/w40/gb-eng.png';
+  if (raw === 'spa1' || raw === 'spa2') return 'https://flagcdn.com/w40/es.png';
+  if (raw === 'ita1' || raw === 'ita2') return 'https://flagcdn.com/w40/it.png';
+  if (raw === 'ger1' || raw === 'ger2') return 'https://flagcdn.com/w40/de.png';
+  if (raw === 'fra1' || raw === 'fra2') return 'https://flagcdn.com/w40/fr.png';
+  if (raw === 'neth') return 'https://flagcdn.com/w40/nl.png';
+  if (raw === 'por1') return 'https://flagcdn.com/w40/pt.png';
+  if (raw === 'turk') return 'https://flagcdn.com/w40/tr.png';
+  if (raw === 'bra1') return 'https://flagcdn.com/w40/br.png';
   if (raw.includes('laliga') || raw.includes('la liga') || raw.includes('hypermotion') || raw.includes('españa') || raw.includes('spain')) return 'https://flagcdn.com/w40/es.png';
   if (raw.includes('serie a') || raw.includes('serie b') || raw.includes('italia') || raw.includes('italy')) return 'https://flagcdn.com/w40/it.png';
   if (raw.includes('bundesliga') || raw.includes('3. liga') || raw.includes('alemania') || raw.includes('germany')) return 'https://flagcdn.com/w40/de.png';
@@ -1118,54 +1151,61 @@ function ensureDatabaseLoaded(callback) {
     });
 }
 
-// Carga inicial del equipo desde localStorage
+function getSquadStorageKey(slotNum) {
+  var s = slotNum || activeSquadSlot || 1;
+  return s === 1 ? TEAM_KEY : (TEAM_KEY + '_slot_' + s);
+}
+
+// Carga inicial del equipo desde el slot activo
 function initTeamState() {
   ensureDatabaseLoaded();
+  loadSquadFromSlot(activeSquadSlot);
+}
+
+function loadSquadFromSlot(slotNum) {
+  activeSquadSlot = slotNum || 1;
+  localStorage.setItem('ufm_active_squad_slot', String(activeSquadSlot));
+  var key = getSquadStorageKey(activeSquadSlot);
 
   try {
-    var saved = localStorage.getItem(TEAM_KEY);
+    var saved = localStorage.getItem(key);
     if (saved) {
       var parsed = JSON.parse(saved);
       if (parsed && parsed.formation && Array.isArray(parsed.starters)) {
         myTeamState = parsed;
-        activeFormationId = parsed.formation;
-        
-        // Limpiar jugadores simulados de capturas anteriores si existieran
-        var fakeIds = [
-          'p-henderson-85-ptc', 'p-ait-nouri-85-totw', 'p-guehi-85', 'p-gabriel-88',
-          'p-llorente-86-euro', 'p-rodri-88', 'p-macallister-87-euro', 'p-tonali-87-transfer',
-          'p-gakpo-85', 'p-cunha-88-euro', 'p-saka-86',
-          'b1', 'b2', 'b3', 'b4', 'b5', 'b6', 'b7', 'b8', 'b9'
-        ];
-        myTeamState.starters = myTeamState.starters.map(function(p) {
-          if (!p) return null;
-          if (fakeIds.indexOf(p.id) !== -1) return null;
-          return p;
-        });
-        if (Array.isArray(myTeamState.bench)) {
-          myTeamState.bench = myTeamState.bench.filter(function(p) {
-            return fakeIds.indexOf(p.id) === -1;
-          });
-        } else {
-          myTeamState.bench = [];
-        }
+        activeFormationId = parsed.formation || '433_def';
+        if (!Array.isArray(myTeamState.bench)) myTeamState.bench = [];
         return;
       }
     }
   } catch(e) {}
 
-  // Plantilla inicial limpia (11 huecos para colocar jugadores de la base de datos)
-  myTeamState.formation = '433_def';
+  // Si este slot está vacío, inicializarlo limpio
+  myTeamState = {
+    formation: '433_def',
+    starters: Array(11).fill(null),
+    bench: []
+  };
   activeFormationId = '433_def';
-  myTeamState.starters = Array(11).fill(null);
-  myTeamState.bench = [];
   saveTeamState();
 }
 
 function saveTeamState() {
   try {
-    localStorage.setItem(TEAM_KEY, JSON.stringify(myTeamState));
+    var key = getSquadStorageKey(activeSquadSlot);
+    localStorage.setItem(key, JSON.stringify(myTeamState));
   } catch(e) {}
+}
+
+function switchSquadSlot(slotNum) {
+  if (slotNum === activeSquadSlot) return;
+  // Guardar primero la plantilla actual antes de cambiar
+  saveTeamState();
+  // Cargar la nueva plantilla
+  loadSquadFromSlot(slotNum);
+  renderAll();
+  var t = i18nTeam[currentLang] || i18nTeam.es;
+  showToast((currentLang === 'es' ? 'Plantilla ' : 'Squad ') + slotNum, 'success');
 }
 
 function clearAllStarters() {
@@ -1460,31 +1500,45 @@ function renderHud() {
   var txtTotalAcq = document.getElementById('txtSquadTotalAcq');
   if (txtTotalAcq) txtTotalAcq.textContent = Number(ratings.totalAcqPrice).toLocaleString('es-ES') + ' 🪙';
 
-  // Desglose de química en Modo 2
+  // Desglose de química en la barra lateral izquierda
   var breakdownList = document.getElementById('chemBreakdownList');
-  if (currentViewMode === 'chemistry') {
+  if (breakdownList) {
     breakdownList.style.display = 'flex';
     var itemsHtml = '';
 
     // Países con química
     for (var c in chem.countryCounts) {
       if (chem.countryCounts[c] >= 2) {
-        var flag = getFlagUrl(c);
+        // Encontrar un jugador titular con este país para obtener su nombre real y bandera exacta
+        var pMatch = myTeamState.starters.find(function(starter) {
+          return starter && getCountryCode(starter.country) === c;
+        });
+        var flag = getFlagUrl(pMatch ? pMatch.country : c);
+        var countryTitle = pMatch ? (pMatch.country || c) : c;
+
         itemsHtml += `
-          <div class="chem-breakdown-item" title="País: ${c}">
-            <img src="${flag}">
-            <div class="chem-nodes-pill"><span>${c}</span> <span>${chem.countryCounts[c]}</span></div>
+          <div class="chem-breakdown-item" title="País: ${countryTitle}">
+            <img src="${flag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+            <div class="chem-nodes-pill"><span>${c}</span> <span class="chem-count-num">${chem.countryCounts[c]}</span></div>
           </div>
         `;
       }
     }
+
     // Ligas con química
     for (var l in chem.leagueCounts) {
       if (chem.leagueCounts[l] >= 3) {
+        // Encontrar un jugador titular con esta liga para obtener su bandera de liga y país de liga exactos
+        var pLeagueMatch = myTeamState.starters.find(function(starter) {
+          return starter && getLeagueCode(starter.league) === l;
+        });
+        var lFlag = pLeagueMatch ? getLeagueFlagUrl(pLeagueMatch.league, pLeagueMatch.country) : getLeagueFlagUrl(l);
+        var leagueTitle = pLeagueMatch ? (pLeagueMatch.league || l) : l;
+
         itemsHtml += `
-          <div class="chem-breakdown-item" title="Liga: ${l}">
-            <span style="font-size:11px;">🛡️</span>
-            <div class="chem-nodes-pill"><span>${l}</span> <span>${chem.leagueCounts[l]}</span></div>
+          <div class="chem-breakdown-item" title="Liga: ${leagueTitle}">
+            <img src="${lFlag}" onerror="this.src='https://flagcdn.com/w40/un.png'">
+            <div class="chem-nodes-pill"><span>${l}</span> <span class="chem-count-num">${chem.leagueCounts[l]}</span></div>
           </div>
         `;
       }
@@ -1493,6 +1547,12 @@ function renderHud() {
   } else {
     breakdownList.style.display = 'none';
   }
+
+  // Actualizar estado activo de los botones 1, 2, 3, 4
+  [1, 2, 3, 4].forEach(function(slotNum) {
+    var btn = document.getElementById('btnSquadSlot' + slotNum);
+    if (btn) btn.classList.toggle('active', activeSquadSlot === slotNum);
+  });
 }
 
 // ALTERNAR MODO DE VISTA (Frontal -> Química -> Stats -> Frontal)
@@ -2187,6 +2247,8 @@ function openPickerForSlot(slotIndex) {
 
   updatePickerPosButtons();
   renderPickerExactPosButtons();
+  updatePickerBestChemButton();
+  updatePickerViewButton();
   document.getElementById('playerPickerModal').classList.add('open');
   filterPickerPlayers();
 }
@@ -2198,6 +2260,8 @@ function openPickerForBench(benchIndex) {
   pickerExactPosFilter = 'ALL';
   updatePickerPosButtons();
   renderPickerExactPosButtons();
+  updatePickerBestChemButton();
+  updatePickerViewButton();
   document.getElementById('playerPickerModal').classList.add('open');
   filterPickerPlayers();
 }
@@ -2225,6 +2289,174 @@ function setPickerExactPosFilter(exactPos) {
   pickerExactPosFilter = exactPos;
   updatePickerExactPosButtons();
   filterPickerPlayers();
+}
+
+function togglePickerBestChem() {
+  pickerBestChemActive = !pickerBestChemActive;
+  updatePickerBestChemButton();
+  filterPickerPlayers();
+}
+
+function togglePickerCardViewMode() {
+  toggleCardViewMode();
+  updatePickerViewButton();
+  filterPickerPlayers();
+}
+
+function updatePickerViewButton() {
+  var lbl = document.getElementById('lblPickerToggleView');
+  var btn = document.getElementById('btnPickerToggleView');
+  var t = i18nTeam[currentLang] || i18nTeam.es;
+  if (!lbl) return;
+
+  if (currentViewMode === 'front' || currentViewMode === 'photo') {
+    lbl.textContent = t.toggleFront || "Vista: Foto";
+    if (btn) btn.classList.remove('active');
+  } else if (currentViewMode === 'chemistry') {
+    lbl.textContent = t.toggleChem || "Vista: Química";
+    if (btn) btn.classList.add('active');
+  } else {
+    lbl.textContent = t.toggleStats || "Vista: Stats";
+    if (btn) btn.classList.add('active');
+  }
+}
+
+function updatePickerBestChemButton() {
+  var btn = document.getElementById('btnPickerBestChem');
+  var lbl = document.getElementById('lblPickerBestChem');
+  var t = i18nTeam[currentLang] || i18nTeam.es;
+  if (!btn || !lbl) return;
+
+  if (pickerBestChemActive) {
+    btn.classList.add('active');
+    btn.style.background = '#2dd4bf';
+    btn.style.color = '#042f2e';
+    btn.style.borderColor = '#5eead4';
+    lbl.textContent = t.pickerBestChemOn || "Mejor Química: ON";
+  } else {
+    btn.classList.remove('active');
+    btn.style.background = '#171b13';
+    btn.style.color = 'var(--muted)';
+    btn.style.borderColor = 'rgba(197, 160, 74, 0.25)';
+    lbl.textContent = t.pickerBestChemOff || "Mejor Química: OFF";
+  }
+}
+
+// Simula y devuelve los conteos globales que tendría la plantilla si colocamos a este candidato
+function getSimulatedCountsWithCandidate(candidatePlayer) {
+  var countryCounts = {};
+  var leagueCounts = {};
+  var clubCounts = {};
+  var rarityCounts = {};
+
+  if (!candidatePlayer) return { countryCounts: countryCounts, leagueCounts: leagueCounts, clubCounts: clubCounts, rarityCounts: rarityCounts };
+
+  var formation = FORMATIONS[activeFormationId] || FORMATIONS['433_def'];
+  var simulatedStarters = myTeamState.starters.slice();
+
+  if (pickerTargetType === 'starter' && activeSlotIndex >= 0) {
+    simulatedStarters[activeSlotIndex] = candidatePlayer;
+  }
+
+  simulatedStarters.forEach(function(p, i) {
+    if (!p) return;
+    var slot = formation.slots[i];
+    if (normalizePosition(p.position) !== normalizePosition(slot.pos)) return;
+
+    var cCode = getCountryCode(p.country);
+    var lCode = getLeagueCode(p.league);
+    var club = getDisplayClub(p.club);
+    var isSpecial = isSpecialRarityType(p.rarity);
+    var rCode = isSpecial ? getRarityCode(p.rarity) : '';
+
+    if (cCode) countryCounts[cCode] = (countryCounts[cCode] || 0) + 1;
+    if (lCode) leagueCounts[lCode] = (leagueCounts[lCode] || 0) + 1;
+    if (club) clubCounts[club] = (clubCounts[club] || 0) + 1;
+    if (isSpecial && rCode) rarityCounts[rCode] = (rarityCounts[rCode] || 0) + 1;
+  });
+
+  return {
+    countryCounts: countryCounts,
+    leagueCounts: leagueCounts,
+    clubCounts: clubCounts,
+    rarityCounts: rarityCounts,
+    simulatedStarters: simulatedStarters,
+    formation: formation
+  };
+}
+
+function evaluateCandidateSquadChem(candidatePlayer) {
+  if (!candidatePlayer) return 0;
+
+  var formation = FORMATIONS[activeFormationId] || FORMATIONS['433_def'];
+  var targetSlot = (pickerTargetType === 'starter' && activeSlotIndex >= 0) ? formation.slots[activeSlotIndex] : null;
+
+  // Si se busca titular y no está en su posición exacta, no aportará química
+  if (targetSlot && normalizePosition(candidatePlayer.position) !== normalizePosition(targetSlot.pos)) {
+    return 0;
+  }
+
+  var sim = getSimulatedCountsWithCandidate(candidatePlayer);
+  var countryCounts = sim.countryCounts;
+  var leagueCounts = sim.leagueCounts;
+  var clubCounts = sim.clubCounts;
+  var rarityCounts = sim.rarityCounts;
+
+  // 1. Puntos brutos del propio jugador contándose a sí mismo en el nuevo equipo
+  var candCountryCode = getCountryCode(candidatePlayer.country);
+  var candLeagueCode = getLeagueCode(candidatePlayer.league);
+  var candClub = getDisplayClub(candidatePlayer.club);
+  var candIsSpecial = isSpecialRarityType(candidatePlayer.rarity);
+  var candRarityCode = candIsSpecial ? getRarityCode(candidatePlayer.rarity) : '';
+
+  var candCountryPts = 0;
+  var cCnt = countryCounts[candCountryCode] || 0;
+  if (cCnt >= 8) candCountryPts = 3; else if (cCnt >= 5) candCountryPts = 2; else if (cCnt >= 2) candCountryPts = 1;
+
+  var candLeaguePts = 0;
+  var lCnt = leagueCounts[candLeagueCode] || 0;
+  if (lCnt >= 8) candLeaguePts = 3; else if (lCnt >= 5) candLeaguePts = 2; else if (lCnt >= 3) candLeaguePts = 1;
+
+  var candClubPts = 0;
+  var clCnt = candClub ? (clubCounts[candClub] || 0) : 0;
+  var rCnt = (candIsSpecial && candRarityCode) ? (rarityCounts[candRarityCode] || 0) : 0;
+  var maxCR = Math.max(clCnt, rCnt);
+  if (maxCR >= 7) candClubPts = 3; else if (maxCR >= 4) candClubPts = 2; else if (maxCR >= 2) candClubPts = 1;
+
+  var candidateRawChem = candCountryPts + candLeaguePts + candClubPts;
+
+  // 2. Suma global de puntos de química de todos los titulares con el candidato alineado
+  var totalSquadTeamChem = 0;
+  if (sim.simulatedStarters) {
+    sim.simulatedStarters.forEach(function(p, i) {
+      if (!p) return;
+      var slot = formation.slots[i];
+      if (normalizePosition(p.position) !== normalizePosition(slot.pos)) return;
+
+      var pts = 0;
+      var c = getCountryCode(p.country);
+      var l = getLeagueCode(p.league);
+      var cl = getDisplayClub(p.club);
+      var sp = isSpecialRarityType(p.rarity);
+      var rc = sp ? getRarityCode(p.rarity) : '';
+
+      var pCCnt = countryCounts[c] || 0;
+      if (pCCnt >= 8) pts += 3; else if (pCCnt >= 5) pts += 2; else if (pCCnt >= 2) pts += 1;
+
+      var pLCnt = leagueCounts[l] || 0;
+      if (pLCnt >= 8) pts += 3; else if (pLCnt >= 5) pts += 2; else if (pLCnt >= 3) pts += 1;
+
+      var pClCnt = cl ? (clubCounts[cl] || 0) : 0;
+      var pRCnt = (sp && rc) ? (rarityCounts[rc] || 0) : 0;
+      var pMaxCR = Math.max(pClCnt, pRCnt);
+      if (pMaxCR >= 7) pts += 3; else if (pMaxCR >= 4) pts += 2; else if (pMaxCR >= 2) pts += 1;
+
+      totalSquadTeamChem += Math.min(3, pts);
+    });
+  }
+
+  // Ponderación: química global total del equipo (x10) + afinidad bruta del candidato
+  return (totalSquadTeamChem * 10) + candidateRawChem;
 }
 
 function updatePickerExactPosButtons() {
@@ -2307,10 +2539,28 @@ function filterPickerPlayers() {
   });
 
   // Ordenar
-  if (sortVal === 'rat-desc') filtered.sort((a,b) => (+b.rating || 0) - (+a.rating || 0));
-  else if (sortVal === 'rat-asc') filtered.sort((a,b) => (+a.rating || 0) - (+b.rating || 0));
-  else if (sortVal === 'price-asc') filtered.sort((a,b) => (+a.price || 9999999) - (+b.price || 9999999));
-  else if (sortVal === 'name') filtered.sort((a,b) => a.name.localeCompare(b.name));
+  if (pickerBestChemActive) {
+    var chemScores = new Map();
+    filtered.forEach(function(p) {
+      chemScores.set(p, evaluateCandidateSquadChem(p));
+    });
+
+    filtered.sort(function(a, b) {
+      var diffChem = (chemScores.get(b) || 0) - (chemScores.get(a) || 0);
+      if (diffChem !== 0) return diffChem;
+
+      if (sortVal === 'rat-desc') return (+b.rating || 0) - (+a.rating || 0);
+      if (sortVal === 'rat-asc') return (+a.rating || 0) - (+b.rating || 0);
+      if (sortVal === 'price-asc') return (+a.price || 9999999) - (+b.price || 9999999);
+      if (sortVal === 'name') return (a.name || '').localeCompare(b.name || '');
+      return (+b.rating || 0) - (+a.rating || 0);
+    });
+  } else {
+    if (sortVal === 'rat-desc') filtered.sort((a,b) => (+b.rating || 0) - (+a.rating || 0));
+    else if (sortVal === 'rat-asc') filtered.sort((a,b) => (+a.rating || 0) - (+b.rating || 0));
+    else if (sortVal === 'price-asc') filtered.sort((a,b) => (+a.price || 9999999) - (+b.price || 9999999));
+    else if (sortVal === 'name') filtered.sort((a,b) => (a.name || '').localeCompare(b.name || ''));
+  }
 
   var container = document.getElementById('pickerCardsList');
   if (!container) return;
@@ -2323,8 +2573,16 @@ function filterPickerPlayers() {
       ? Number(p.price).toLocaleString('es-ES') + ' 🪙'
       : (i18nTeam[currentLang] || i18nTeam.es).noPrice || 'Sin precio';
 
-    // Genera el escudo idéntico al del campo (vista frontal foto)
-    var shieldHtml = renderPlayerShieldCard(p, 0, true, false, null);
+    // Evalúa los conteos a futuro simulando que este jugador entra en el hueco
+    var targetSlotPos = (pickerTargetType === 'starter' && activeSlotIndex >= 0 && FORMATIONS[activeFormationId]) 
+      ? FORMATIONS[activeFormationId].slots[activeSlotIndex].pos 
+      : null;
+
+    var simCounts = getSimulatedCountsWithCandidate(p);
+    var futureCatChem = getPlayerCategoryChem(p, targetSlotPos, simCounts);
+    var playerChemPts = futureCatChem.total || 0;
+
+    var shieldHtml = renderPlayerShieldCard(p, playerChemPts, false, false, targetSlotPos, simCounts);
 
     return `
       <div class="drawer-player-card ${dupClass}" onclick="assignPickedPlayer('${p.id || p.name}')" title="${p.name} (${p.rating} · ${displayPos(p.position)})">
@@ -2512,6 +2770,8 @@ function applyTranslations() {
   // Traducción de la fila de posición exacta del selector
   setTxt('lblPickerExactPos', t.pickerExactPosLabel || 'Posición Exacta:');
   renderPickerExactPosButtons();
+  updatePickerBestChemButton();
+  updatePickerViewButton();
 }
 
 // FUNCIÓN GENERAL DE RENDERIZADO
