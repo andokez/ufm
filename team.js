@@ -845,6 +845,82 @@ function getLeagueFlagUrl(league, country) {
   return getFlagUrl(country || league);
 }
 
+// Traducciones completas de los nombres de formaciones
+var formationNamesI18n = {
+  '433_def': {
+    es: '4-3-3 defensa', en: '4-3-3 defend', fr: '4-3-3 défense',
+    de: '4-3-3 defensiv', it: '4-3-3 difensivo', pt: '4-3-3 contenção'
+  },
+  '433_atk': {
+    es: '4-3-3 ataque', en: '4-3-3 attack', fr: '4-3-3 offensive',
+    de: '4-3-3 offensiv', it: '4-3-3 offensivo', pt: '4-3-3 ofensivo'
+  },
+  '433_pivot': {
+    es: '4-3-3 con pivote', en: '4-3-3 holding', fr: '4-3-3 avec pivot',
+    de: '4-3-3 mit Sechser', it: '4-3-3 con perno', pt: '4-3-3 com trinco'
+  },
+  '433_flat': {
+    es: '4-3-3 plano', en: '4-3-3 flat', fr: '4-3-3 à plat',
+    de: '4-3-3 flach', it: '4-3-3 piatto', pt: '4-3-3 plano'
+  },
+  '352': {
+    es: '3-5-2', en: '3-5-2', fr: '3-5-2',
+    de: '3-5-2', it: '3-5-2', pt: '3-5-2'
+  },
+  '343_diamond': {
+    es: '3-4-3 diamante', en: '3-4-3 diamond', fr: '3-4-3 losange',
+    de: '3-4-3 Raute', it: '3-4-3 rombo', pt: '3-4-3 diamante'
+  },
+  '343_flat': {
+    es: '3-4-3 plano', en: '3-4-3 flat', fr: '3-4-3 à plat',
+    de: '3-4-3 flach', it: '3-4-3 piatto', pt: '3-4-3 plano'
+  },
+  '442': {
+    es: '4-4-2 plano', en: '4-4-2 flat', fr: '4-4-2 à plat',
+    de: '4-4-2 flach', it: '4-4-2 piatto', pt: '4-4-2 plano'
+  },
+  '442_holding': {
+    es: '4-4-2 contención', en: '4-4-2 holding', fr: '4-4-2 défensif',
+    de: '4-4-2 defensiv', it: '4-4-2 difensivo', pt: '4-4-2 contenção'
+  },
+  '4231': {
+    es: '4-2-3-1 estrecho', en: '4-2-3-1 narrow', fr: '4-2-3-1 resserré',
+    de: '4-2-3-1 eng', it: '4-2-3-1 stretto', pt: '4-2-3-1 fechado'
+  },
+  '41212_narrow': {
+    es: '4-1-2-1-2 cerrado', en: '4-1-2-1-2 narrow', fr: '4-1-2-1-2 resserré',
+    de: '4-1-2-1-2 eng', it: '4-1-2-1-2 stretto', pt: '4-1-2-1-2 fechado'
+  },
+  '4222': {
+    es: '4-2-2-2', en: '4-2-2-2', fr: '4-2-2-2',
+    de: '4-2-2-2', it: '4-2-2-2', pt: '4-2-2-2'
+  },
+  '4321': {
+    es: '4-3-2-1', en: '4-3-2-1', fr: '4-3-2-1',
+    de: '4-3-2-1', it: '4-3-2-1', pt: '4-3-2-1'
+  },
+  '424': {
+    es: '4-2-4', en: '4-2-4', fr: '4-2-4',
+    de: '4-2-4', it: '4-2-4', pt: '4-2-4'
+  },
+  '532': {
+    es: '5-3-2', en: '5-3-2', fr: '5-3-2',
+    de: '5-3-2', it: '5-3-2', pt: '5-3-2'
+  },
+  '523': {
+    es: '5-2-3', en: '5-2-3', fr: '5-2-3',
+    de: '5-2-3', it: '5-2-3', pt: '5-2-3'
+  }
+};
+
+function getFormationDisplayName(fId) {
+  var entry = formationNamesI18n[fId];
+  if (entry) {
+    return entry[currentLang] || entry.es || entry.en;
+  }
+  return (FORMATIONS[fId] && FORMATIONS[fId].name) ? FORMATIONS[fId].name : fId;
+}
+
 // 24 FORMACIONES TÁCTICAS POPULARES DE EA FC
 var FORMATIONS = {
   '433_def': {
@@ -1491,7 +1567,7 @@ function renderHud() {
   document.getElementById('hudSecCen').textContent = ratings.cen;
   document.getElementById('hudSecDef').textContent = ratings.def;
 
-  document.getElementById('txtSquadFormation').textContent = (FORMATIONS[activeFormationId] || {}).name.toUpperCase();
+  document.getElementById('txtSquadFormation').textContent = getFormationDisplayName(activeFormationId).toUpperCase();
 
   // 2. En la barra donde está el botón de autocompletar: mostrar suma total (alineación + banquillo)
   var txtCost = document.getElementById('txtSquadCost');
@@ -1696,12 +1772,14 @@ function renderSidebar() {
         return `<div class="mini-pitch-dot" style="left:${s.x}%; top:${s.y}%;"></div>`;
       }).join('');
 
+      var localizedFormName = getFormationDisplayName(fId);
+
       gridHtml += `
         <div class="formation-card ${isActive ? 'active' : ''}" onclick="selectFormation('${fId}')">
           <div class="formation-mini-pitch">
             ${dotsHtml}
           </div>
-          <div class="formation-card-name">${f.name}</div>
+          <div class="formation-card-name">${localizedFormName}</div>
         </div>
       `;
     }
