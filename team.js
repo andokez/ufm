@@ -845,28 +845,8 @@ function getLeagueFlagUrl(league, country) {
   return getFlagUrl(country || league);
 }
 
-// Traducciones completas de los nombres de formaciones
+// Traducciones completas de las 19 alineaciones oficiales del juego
 var formationNamesI18n = {
-  '433_def': {
-    es: '4-3-3 defensa', en: '4-3-3 defend', fr: '4-3-3 défense',
-    de: '4-3-3 defensiv', it: '4-3-3 difensivo', pt: '4-3-3 contenção'
-  },
-  '433_atk': {
-    es: '4-3-3 ataque', en: '4-3-3 attack', fr: '4-3-3 offensive',
-    de: '4-3-3 offensiv', it: '4-3-3 offensivo', pt: '4-3-3 ofensivo'
-  },
-  '433_pivot': {
-    es: '4-3-3 con pivote', en: '4-3-3 holding', fr: '4-3-3 avec pivot',
-    de: '4-3-3 mit Sechser', it: '4-3-3 con perno', pt: '4-3-3 com trinco'
-  },
-  '433_flat': {
-    es: '4-3-3 plano', en: '4-3-3 flat', fr: '4-3-3 à plat',
-    de: '4-3-3 flach', it: '4-3-3 piatto', pt: '4-3-3 plano'
-  },
-  '352': {
-    es: '3-5-2', en: '3-5-2', fr: '3-5-2',
-    de: '3-5-2', it: '3-5-2', pt: '3-5-2'
-  },
   '343_diamond': {
     es: '3-4-3 diamante', en: '3-4-3 diamond', fr: '3-4-3 losange',
     de: '3-4-3 Raute', it: '3-4-3 rombo', pt: '3-4-3 diamante'
@@ -875,41 +855,73 @@ var formationNamesI18n = {
     es: '3-4-3 plano', en: '3-4-3 flat', fr: '3-4-3 à plat',
     de: '3-4-3 flach', it: '3-4-3 piatto', pt: '3-4-3 plano'
   },
+  '352': {
+    es: '3-5-2', en: '3-5-2', fr: '3-5-2',
+    de: '3-5-2', it: '3-5-2', pt: '3-5-2'
+  },
+  '433_atk': {
+    es: '4-3-3 ataque', en: '4-3-3 attack', fr: '4-3-3 offensive',
+    de: '4-3-3 offensiv', it: '4-3-3 offensivo', pt: '4-3-3 ofensivo'
+  },
+  '433_def': {
+    es: '4-3-3 defensa', en: '4-3-3 defend', fr: '4-3-3 défense',
+    de: '4-3-3 defensiv', it: '4-3-3 difensivo', pt: '4-3-3 contenção'
+  },
+  '433_pivot': {
+    es: '4-3-3 con pivote', en: '4-3-3 holding', fr: '4-3-3 avec pivot',
+    de: '4-3-3 mit Sechser', it: '4-3-3 con perno', pt: '4-3-3 com pivô'
+  },
   '442': {
     es: '4-4-2 plano', en: '4-4-2 flat', fr: '4-4-2 à plat',
     de: '4-4-2 flach', it: '4-4-2 piatto', pt: '4-4-2 plano'
   },
   '442_holding': {
-    es: '4-4-2 contención', en: '4-4-2 holding', fr: '4-4-2 défensif',
-    de: '4-4-2 defensiv', it: '4-4-2 difensivo', pt: '4-4-2 contenção'
+    es: '4-4-2 con pivote', en: '4-4-2 holding', fr: '4-4-2 avec pivot',
+    de: '4-4-2 mit Sechser', it: '4-4-2 con perno', pt: '4-4-2 com pivô'
   },
-  '4231': {
-    es: '4-2-3-1 estrecho', en: '4-2-3-1 narrow', fr: '4-2-3-1 resserré',
-    de: '4-2-3-1 eng', it: '4-2-3-1 stretto', pt: '4-2-3-1 fechado'
+  '41212_wide': {
+    es: '4-1-2-1-2 abierto', en: '4-1-2-1-2 wide', fr: '4-1-2-1-2 étiré',
+    de: '4-1-2-1-2 breit', it: '4-1-2-1-2 largo', pt: '4-1-2-1-2 aberto'
   },
   '41212_narrow': {
     es: '4-1-2-1-2 cerrado', en: '4-1-2-1-2 narrow', fr: '4-1-2-1-2 resserré',
     de: '4-1-2-1-2 eng', it: '4-1-2-1-2 stretto', pt: '4-1-2-1-2 fechado'
   },
-  '4222': {
-    es: '4-2-2-2', en: '4-2-2-2', fr: '4-2-2-2',
-    de: '4-2-2-2', it: '4-2-2-2', pt: '4-2-2-2'
+  '4132': {
+    es: '4-1-3-2', en: '4-1-3-2', fr: '4-1-3-2',
+    de: '4-1-3-2', it: '4-1-3-2', pt: '4-1-3-2'
   },
-  '4321': {
-    es: '4-3-2-1', en: '4-3-2-1', fr: '4-3-2-1',
-    de: '4-3-2-1', it: '4-3-2-1', pt: '4-3-2-1'
+  '4141': {
+    es: '4-1-4-1', en: '4-1-4-1', fr: '4-1-4-1',
+    de: '4-1-4-1', it: '4-1-4-1', pt: '4-1-4-1'
   },
-  '424': {
-    es: '4-2-4', en: '4-2-4', fr: '4-2-4',
-    de: '4-2-4', it: '4-2-4', pt: '4-2-4'
+  '4231_wide': {
+    es: '4-2-3-1 abierto', en: '4-2-3-1 wide', fr: '4-2-3-1 étiré',
+    de: '4-2-3-1 breit', it: '4-2-3-1 largo', pt: '4-2-3-1 aberto'
+  },
+  '5122': {
+    es: '5-1-2-2', en: '5-1-2-2', fr: '5-1-2-2',
+    de: '5-1-2-2', it: '5-1-2-2', pt: '5-1-2-2'
+  },
+  '5212': {
+    es: '5-2-1-2', en: '5-2-1-2', fr: '5-2-1-2',
+    de: '5-2-1-2', it: '5-2-1-2', pt: '5-2-1-2'
+  },
+  '523': {
+    es: '5-2-3', en: '5-2-3', fr: '5-2-3',
+    de: '5-2-3', it: '5-2-3', pt: '5-2-3'
   },
   '532': {
     es: '5-3-2', en: '5-3-2', fr: '5-3-2',
     de: '5-3-2', it: '5-3-2', pt: '5-3-2'
   },
-  '523': {
-    es: '5-2-3', en: '5-2-3', fr: '5-2-3',
-    de: '5-2-3', it: '5-2-3', pt: '5-2-3'
+  '541': {
+    es: '5-4-1', en: '5-4-1', fr: '5-4-1',
+    de: '5-4-1', it: '5-4-1', pt: '5-4-1'
+  },
+  '541_diamond': {
+    es: '5-4-1 diamante', en: '5-4-1 diamond', fr: '5-4-1 losange',
+    de: '5-4-1 Raute', it: '5-4-1 rombo', pt: '5-4-1 diamante'
   }
 };
 
@@ -921,28 +933,62 @@ function getFormationDisplayName(fId) {
   return (FORMATIONS[fId] && FORMATIONS[fId].name) ? FORMATIONS[fId].name : fId;
 }
 
-// 24 FORMACIONES TÁCTICAS POPULARES DE EA FC
+// LAS 19 FORMACIONES OFICIALES
 var FORMATIONS = {
-  '433_def': {
-    name: '4-3-3 defensa',
-    category: '4-def',
+  // 1. 3-4-3 diamante
+  '343_diamond': {
+    name: '3-4-3 diamante',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 64 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 65 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 65 },
-      { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 64 },
-      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 30, y: 44 },
-      { id: 'CM', pos: 'CM', sector: 'CEN', x: 50, y: 38 },
-      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 70, y: 44 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 28, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 72, y: 68 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 38 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 38 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 32 },
       { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
       { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
       { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
     ]
   },
+  // 2. 3-4-3 plano
+  '343_flat': {
+    name: '3-4-3 plano',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 28, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 72, y: 68 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 44 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 44 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 44 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 44 },
+      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
+      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
+    ]
+  },
+  // 3. 3-5-2
+  '352': {
+    name: '3-5-2',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 28, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 72, y: 68 },
+      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 36, y: 52 },
+      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 64, y: 52 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 16, y: 38 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 34 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 84, y: 38 },
+      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
+      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
+    ]
+  },
+  // 4. 4-3-3 ataque
   '433_atk': {
     name: '4-3-3 ataque',
-    category: '4-def',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
@@ -957,9 +1003,26 @@ var FORMATIONS = {
       { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
     ]
   },
+  // 5. 4-3-3 defensa
+  '433_def': {
+    name: '4-3-3 defensa',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 64 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 65 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 65 },
+      { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 64 },
+      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 30, y: 44 },
+      { id: 'CM', pos: 'CM', sector: 'CEN', x: 50, y: 38 },
+      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 70, y: 44 },
+      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
+      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
+    ]
+  },
+  // 6. 4-3-3 con pivote
   '433_pivot': {
     name: '4-3-3 con pivote',
-    category: '4-def',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 64 },
@@ -974,77 +1037,9 @@ var FORMATIONS = {
       { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
     ]
   },
-  '433_flat': {
-    name: '4-3-3 plano',
-    category: '4-def',
-    slots: [
-      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 66 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 66 },
-      { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 28, y: 42 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 50, y: 42 },
-      { id: 'CM3', pos: 'CM', sector: 'CEN', x: 72, y: 42 },
-      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
-      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
-      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
-    ]
-  },
-  '352': {
-    name: '3-5-2',
-    category: '3-def',
-    slots: [
-      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 26, y: 68 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
-      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 74, y: 68 },
-      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 36, y: 52 },
-      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 64, y: 52 },
-      { id: 'LM', pos: 'LM', sector: 'CEN', x: 16, y: 38 },
-      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 34 },
-      { id: 'RM', pos: 'RM', sector: 'CEN', x: 84, y: 38 },
-      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
-      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
-    ]
-  },
-  '343_diamond': {
-    name: '3-4-3 diamante',
-    category: '3-def',
-    slots: [
-      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 26, y: 68 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
-      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 74, y: 68 },
-      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
-      { id: 'LM', pos: 'LM', sector: 'CEN', x: 20, y: 40 },
-      { id: 'RM', pos: 'RM', sector: 'CEN', x: 80, y: 40 },
-      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 32 },
-      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
-      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
-      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
-    ]
-  },
-  '343_flat': {
-    name: '3-4-3 plano',
-    category: '3-def',
-    slots: [
-      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 26, y: 68 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
-      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 74, y: 68 },
-      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 44 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 44 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 44 },
-      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 44 },
-      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
-      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
-      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
-    ]
-  },
+  // 7. 4-4-2 plano
   '442': {
     name: '4-4-2 plano',
-    category: '4-def',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
@@ -1059,9 +1054,9 @@ var FORMATIONS = {
       { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 16 }
     ]
   },
+  // 8. 4-4-2 con pivote
   '442_holding': {
-    name: '4-4-2 contención',
-    category: '4-def',
+    name: '4-4-2 con pivote',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
@@ -1069,33 +1064,16 @@ var FORMATIONS = {
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
       { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
       { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 40 },
-      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 38, y: 48 },
-      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 62, y: 48 },
+      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 38, y: 49 },
+      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 62, y: 49 },
       { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 40 },
       { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 16 },
       { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 16 }
     ]
   },
-  '4231': {
-    name: '4-2-3-1 estrecho',
-    category: '4-def',
-    slots: [
-      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
-      { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
-      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 67 },
-      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
-      { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
-      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 36, y: 49 },
-      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 64, y: 49 },
-      { id: 'CAM1', pos: 'CAM', sector: 'CEN', x: 25, y: 32 },
-      { id: 'CAM2', pos: 'CAM', sector: 'CEN', x: 50, y: 30 },
-      { id: 'CAM3', pos: 'CAM', sector: 'CEN', x: 75, y: 32 },
-      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 }
-    ]
-  },
-  '41212_narrow': {
-    name: '4-1-2-1-2 cerrado',
-    category: '4-def',
+  // 9. 4-1-2-1-2 abierto (con LM y RM)
+  '41212_wide': {
+    name: '4-1-2-1-2 abierto',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
@@ -1103,67 +1081,135 @@ var FORMATIONS = {
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
       { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
       { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 30, y: 40 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 70, y: 40 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 38 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 38 },
       { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 30 },
       { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
       { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
     ]
   },
-  '4222': {
-    name: '4-2-2-2',
-    category: '4-def',
+  // 10. 4-1-2-1-2 cerrado (con CM1 y CM2)
+  '41212_narrow': {
+    name: '4-1-2-1-2 cerrado',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
       { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 67 },
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
       { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
-      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 36, y: 48 },
-      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 64, y: 48 },
-      { id: 'CAM1', pos: 'CAM', sector: 'CEN', x: 26, y: 32 },
-      { id: 'CAM2', pos: 'CAM', sector: 'CEN', x: 74, y: 32 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 32, y: 40 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 68, y: 40 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 30 },
       { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
       { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
     ]
   },
-  '4321': {
-    name: '4-3-2-1',
-    category: '4-def',
+  // 11. 4-1-3-2 (CDM, LM, CM, RM, dos puntas)
+  '4132': {
+    name: '4-1-3-2',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
       { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 67 },
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
       { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 28, y: 45 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 50, y: 47 },
-      { id: 'CM3', pos: 'CM', sector: 'CEN', x: 72, y: 45 },
-      { id: 'CF1', pos: 'CF', sector: 'DEL', x: 32, y: 24 },
-      { id: 'CF2', pos: 'CF', sector: 'DEL', x: 68, y: 24 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 51 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 36 },
+      { id: 'CM', pos: 'CM', sector: 'CEN', x: 50, y: 35 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 36 },
+      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
+      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
+    ]
+  },
+  // 12. 4-1-4-1 (CDM, LM, CM1, CM2, RM, un punta)
+  '4141': {
+    name: '4-1-4-1',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 67 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
+      { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 36 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 38 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 38 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 36 },
       { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 }
     ]
   },
-  '424': {
-    name: '4-2-4',
-    category: '4-def',
+  // 13. 4-2-3-1 abierto (dos MCD, LM, CAM, RM y un ST)
+  '4231_wide': {
+    name: '4-2-3-1 abierto',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LB', pos: 'LB', sector: 'DEF', x: 18, y: 65 },
       { id: 'CB1', pos: 'CB', sector: 'DEF', x: 38, y: 67 },
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 62, y: 67 },
       { id: 'RB', pos: 'RB', sector: 'DEF', x: 82, y: 65 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 36, y: 46 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 64, y: 46 },
-      { id: 'LW', pos: 'LW', sector: 'DEL', x: 20, y: 18 },
-      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 40, y: 14 },
-      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 60, y: 14 },
-      { id: 'RW', pos: 'RW', sector: 'DEL', x: 80, y: 18 }
+      { id: 'CDM1', pos: 'CDM', sector: 'CEN', x: 36, y: 50 },
+      { id: 'CDM2', pos: 'CDM', sector: 'CEN', x: 64, y: 50 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 34 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 30 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 34 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 }
     ]
   },
+  // 14. 5-1-2-2 (5 defensas, 1 CDM, 2 CM y 2 ST)
+  '5122': {
+    name: '5-1-2-2',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 32, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 68, y: 68 },
+      { id: 'RWB', pos: 'RWB', sector: 'DEF', x: 84, y: 62 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 50 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 35, y: 36 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 65, y: 36 },
+      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
+      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
+    ]
+  },
+  // 15. 5-2-1-2 (5 defensas, 2 CM, 1 CAM y 2 ST)
+  '5212': {
+    name: '5-2-1-2',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 32, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 68, y: 68 },
+      { id: 'RWB', pos: 'RWB', sector: 'DEF', x: 84, y: 62 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 36, y: 45 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 64, y: 45 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 30 },
+      { id: 'ST1', pos: 'ST', sector: 'DEL', x: 36, y: 15 },
+      { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 15 }
+    ]
+  },
+  // 16. 5-2-3 (5 defensas, 2 CM, LW, ST, RW)
+  '523': {
+    name: '5-2-3',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 32, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 68, y: 68 },
+      { id: 'RWB', pos: 'RWB', sector: 'DEF', x: 84, y: 62 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 45 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 45 },
+      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
+      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
+    ]
+  },
+  // 17. 5-3-2 (5 defensas, 3 CM, 2 ST)
   '532': {
     name: '5-3-2',
-    category: '5-def',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
@@ -1178,9 +1224,9 @@ var FORMATIONS = {
       { id: 'ST2', pos: 'ST', sector: 'DEL', x: 64, y: 16 }
     ]
   },
-  '523': {
-    name: '5-2-3',
-    category: '5-def',
+  // 18. 5-4-1 (5 defensas, LM, CM1, CM2, RM, 1 ST)
+  '541': {
+    name: '5-4-1',
     slots: [
       { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
       { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
@@ -1188,11 +1234,28 @@ var FORMATIONS = {
       { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
       { id: 'CB3', pos: 'CB', sector: 'DEF', x: 68, y: 68 },
       { id: 'RWB', pos: 'RWB', sector: 'DEF', x: 84, y: 62 },
-      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 45 },
-      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 45 },
-      { id: 'LW', pos: 'LW', sector: 'DEL', x: 22, y: 16 },
-      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 14 },
-      { id: 'RW', pos: 'RW', sector: 'DEL', x: 78, y: 16 }
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 18, y: 42 },
+      { id: 'CM1', pos: 'CM', sector: 'CEN', x: 38, y: 44 },
+      { id: 'CM2', pos: 'CM', sector: 'CEN', x: 62, y: 44 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 82, y: 42 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 15 }
+    ]
+  },
+  // 19. 5-4-1 diamante (5 defensas, CDM, LM, RM, CAM, 1 ST)
+  '541_diamond': {
+    name: '5-4-1 diamante',
+    slots: [
+      { id: 'GK', pos: 'GK', sector: 'DEF', x: 50, y: 88 },
+      { id: 'LWB', pos: 'LWB', sector: 'DEF', x: 16, y: 62 },
+      { id: 'CB1', pos: 'CB', sector: 'DEF', x: 32, y: 68 },
+      { id: 'CB2', pos: 'CB', sector: 'DEF', x: 50, y: 70 },
+      { id: 'CB3', pos: 'CB', sector: 'DEF', x: 68, y: 68 },
+      { id: 'RWB', pos: 'RWB', sector: 'DEF', x: 84, y: 62 },
+      { id: 'CDM', pos: 'CDM', sector: 'CEN', x: 50, y: 52 },
+      { id: 'LM', pos: 'LM', sector: 'CEN', x: 20, y: 38 },
+      { id: 'RM', pos: 'RM', sector: 'CEN', x: 80, y: 38 },
+      { id: 'CAM', pos: 'CAM', sector: 'CEN', x: 50, y: 32 },
+      { id: 'ST', pos: 'ST', sector: 'DEL', x: 50, y: 15 }
     ]
   }
 };
